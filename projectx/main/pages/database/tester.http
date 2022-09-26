@@ -1,0 +1,35 @@
+###
+POST http://localhost:3000/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"testing",
+    "password":"1234"
+}
+
+###
+POST http://localhost:3000/newLogin HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"testing",
+    "password":"1234"
+}
+
+###
+POST http://localhost:3000/token HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"testing",
+    "password":"1234"
+}
+
+###
+POST http://localhost:3000/delete HTTP/1.1
+Content-Type: application/json
+
+{
+    "username":"testing",
+    "password":"1234"
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/projectx_favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/images/projectx_faviconBU.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/style.css" type="text/css">
+</head>
+
+<body>
+    <div id="navWrap">
+        <nav>
+            <button>testing</button>
+            <button>11testing11</button>
+        </nav>
+        <div id="user">
+            <!-- Jos on tylsää tee uudestaan. Styling todella huono -->
+            <button id="username"></button>
+            <div id="userContent">
+                <button id="settings">Asetukset</button>
+                <button id="logout">Kirjaudu ulos</button>
+            </div>
+        </div>
+    </div>
+    <div class="center">
+        <div id="userSettings">
+            <h4 id="closeSettings">&#9587;</h4>
+            
+            <p class="margin0">Vaihda salasana</p>
+            <input type="text" id="changePWOld" placeholder="Vanha salasana">
+            <input type="text" id="changePW" placeholder="Uusi salasana">
+            <input type="text" id="changePWVerify" placeholder="Vahvista uusi salasana">
+            <button id="changePWBtn">Lähetä</button>
+            <p>Poista käyttäjä</p>
+            <input type="text" id="deleteUserPW" placeholder="Salasana">
+            <button id="deleteUser">Poista käyttäjä</button>
+            <p id="info"></p>
+        </div>
+    </div>
+
+    <main id="main">
+
+        <canvas id="canvas" width="800" height="400"></canvas>
+        <h3 id="points"></h3>
+        <button id="restart">JATKA</button>
+    </main>
+
+    
+
+    <script src="/js/mainJS/checkToken.js"></script>
+    <script src="/js/mainJS/displayCookies.js"></script>
+    <script src="/js/mainJS/listener.js"></script>
+    <script src="/js/mainJS/setupCanvas.js"></script>
+    <script src="/js/mainJS/canvasMovement.js"></script>
+    <script src="/js/mainJS/character.js"></script>
+    <script src="/js/mainJS/charHP.js"></script>
+</body>
+</html>

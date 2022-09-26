@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/images/projectx_favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/images/projectx_faviconBU.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles/loginStyle.css" type="text/css">
+</head>
+<body>
+    <div class="loginBG" id="loginBG">
+        <h2>Kirjaudu</h2>
+        <input type="text" placeholder="Käyttäjätunnus" id="username" autocomplete="off">
+        <input type="text" placeholder="Salasana" id="password" autocomplete="off">
+        <a id="newLogin">Luo käyttäjä</a>
+        <button id="submit">Kirjaudu</button> 
+    </div>
+
+    <div class="loginBG" id="newLoginBG">
+        <a id="backToLog">&#8592</a>
+        <h2>Rekisteröidy</h2>
+        <input type="text" placeholder="Käyttäjätunnus" id="newUsername" autocomplete="off">
+        <input type="text" placeholder="Salasana" id="newPassword" autocomplete="off">
+        <input type="text" placeholder="Salasana" id="verifyPassword" autocomplete="off">
+        <button id="submitNewLogin">Luo käyttäjä</button>
+    </div>
+    <p id="infoalue"></p>
+    
+    <script src="/js/loginJS/functions.js"></script>
+    <script src="/js/loginJS/listener.js"></script>
+    <script src="/js/loginJS/loginPost.js"></script>
+    <script src="/js/loginJS/cookies.js"></script>
+</body>
+</html>
