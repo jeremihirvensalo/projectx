@@ -773,4 +773,52 @@ Palauttaa `pelaaja1`
 
 
 ## gameServer.js
-    Käsittelee käyttäjän tekemät liikkeet ja vahvistaa niiden aitouden.
+    Serveri, joka käsittelee käyttäjän tekemät liikkeet ja vahvistaa niiden aitouden.
+
+### POST /player
+    Ottaa vastaan pelaaja-luokan (character-luokka) ja pelaajan nimen (string) ja säilöö sen tietokantaan.
+    Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia.
+    Onnistuneessa lisäyksessa palauttaa json-muodossa:
+```json
+{
+    "info":true
+}
+```
+    Epäonnistuneessa lisäyksessä palauttaa json-muodossa:
+```json
+{
+    "info":false
+}
+```
+
+### POST /move
+    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee pelaajan koordinaatit (json),
+    nimi (string) ja blockstate (boolean). Palauttaa json-muodossa booleanin.
+    Jos liike on sallittu palauttaa:
+```json
+{
+    "info":true
+}
+```
+    Jos liike ei ole sallittu palauttaa:
+```json
+{
+    "info":false
+}
+```
+
+### POST /attack
+    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee nimi ja blockstate (boolean).
+    Palauttaa json-muodossa booleanin.
+    Jos liike on sallittu palauttaa:
+```json
+{
+    "info":true
+}
+```
+    Jos liike ei ole sallittu palauttaa:
+```json
+{
+    "info":false
+}
+```
