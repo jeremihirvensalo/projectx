@@ -24,7 +24,6 @@ app.post("/player", async (req, res)=>{
         }else res.json({info:false});
         
     }catch(e){
-        console.log(e.message);
         res.json({info:false});
     }
 
