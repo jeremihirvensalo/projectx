@@ -651,5 +651,126 @@ Palauttaa `pelaaja1`
 # Pelipalvelin
     Hoitaa pelin toiminnan.
 
+## setupCanvas.js
+    Käsittelee pelin aloituksen.
+
+### start()
+    Parametriton(?) funktio, joka aloittaa pelin luomalla canvaksen ja tarvittavat luokat.
+
+### showPoints(points)
+    Funktio, joka päivittää sivulle pelaajan pisteet. Parametriksi ottaa pelaajan pisteet (integer)
+
+
+## character.js
+    Luokka, joka luo pelaajan. Luokka ottaa parametreiksi ctx, x, y, userW, userH, color, hp
+    eli canvaksen kontekstin (canvas context), x ja y koordinaatit johon pelaaja luodaan canvaksella (integer),
+    pelaajan leveys (integer), pelaajan korkeus (integer),
+    pelaajan väri (string) (tulee olemaan lopuksi pelaajan kuva(t)(jpeg tai png)) ja pelaajan osumapisteet (integer)
+
+### goLeft(amount)
+    Funktio, joka liikuttaa pelaajaa vasemmalle. Parametriksi ottaa liikkumismäärän (integer).
+
+### goRight(amount, botX)
+    Funktio, joka liikuttaa pelaajaa oikealle. Parametreiksi ottaa liikkumismäärän (integer) ja
+    toisen pelaajan eli botin x-koordinaatin (integer).
+
+### jump(amount, bot)
+    Funktio, jonka avulla pelaaja hyppää. Parametreiksi funktio ottaa hypyn korkeuden (integer)
+    ja toisen pelaajan eli botin (character-luokka).
+
+### block(state)
+    Funktio asettaa pelaajan torjumistilaan. Parametriksi ottaa booleanin.
+
+### blockState()
+    Parametriton funktio, joka palauttaa torjumistilan. Palautus on boolean.
+
+### punch(bot, hp)
+    Funktio, jonka avulla pelaaja lyö. Parametreiksi ottaa toisen pelaajan (character-luokka) 
+    ja toisen pelaajan osumapisteet (hp-luokka)
+
+### kick(bot, hp)
+    Funktio, jonka avulla pelaaja potkaisee. Parametreiksi ottaa toisen pelaajan (character-luokka) 
+    ja toisen pelaajan osumapisteet (hp-luokka)
+
+### awardPoints()
+    Parametriton funktio, joka antaa pelaajalle pisteitä.
+
+### getPoints()
+    Parametriton funktio, joka palauttaa pelaajan pisteet (integer).
+
+### getCoords()
+    Parametriton funktio, joka palauttaa pelaajan koordinaatit, leveyden ja korkeuden canvaksella.
+    Palauttaa json-muodossa (arvot ovat integereitä):
+```json
+{
+    "x":"this.x", 
+    "y":"this.y", 
+    "w":"this.userW", 
+    "h":"this.userH"
+}
+```
+
+### piirraChar()
+    Parametriton funktio, joka piirtää pelaajan canvakselle.
+
+### piirraCanvas()
+    Parametriton funktio, joka luo canvaksen.
+
+### getHP()
+    Parametriton funktio, joka palauttaa pelaajan osumapisteet (integer).
+
+### getAttackStatus()
+    Parametriton funktio, joka kertoo voiko pelaaja hyökätä. Palauttaa booleanin.
+
+### reset()
+    Parametriton funktio, joka palauttaa pelaajan kierroksen aloitusarvoihin.
+    Eli pelaajan koorditaatit, leveys ja korkeus palautuu kierroksen alkutilaan.
+
+
+## charHP.js
+    Luokka, joka käsittelee osumapisteiden vaihtelut ja niiden piirtämisen canvakselle.
+    Parametreiksi ottaa ctx, player, bot eli canvaksen kontekstin, pelaajan (character-luokka) ja
+    toisen pelaajan eli botin (character-luokka)
+    Konstruktorissa on myös arvot 'this.botStart' ja 'this.playerStart'. Ne määrittelevät osumapisteiden esittävän
+    laatikon piirtokohdan aloituspaikan.
+    Konstruktorin ulkopuolella on muuttujat 'hpWidth' esittää osumapisteiden esittävän laatikon leveyden,
+    'botRedBlock' ja 'playerRedBlock' esittää osumapistelaatikossa otetun osuman määrän.
+
+### drawBarL(name)
+    Funktio luo osumapistelaatikon canvaksen vasemmalle puolelle. Parametriksi ottaa nimen (string).
+
+### drawBarR(name)
+    Funktio luo osumapistelaatikon canvaksen oikealle puolelle. Parametrikis ottaa nimen (string).
+
+### drawDMG(amount, who)
+    Funktio piirtää otetun osuman osumapistelaatikkoon. Parametreiksi ottaa osuman vahingon kertoimen (integer) 
+    ja kenelle vahinko tehdään (string)
+
+### takeHit(amount, who)
+    Funktio käsittelee osumat ja pysäyttää pelin, jos jommankumman pelaajan osumapisteet on 0.
+    Parametreiksi ottaa osuman vahingon määrän (integer) ja kenelle vahinko tehdään (string)
+
+### returnHP()
+    Parametriton funktio, joka palauttaa molempien pelaajien osumapisteet.
+    Palautus on json-muodossa (arvot ovat integereitä): 
+```json
+{
+    "botHP":"this.botHP",
+    "playerHP":"this.playerHP"
+}
+```
+
+### reset()
+    Parametriton funktio, joka palauttaa kutsuu tarvittavat funktiot pelin uudelleen aloittamiseen.
+
+
+## canvasMovement.js
+    Käsittelee pelaajan tekemät liikkeet.
+
+### suoritaToiminto(player, bot, toiminto, hp)
+    Suorittaa pelaajan halutun toiminnon. Parametreiksi ottaa pelaajan (character-luokka),
+    toisen pelaajan (character-luokka), toiminnon (string) ja osumapisteluokan (hp-luokka)
+
+
 ## gameServer.js
     Käsittelee käyttäjän tekemät liikkeet ja vahvistaa niiden aitouden.
