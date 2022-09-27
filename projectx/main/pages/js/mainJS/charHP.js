@@ -1,11 +1,10 @@
 let hpWidth = 360;
-let dmgTakenWidth = 0;
 let botRedBlock = 0;
 let playerRedBlock = 0;
 
-class HP extends Character{
+class HP{
     constructor(ctx, player, bot){
-        super(ctx)
+        this.ctx = ctx;
         this.playerHP = player.getHP();
         this.botHP = bot.getHP();
         this.botStart = 425;
@@ -83,7 +82,6 @@ class HP extends Character{
         this.player.reset();
         this.bot.reset();
         hpWidth = 360;
-        dmgTakenWidth = 0;
         botRedBlock = 0;
         playerRedBlock = 0;
         document.getElementById("restart").addEventListener("click", start);
