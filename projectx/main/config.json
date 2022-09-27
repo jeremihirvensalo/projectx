@@ -3,6 +3,10 @@
         "port":3000,
         "host":"localhost"
     },
+    "gameServer":{
+        "port":3001,
+        "host":"localhost"
+    },
     "database":{
         "port":3307,
         "host":"localhost"
