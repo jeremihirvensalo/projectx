@@ -774,10 +774,20 @@ Palauttaa `pelaaja1`
 
 ## gameServer.js
     Serveri, joka käsittelee käyttäjän tekemät liikkeet ja vahvistaa niiden aitouden.
+    Jokainen kutsu ottaa vastaan pelaajan tokenin. Jos se ei täsmää tietokannassa olevaan
+    tokeniin, ei kutsu mene läpi ja palautetaan:
+```json
+{
+    "status":401
+}
+    
+```
 
 ### POST /player
-    Ottaa vastaan pelaaja-luokan (character-luokka) ja pelaajan nimen (string) ja säilöö sen tietokantaan.
-    Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia.
+    Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit
+    ja pelaajan nimen (string) joka säilötään tietokantaan.
+    Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia. Jos jokin parametri puuttuu,
+    ei lisäys onnistu.
     Onnistuneessa lisäyksessa palauttaa json-muodossa:
 ```json
 {
@@ -792,8 +802,9 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /move
-    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee pelaajan koordinaatit (json),
-    nimi (string) ja blockstate (boolean). Palauttaa json-muodossa booleanin.
+    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
+    nimi (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
+    Palauttaa json-muodossa booleanin.
     Jos liike on sallittu palauttaa:
 ```json
 {
@@ -808,7 +819,8 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /attack
-    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee nimi ja blockstate (boolean).
+    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string) ja blockstate (boolean).
+    Jos jokin parametri puuttuu, ei kutsu onnistu.
     Palauttaa json-muodossa booleanin.
     Jos liike on sallittu palauttaa:
 ```json
