@@ -107,7 +107,7 @@ class Character{
     }
 
     piirraCanvas(){
-        this.ctx.fillStyle = "grey";
+        this.ctx.fillStyle = "grey"; // tähän taustakuva
         this.ctx.clearRect(0, 170, 800, 400); // vain canvaksen alaosa piirretään uusiksi
         this.ctx.fillRect(0, 170, 800, 400);
     }
