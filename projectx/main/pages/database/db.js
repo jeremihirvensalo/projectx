@@ -36,6 +36,39 @@ module.exports = class Database{
         }
     }
 
+    async newInsert(user, table){ // ei valmis + päivitä API ja korvaa ylmepi insert() tällä
+        try{
+            conn = await pool.getConnection();
+            let result = await conn.query(`SELECT username FROM ${table} WHERE username=?`, [user.username]);
+            delete result.meta;
+            if(result.length != 0){
+                return {err:"Käyttäjä on jo olemassa"}
+            }
+
+            if(table === "users"){
+                result = await bcrypt.hash(password, 10).then(async (hash) => {
+                    let data = await conn.query(`INSERT INTO users VALUES(?,?)`, [user.username, hash]);
+                    if(data.affectedRows > 0){
+                        return {info:"Käyttäjän luonti onnistui"};
+                    }
+                    return {err:"Käyttäjän luonti epäonnistui"};
+                });
+                return result;
+            }else if(table === "userPoints"){
+                // tarkista jos pisteet ovat jo olemassa. Jos on => ALTER
+                result = await conn.query(`INSERT INTO userPoints VALUES(?,?)`, [user.username, user.points]);
+                if(result.affectedRows > 0){
+                    return {info:"Pisteiden tallennus onnistui"}
+                }
+                return {err:"Pisteiden tallennus epäonnistui"}
+            }
+        }catch(e){
+            return {err:"Tallennus epäonnistui"}
+        }finally{
+            if(conn) conn.end();
+        }
+    }
+
     async insertPoints(username, points){
         try{
             conn = await pool.getConnection();
