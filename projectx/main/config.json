@@ -10,8 +10,5 @@
     "database":{
         "port":3307,
         "host":"localhost"
-    },
-    "bs":{
-        "testing":201
     }
 }]
