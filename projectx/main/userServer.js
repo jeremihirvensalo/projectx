@@ -30,20 +30,23 @@ app.post("/", async (req, res) => {
     const result = await db.verifyLogin(user.username, user.password);
     if (result) {
         const newToken = token();
-        await db.insertToken(user.username, newToken);
+        const tokenResult = await db.insert({username:user.username,token:newToken}, "tokens");
+        if(tokenResult.err){
+            return res.json(tokenResult.err);
+        }
         if(id._idleTimeout) id=setInterval(async ()=>{await db.checkTokenDates()}, 1900000);
         res.json({info:"Kirjautuminen onnistui", token:newToken});
-    } else if (result.err) res.json(result.err);
+    } else if (result.err) res.json(result);
     else return res.json({err:"Käyttäjätiedot väärin"});
 });
 
 app.post("/newLogin", async (req, res) => {
     const user = req.body;
-    if (user.username == null || user.password == null) {
+    if (!user.username || !user.password) {
         res.json({ err: "Virheellinen data" });
     }
-    const result = await db.insert(user.username, user.password);
-    
+
+    const result = await db.insert(user, "users");
     res.json(result);
 });
 
@@ -54,7 +57,7 @@ app.post("/token", async (req, res)=>{
         result = db.compareTokens(user.token, result.token);
         res.json({info:result});
     }else{
-        res.json({err:result.err});
+        res.json(result);
     }
 });
 
@@ -63,11 +66,15 @@ app.post("/logout", async (req, res)=>{
     let result;
     if(user.username){
         result = await db.searchToken(user.username);
+        if(result.check == false){
+            return res.json({err:"Token check fail", logoutURL:"http://localhost:3000"});
+        }
         if(!result.err){
             if(user.token == result.token){
-                result = await db.deleteToken(user.username);
+                // result = await db.deleteToken(user.username);
+                result = await db.delete(user.username, "token");
                 if(result.info){
-                    res.json({logoutURL:"http://localhost:3000"});
+                    return res.json({logoutURL:"http://localhost:3000"});
                 } 
             }
         }
@@ -76,8 +83,6 @@ app.post("/logout", async (req, res)=>{
         res.json({err:result.err});
     }else if(result == undefined){
         res.json({err:"Jokin meni pahasti pieleen ulos kirjautuessa"});
-    }else if(result.check == false){
-        res.json({err:"Token check fail", logoutURL:"http://localhost:3000"});
     }
 });
 
@@ -92,7 +97,7 @@ app.post("/delete", async (req, res)=>{
         }
         
         if(result == true){
-            result = await db.deleteUser(user.username);
+            result = await db.delete(user.username);
             if(result.err){
                 res.json({err:result.err});
             }
@@ -130,11 +135,27 @@ app.post("/changePW", async (req, res)=>{
             result = await db.updatePW(user.username, user.newPW);
             res.json(result);
         }else{
-            res.json(result.err);
+            res.json(result);
         }
     }else{
         res.json({err:"Tiedot puutteelliset!"});
     }
+});
+
+app.post("/points", async (req, res)=>{
+    const user = req.body;
+    if(!user.username || !user.points || !user.token){
+        if(!user.token) return res.json({err:"No token found", newURL:"http://localhost:3000"});
+        return res.json({err:"Käyttäjätiedot eivät tulleet palvelimelle"});
+    }
+    const tokenDB = await db.searchToken(user.username);
+    if(tokenDB.check === false) return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
+
+    if(db.compareTokens(user.token, tokenDB)){
+        const result = await db.insert(user, "userPoints");
+        return res.json(result);
+    }
+    return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
 });
 
 app.listen(port, async() =>{
