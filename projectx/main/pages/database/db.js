@@ -12,42 +12,20 @@ const pool = mariadb.createPool({
 let conn;
 
 module.exports = class Database{
-    async insert(username, password){
+    async insert(user, table){ // päivitä API
         try{
             conn = await pool.getConnection();
-            let result = await conn.query("SELECT username FROM users WHERE username=?", [username]);
-            delete result.meta;
-            if(result.length != 0){
-                return {err:"Käyttäjä on jo olemassa"}
-            }
-            
-            result = await bcrypt.hash(password, 10).then(async (hash) => {
-                let data = await conn.query(`INSERT INTO users VALUES(?,?)`, [username, hash]);
-                if(data.affectedRows > 0){
-                    return {info:"Käyttäjän luonti onnistui"};
-                }
-                return {err:"Käyttäjän luonti epäonnistui"};
-            });
-            return result;
-        }catch(e){
-            return {err:"Käyttäjän luonti epäonnistui"};
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async newInsert(user, table){ // ei valmis + päivitä API ja korvaa ylmepi insert() tällä
-        try{
-            conn = await pool.getConnection();
-            let result = await conn.query(`SELECT username FROM ${table} WHERE username=?`, [user.username]);
-            delete result.meta;
-            if(result.length != 0){
-                return {err:"Käyttäjä on jo olemassa"}
-            }
+            let result;
 
             if(table === "users"){
-                result = await bcrypt.hash(password, 10).then(async (hash) => {
-                    let data = await conn.query(`INSERT INTO users VALUES(?,?)`, [user.username, hash]);
+                result = await conn.query(`SELECT username FROM users WHERE username=?`, [user.username]);
+                delete result.meta;
+                if(result.length != 0){
+                    return {err:"Käyttäjä on jo olemassa"}
+                }
+    
+                result = await bcrypt.hash(user.password, 10).then(async (hash) => {
+                    let data = await conn.query(`INSERT INTO ${table} VALUES(?,?)`, [user.username, hash]);
                     if(data.affectedRows > 0){
                         return {info:"Käyttäjän luonti onnistui"};
                     }
@@ -55,31 +33,30 @@ module.exports = class Database{
                 });
                 return result;
             }else if(table === "userPoints"){
-                // tarkista jos pisteet ovat jo olemassa. Jos on => ALTER
-                result = await conn.query(`INSERT INTO userPoints VALUES(?,?)`, [user.username, user.points]);
-                if(result.affectedRows > 0){
-                    return {info:"Pisteiden tallennus onnistui"}
+                result = await conn.query("SELECT username FROM userPoints WHERE username=?",[user.username]);
+                delete result.meta;
+                if(result.length != 0){
+                    result = await conn.query(`UPDATE ${table} SET points=? WHERE username=?`, [user.points, user.username]);
+                    if(result.affectedRows > 0) return {info:"Pisteden tallennus onnistui"};
+                    return {err:"Pisteiden tallennus epäonnistui"};
                 }
+                result = await conn.query(`INSERT INTO ${table} VALUES(?,?)`, [user.username, user.points]);
+                if(result.affectedRows > 0) return {info:"Pisteiden tallennus onnistui"};
                 return {err:"Pisteiden tallennus epäonnistui"}
+            }else if(table === "tokens"){
+                const checkForToken = await this.searchToken(user.username);
+                if(checkForToken.username != undefined){
+                    result = await conn.query("UPDATE tokens SET token=?, date=CURRENT_TIMESTAMP WHERE username=?", [user.token, user.username]);
+                }else{
+                    result = await conn.query("INSERT INTO tokens VALUES(?,?,CURRENT_TIMESTAMP)", [user.username, user.token]);
+                }
+                if(result.affectedRows > 0){
+                    return {info:"Tokenin tallennus onnistui"};
+                }
+                return {err:"Tokenin tallennus epäonnistui"};
             }
         }catch(e){
-            return {err:"Tallennus epäonnistui"}
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async insertPoints(username, points){
-        try{
-            conn = await pool.getConnection();
-            // tarkista jos pisteet ovat jo olemassa. Jos on => ALTER
-            let result = await conn.query(`INSERT INTO userPoints VALUES(?,?)`, [username, points]);
-            if(result.affectedRows > 0){
-                return {info:"Tallennus onnistui"}
-            }
-            return {err:"Tallennus epäonnistui"}
-        }catch(e){
-            return {err:"Virhe pisteiden tallennuksessa"}
+            return {err:"Tallennus epäonnistui"};
         }finally{
             if(conn) conn.end();
         }
@@ -131,41 +108,6 @@ module.exports = class Database{
         }
     }
 
-    async updatePoints(username, points){ // not ready. tarkista toimivuus kun/jos tarvitaan käyttää
-        try{
-            let user = await this.searchUser(username);
-            if(user.username){
-                conn = await pool.getConnection();
-                let result = await conn.query("UPDATE userPoints SET points=? WHERE username=?",[points, username]);
-                if(result.rowsAffected > 0){
-                    return {info:"Tallennus onnistui"}
-                }
-                return {info:"Tallennus epäonnistui"}
-            }
-        }catch(e){
-            return {err:"Virhe pisteiden tallennuksessa"}
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async deleteUser(username){
-        try{
-            let response = "Poisto onnistui: ";
-            conn = await pool.getConnection();
-            let result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-            if(result.affectedRows > 0) response += "tokeneista ";
-            //lisää poisto taulusta userPoints kun sitä aletaan käyttämään
-            result = await conn.query("DELETE FROM users WHERE username=?", [username]);
-            if(result.affectedRows > 0) response += "käyttäjistä "
-            return {info:response};
-        }catch(e){
-            return {err:"Virhe käyttäjän poistossa"}
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
     async verifyLogin(username, password){
         try{
             let user = await this.searchUser(username);
@@ -178,29 +120,6 @@ module.exports = class Database{
             return false;
         }catch(e){
             return ({err:"Virhe kirjautumistietojen tarkistuksessa"});
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async insertToken(username, tkn){
-        try{
-            conn = await pool.getConnection();
-
-            const checkForToken = await this.searchToken(username);
-            let result;
-            if(checkForToken.username != undefined){
-                result = await conn.query("UPDATE tokens SET token=?, date=CURRENT_TIMESTAMP WHERE username=?", [tkn, username]);
-            }else{
-                result = await conn.query("INSERT INTO tokens VALUES(?,?,CURRENT_TIMESTAMP)", [username, tkn]);
-            }
-            if(result.affectedRows > 0){
-                return {info:"Tokenin tallennus onnistui"}
-            }
-            return {err:"Tokenin tallennus epäonnistui"}
-        }catch(e){
-            console.log(e);
-            return {err:"Virhe tokenin tallennuksessa"}
         }finally{
             if(conn) conn.end();
         }
@@ -227,27 +146,6 @@ module.exports = class Database{
         return false;
     }
 
-    async deleteToken(username){
-        try{
-            let result = await this.searchToken(username);
-            // check user if found delete if not => err
-            if(result.username){
-                conn = await pool.getConnection();
-                result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-                
-                if(result.affectedRows > 0){
-                    return {info:`Käyttäjän ${username} tokeni poistettu`}
-                }
-                return {err:"Jokin meni pieleen, eikä käyttäjää poistettu"};
-            }
-            return {err:"Tokenia ei löytynyt"};
-        }catch(e){
-            console.log(e);
-            return {err:"Virhe tokenin poistossa"};
-        }finally{
-            if(conn) conn.end();
-        }
-    }
 
     async checkTokenDates(id){ // tarkistaa jokaisen tokenin ja poistaa jos on yli tunnin vanha
         try{
@@ -289,5 +187,34 @@ module.exports = class Database{
         }finally{
             if(conn) conn.end();
         }
+    }
+
+    async delete(username, key){
+        try{
+            conn = await pool.getConnection();
+            if(!key){
+                const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
+                const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+                const deletePoints = await conn.query("DELETE FROM userPoints WHERE username=?", [username]);
+                return {
+                    user:deleteUser.affectedRows > 0 ? true : false,
+                    token:deleteToken.affectedRows > 0 ? true : false,
+                    points:deletePoints.affectedRows > 0 ? true : false,
+                    info:"Poistaminen onnistui"
+                };
+            }else if(key === "token"){
+                const result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+                if(result.affectedRows > 0){
+                    return {info:"Poistaminen onnistui"};
+                }
+                return {err:"Poistossa meni jokin pieleen, mitään ei poistettu"};
+            }
+
+        }catch(e){
+            return {err:"Poistaminen epäonnistui"};
+        }finally{
+            if(conn) conn.end();
+        }
+
     }
 }
