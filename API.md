@@ -817,7 +817,8 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /attack
-    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string) ja blockstate (boolean).
+    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string) ja
+    molempien pelaajien blockstate (boolean).
     Jos jokin parametri puuttuu, ei kutsu onnistu.
     Palauttaa json-muodossa booleanin.
     Jos liike on sallittu palauttaa:
