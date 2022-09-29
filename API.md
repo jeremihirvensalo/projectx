@@ -785,7 +785,7 @@ Palauttaa `pelaaja1`
     Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit
     ja pelaajan nimen (string) joka säilötään tietokantaan.
     Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia. Jos jokin parametri puuttuu,
-    ei lisäys onnistu.
+    ei lisäys onnistu. Pelaajilla ei voi olla samanimi.
     Onnistuneessa lisäyksessa palauttaa json-muodossa:
 ```json
 {
