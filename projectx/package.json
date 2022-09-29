@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main/userServer.js"
+    "start": "node main/userServer.js",
+    "server": "node main/gameServer.js"
   },
   "keywords": [],
   "author": "",
