@@ -96,19 +96,33 @@ new Database();
 Luo `Database` luokan
 
 
-### insert(username, password)
-
+### insert(user, table)
     Kirjoittaa tietokantaan dataa. 
-    Parametreiksi funktio ottaa käyttäjätunnuksen ja
-    salasanan.
+    Parametreiksi funktio ottaa käyttäjäntiedot json-muodossa ja
+    taulukon nimen johon halutaan lisätä tieto. Käyttäjätietojen pitää sisältää
+    ainakin käyttäjänimen.
+    Funktioon voi syöttää 3 eri taulukkoa; users, tokens ja userPoints
     Funktioon ei pitäisi olla mahdollista laittaa väärää dataa, 
     koska ne tarkistetaan ennen funktion käyttöä.
     Funktio palauttaa onnistuneessa ja virhetilanteessa
     dataa json muodossa.
 
+Jos tietokanta ei ole päällä tai jokin muu menee pahasti pieleen
+palauttaa
+
+```json
+{
+    "err":"Tallennus epäonnistui"
+}
+```
+
+#### user-taulu
+    Ensimmäisen parametrin täytyy sisältää käyttäjänimen ja salasanan.
+    Tietokantaan ei voi lisätä samaa nimeä useaan kertaan.
+
 ```js
 const db = new Database();
-db.insert("taulu1", "pelaaja1", "salasana1");
+db.insert({username:"pelaaja",password:"salasana"}, "users");
 ```
 
 palauttaa 
@@ -128,9 +142,7 @@ palauttaa
 }
 ```
 
-Jos jokin menee pieleen kuten, että tietokanta ei
-ole päällä:
-
+Jos jokin menee pieleen tietokantaa lisätessä
 palauttaa
 
 ```json
@@ -139,37 +151,53 @@ palauttaa
 }
 ```
 
+#### tokens-taulu
+    `user` parametrin täytyy sisältää käyttäjänimen lisäksi tokeni.
+    Jos tokeni on jo olemassa käyttäjälle, sen päälle kirjoitetaa uusi tokeni.
 
-### insertPoints(username, points)
+```js
+const db = new Database();
+db.insert({username:"pelaaja",token:"randtoken123"}, "tokens");
+```
 
-    Kirjoittaa käyttäjän ennätyksen tietokantaan.
-    Tietokantaan tallentuu käyttäjätunnus ja piste-ennätys.
+Onnistuneessa tallennuksessa palautuu
+```json
+{
+    "info":"Tokenin tallennus onnistui"
+}
+```
+
+Epäonnistuneessa tilanteessa palautuu
+```json
+{
+    "err":"Tokenin tallennus epäonnistui"
+}
+```
+
+#### userPoints-taulukko
+    `user` parametrin täytyy sisältää käyttäjänimen lisäksi pisteet.
     Jos ennätys on jo olemassa sen päälle kirjoitetaan uusi ennätys.
 
 ```js
 const db = new Database();
-db.insertPoints("pelaaja1", 1200);
+db.insert({username:"pelaaja", points:1000}); 
 ```
 
 palauttaa
 
 ```json
 {
-    "info":"Tallennus onnistui"
+    "info":"Pisteiden tallennus onnistui"
 }
 ```
 
-Mahdollisessa virhetilanteessa kuten, että tietokanta 
-ei ole päällä
-
-palauttaa
+Jos tallennus ei onnisunut palauttaa
 
 ```json
 {
-    "err":"Tallennus epäonnistui"
+    "err":"Pisteiden tallennus epäonnistui"
 }
 ```
-
 
 ### searchUser(username)
 
@@ -298,36 +326,6 @@ Virhetilanteessa palauttaa
     "err":"Virhe kirjautumistietojen tarkistuksessa"
 }
 ```
-
-### insertToken(username, tkn)
-    Syöttää käyttäjän nimen ja tokenin tietokantaan.
-    Otta parametreiksi nimen ja tokenin.
-
-```js
-insertToken("pelaaja1", "token");
-```
-
-Onnistuneessa tallennuksessa palautuu
-```json
-{
-    "info":"Tokenin tallennus onnistui"
-}
-```
-
-Epäonnistuneessa tilanteessa palautuu
-```json
-{
-    "err":"Tokenin tallennus epäonnistui"
-}
-```
-
-Virhetilanteessa palautuu
-```json
-{
-    "err":"Virhe tokenin tallennuksessa"
-}
-```
-
 
 ### searchToken(username)
     Etsii tietokannasta käyttäjän nimen ja tokenin. Ottaa parametriksi nimen.
