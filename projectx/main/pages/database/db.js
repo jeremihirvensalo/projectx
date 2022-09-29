@@ -19,6 +19,7 @@ module.exports = class Database{
 
             if(table === "users"){
                 result = await conn.query(`SELECT username FROM users WHERE username=?`, [user.username]);
+                if(!result.meta) new Error();
                 delete result.meta;
                 if(result.length != 0){
                     return {err:"Käyttäjä on jo olemassa"}
