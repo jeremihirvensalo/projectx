@@ -9,16 +9,16 @@ app.use(express.json());
 app.post("/player", async (req, res)=>{
     const player = req.body;
     if(!player.token) res.json({status:401});
-    if(!player.x || !player.y || !player.w || !player.h || !player.name) res.json({info:false});
+    if(!player.x || !player.y || !player.w || !player.h || !player.username) res.json({info:false});
     try{
-        const user = await db.searchUser(player.name);
+        const user = await db.searchUser(player.username);
         if(user.username){
             const userToken = await db.searchToken(user.username);
             if(!userToken.err){
                 if(db.compareTokens(player.token, userToken.token)){
-                    // Tässä pelaajan lisäys tietokantaan
-
-                    res.json({info:true});
+                    const result = await db.insert(player, "players");
+                    if(result.err) return res.json({info:false});
+                    return res.json({info:true});
                 }
             } 
         }else res.json({info:false});

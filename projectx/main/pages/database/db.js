@@ -55,6 +55,20 @@ module.exports = class Database{
                     return {info:"Tokenin tallennus onnistui"};
                 }
                 return {err:"Tokenin tallennus epäonnistui"};
+            }else if(table === "players"){
+                let result = await conn.query("SELECT * FROM players");
+                if(result.meta) delete result.meta;
+                if(result.length === 2) return {err:"Tietokanta on täynnä pelaajia"};
+
+                for(let player of result){
+                    if(player.username === user.username){
+                        return {err:"Käyttäjänimi on jo varattu toiselle pelaajalle"};
+                    }
+                }
+
+                result = await conn.query("INSERT INTO players VALUES(?,?,?,?,?)",[user.username, user.x, user.y, user.w, user.h]);
+                if(result.affectedRows > 0) return {info:"Lisäys onnistui"};
+                return new Error();
             }
         }catch(e){
             return {err:"Tallennus epäonnistui"};
@@ -85,6 +99,8 @@ module.exports = class Database{
         try{
             conn = await pool.getConnection();
             let userPW = await conn.query("SELECT password FROM users WHERE username=?",[username]);
+            if(!userPW.meta) new Error(); 
+            delete userPW.meta;
             if(userPW[0].password){
                 let userPoints = await conn.query("SELECT points FROM userPoints WHERE username=?",[username]);
                 let user = {
@@ -103,6 +119,7 @@ module.exports = class Database{
             }
             return {info:"Käyttäjää ei löydy"}
         }catch(e){
+            console.log(e.message);
             return {err:"Virhe käyttäjän haussa tietokannasta"}
         }finally{
             if(conn) conn.end();
