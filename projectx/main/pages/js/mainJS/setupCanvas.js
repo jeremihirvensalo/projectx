@@ -12,6 +12,8 @@ const movement = {
     KeyG: "KICK"
 };
 
+let keypressed = false;
+
 function start() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
@@ -28,6 +30,8 @@ function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
     document.addEventListener("keydown", e => {
+        if(keypressed) return;
+        keypressed = true;
         if (canvasEvents()) return; // this is fucking stupid. rework needed
         if (movement[e.code] == "BLOCK") {
             if (player.blockState()) return;
@@ -39,6 +43,7 @@ function start() {
         }
     });
     document.addEventListener("keyup", e => {
+        keypressed = false;
         if (canvasEvents()) return;
         if (movement[e.code] == "BLOCK") player.block(false);
     });
