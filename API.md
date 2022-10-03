@@ -833,3 +833,37 @@ Palauttaa `pelaaja1`
     "info":false
 }
 ```
+
+### POST /game
+    Pitää huolen siitä, että palvelin tietää milloin peli on alkanut ja milloin se loppuu.
+    Ottaa vastaan pelaajan tokenin, pelaajan nimen, pelin alkaessa booleanin `true` ja pelin loppuessa `false`.
+    Palauttaa json-muodossa vastauksen.
+
+Jos jotkin parametrit puuttuvat palauttaa:
+```json
+{
+    "err":"Tiedot puutteelliset"
+}
+```
+
+Onnistuneessa tilanteessa palauttaa:
+```json
+{
+    "info":true
+}
+```
+
+Virhetilanteessa palauttaa:
+```json
+{
+    "err":"Ohjelmassa tapahtui virhe"
+}
+```
+tai jonkin Database-luokan funktion search virheilmoituksen.
+
+Jos tokeni on väärä palauttaa:
+```json
+{
+    "err":false
+}
+```
