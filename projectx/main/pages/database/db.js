@@ -12,7 +12,7 @@ const pool = mariadb.createPool({
 let conn;
 
 module.exports = class Database{
-    async insert(user, table){ // päivitä API
+    async insert(user, table){ // rework needed
         try{
             conn = await pool.getConnection();
             let result;
@@ -45,7 +45,7 @@ module.exports = class Database{
                 if(result.affectedRows > 0) return {info:"Pisteiden tallennus onnistui"};
                 return {err:"Pisteiden tallennus epäonnistui"}
             }else if(table === "tokens"){
-                const checkForToken = await this.searchToken(user.username);
+                const checkForToken = await this.search("tokens", "*", user.username);
                 if(checkForToken.username != undefined){
                     result = await conn.query("UPDATE tokens SET token=?, date=CURRENT_TIMESTAMP WHERE username=?", [user.token, user.username]);
                 }else{
@@ -95,6 +95,25 @@ module.exports = class Database{
         }
     }
 
+    async search(table, params, username){ // update API
+        try{
+            conn = await pool.getConnection();
+            let result;
+            if(!username){
+                result = await conn.query(`SELECT ${params} FROM ${table}`);
+                if(result.meta) delete result.meta;
+                return result;
+            }
+
+            result = await conn.query(`SELECT ${params} FROM ${table} WHERE username=?`, [username]);
+            if(result.meta) delete result.meta;
+            return result.length > 0 ? result[0] : result;
+
+        }catch(e){
+            return {err:"Virhe tietojen haussa tietokannasta"};
+        }
+    }
+
     async searchUser(username){
         try{
             conn = await pool.getConnection();
@@ -119,7 +138,6 @@ module.exports = class Database{
             }
             return {info:"Käyttäjää ei löydy"}
         }catch(e){
-            console.log(e.message);
             return {err:"Virhe käyttäjän haussa tietokannasta"}
         }finally{
             if(conn) conn.end();
@@ -128,7 +146,8 @@ module.exports = class Database{
 
     async verifyLogin(username, password){
         try{
-            let user = await this.searchUser(username);
+            // let user = await this.searchUser(username);
+            let user = await this.search("users", "*", username);
             if(user.username){
                 const check = await bcrypt.compare(password, user.password).then(result =>{
                     return result;
