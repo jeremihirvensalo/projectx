@@ -199,58 +199,19 @@ Jos tallennus ei onnisunut palauttaa
 }
 ```
 
-### searchUser(username)
-
+### search(table, params, username)
     Etsii tietokannasta käyttäjän tiedot.
-    Funktio palauttaa json-muodossa käyttäjätunnuksen, salasanan ja 
-    mahdollisen piste-ennätyksen.
+    Funktio palauttaa listassa etsityt kohteet tai json-muodossa
+    jos etsittiin vain tiettyä asiaa tietokannasta. Eli jos parametri `username`
+    on määritelty (eli ei tyhjä) palauttaa json-olion. Jos parametri `username` ei ole
+    määritelty palauttaa funktio listan, joka sisältää halutut kohteet json-muodossa tai
+    tyhjän listan jos mitään ei löydetty.
+    Parametrit: table (string) taulukko mistä halutaan tieto, params (string) toimii samalla tavalla
+    kuin MySQLI:n parametrit eli jos params `*` palauttaisi funktio koko tietokannan rivin, username (string)
+    käyttäjänimi.
+    `username` ei ole pakollinen parametri, mutta muut ovat.
 
-Pelaajalla on ennätys tietokannassa.
-
-```js
-const db = new Database();
-db.searchUser("pelaaja1");
-```
-
-palauttaa
-(Salasana on "suolattu")
-
-```json
-{
-    "username":"pelaaja1",
-    "password":"salasana1",
-    "points":1200
-}
-```
-
-Jos käyttäjällä ei ole piste-ennätystä
-palauttaa
-
-```json
-{
-    "username":"pelaaja1",
-    "password":"salasana1"
-}
-```
-
-Jos käyttäjää ei löydy
-palauttaa
-
-```json
-{
-    "info":"Käyttäjää ei löydy"
-}
-```
-
-Virhetilanteessa
-palauttaa
-
-```json
-{
-    "err":"Virhe käyttäjän haussa tietokannasta"
-}
-```
-
+    **pistä vielä esimerkkitilanteet**
 
 ### updatePoints(username, points)
 
@@ -327,67 +288,9 @@ Virhetilanteessa palauttaa
 }
 ```
 
-### searchToken(username)
-    Etsii tietokannasta käyttäjän nimen ja tokenin. Ottaa parametriksi nimen.
-
-Onnistuneessa tilanteessa palauttaa käyttäjänimen ja tokenin
-```json
-{
-    "username":"pelaaja1",
-    "token":"token"
-}
-```
-
-Jos tietoja ei löydy palauttaa
-```json
-{
-    "err":"Käyttäjälle ei löytynyt tokenia"
-}
-```
-
-Virhetilanteessa palautuu
-```json
-{
-    "err":"Virhe tokenin haussa"
-}
-```
-
 ### compareTokens(userToken, dbToken)
     Vertailee tietokannasta saatua tokenia käyttäjän tokeniin
     Palauttaa vertailun onnistuessa `true` ja sen epäonnistuessa `false`
-
-
-### deleteToken(username)
-    Poistaa tokenin tietokannasta. Ottaa parametriksi nimen.
-
-Onnistuneessa tilanteessa palauttaa
-username kohdalla on poistetun käyttäjän nimi.
-```json
-{
-    "info":"Käyttäjän username tokeni poistettu"
-}
-```
-
-Jos käyttäjää ei poistettu palauttaa
-```json
-{
-    "err":"Jokin meni pieleen, eikä käyttäjää poistettu"
-};
-```
-
-Jos tokenia ei ylipäätään ole palauttaa
-```json
-{
-    "err":"Tokenia ei löytynyt"
-}
-```
-
-Virhetilanteessa palauttaa
-```json
-{
-    "err":"Virhe tokenin poistossa"
-}
-```
 
 
 ### checkTokenDates()
