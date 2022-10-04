@@ -114,39 +114,8 @@ module.exports = class Database{
         }
     }
 
-    async searchUser(username){
-        try{
-            conn = await pool.getConnection();
-            let userPW = await conn.query("SELECT password FROM users WHERE username=?",[username]);
-            if(!userPW.meta) new Error(); 
-            delete userPW.meta;
-            if(userPW[0].password){
-                let userPoints = await conn.query("SELECT points FROM userPoints WHERE username=?",[username]);
-                let user = {
-                    username:username,
-                    password:userPW[0].password
-                };
-
-                if(userPoints.points){
-                    user = {
-                        username:username,
-                        password:userPW.password,
-                        points:userPoints[0].points
-                    }
-                    return user;
-                }else return user;
-            }
-            return {info:"Käyttäjää ei löydy"}
-        }catch(e){
-            return {err:"Virhe käyttäjän haussa tietokannasta"}
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
     async verifyLogin(username, password){
         try{
-            // let user = await this.searchUser(username);
             let user = await this.search("users", "*", username);
             if(user.username){
                 const check = await bcrypt.compare(password, user.password).then(result =>{
@@ -157,22 +126,6 @@ module.exports = class Database{
             return false;
         }catch(e){
             return ({err:"Virhe kirjautumistietojen tarkistuksessa"});
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async searchToken(username){
-        try{
-            conn = await pool.getConnection();
-            const result = await conn.query("SELECT * FROM tokens WHERE username=?", [username]);
-            delete result.meta;
-            if(result.length != 0){
-                return result[0];
-            }
-            return {err:"Käyttäjälle ei löytynyt tokenia", check:false}
-        }catch(e){
-            return {err:"Virhe tokenin haussa", check:false}
         }finally{
             if(conn) conn.end();
         }
