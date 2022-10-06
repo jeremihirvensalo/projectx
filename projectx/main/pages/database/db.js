@@ -12,6 +12,43 @@ const pool = mariadb.createPool({
 let conn;
 
 module.exports = class Database{
+    async newInsert(user, table){
+        try{
+            const player = await this.search(table, "username", user.username);
+            if(player.err) return res.json(player);
+            else if(player.length > 0 && table === "users") return res.json({err:"Käyttäjä on jo olemassa"});
+
+            const keys = Object.keys(user);
+            const Qmarks = ("?,".repeat(keys.length)).slice(0, -1);
+            const values = Object.values(user);
+            const valuesArr = [];
+            for(let value of values){
+                valuesArr.push(value);
+            }
+            let keyString = "";
+            for(let key of keys){
+                keyString += `${key},`; 
+            }
+
+            const tableType = await conn.query(`DESCRIBE ${table}`);
+            if(tableType.meta) delete tableType.meta;
+            
+            for(let row of tableType){
+                console.log(row.Field);
+            }
+
+            keyString = keyString.slice(0, -1);
+            const insertWords = `INSERT INTO ${table} (${keyString}) VALUES(${Qmarks})`;
+            return {info: insertWords,arr: valuesArr};
+            
+        }catch(e){
+            console.log(e.message);
+            return {err:"Tallennus epäonnistui"}
+        }finally{
+            if(conn) conn.end();
+        }
+    }
+
     async insert(user, table){ // rework needed
         try{
             conn = await pool.getConnection();
