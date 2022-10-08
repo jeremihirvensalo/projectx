@@ -100,157 +100,164 @@ Luo `Database` luokan
     Kirjoittaa tietokantaan dataa. 
     Parametreiksi funktio ottaa käyttäjäntiedot json-muodossa ja
     taulukon nimen johon halutaan lisätä tieto. Käyttäjätietojen pitää sisältää
-    ainakin käyttäjänimen.
-    Funktioon voi syöttää 3 eri taulukkoa; users, tokens ja userPoints
-    Funktioon ei pitäisi olla mahdollista laittaa väärää dataa, 
-    koska ne tarkistetaan ennen funktion käyttöä.
+    ainakin käyttäjänimi.
+    Funktioon ei pitäisi olla mahdollista syöttää virheellisessä muodossa käyttäjätietoja, 
+    sillä se tarkistetaan ennen funktion käyttöä.
     Funktio palauttaa onnistuneessa ja virhetilanteessa
     dataa json muodossa.
 
-Jos tietokanta ei ole päällä tai jokin muu menee pahasti pieleen
-palauttaa
-
-```json
-{
-    "err":"Tallennus epäonnistui"
-}
-```
-
-#### user-taulu
-    Ensimmäisen parametrin täytyy sisältää käyttäjänimen ja salasanan.
-    Tietokantaan ei voi lisätä samaa nimeä useaan kertaan.
-
-```js
-const db = new Database();
-db.insert({username:"pelaaja",password:"salasana"}, "users");
-```
-
-palauttaa 
-
-```json
-{
-    "info":"Käyttäjän luonti onnistui"
-}
-```
-
-Jos käyttäjätunnuksella on jo käyttäjä
-palauttaa
-
-```json
-{
-    "info":"Käyttäjä on jo olemassa"
-}
-```
-
-Jos jokin menee pieleen tietokantaa lisätessä
-palauttaa
-
-```json
-{
-    "err":"Käyttäjän luonti epäonnistui"
-}
-```
-
-#### tokens-taulu
-    `user` parametrin täytyy sisältää käyttäjänimen lisäksi tokeni.
-    Jos tokeni on jo olemassa käyttäjälle, sen päälle kirjoitetaa uusi tokeni.
-
-```js
-const db = new Database();
-db.insert({username:"pelaaja",token:"randtoken123"}, "tokens");
-```
-
-Onnistuneessa tallennuksessa palautuu
-```json
-{
-    "info":"Tokenin tallennus onnistui"
-}
-```
-
-Epäonnistuneessa tilanteessa palautuu
-```json
-{
-    "err":"Tokenin tallennus epäonnistui"
-}
-```
-
-#### userPoints-taulukko
-    `user` parametrin täytyy sisältää käyttäjänimen lisäksi pisteet.
-    Jos ennätys on jo olemassa sen päälle kirjoitetaan uusi ennätys.
-
-```js
-const db = new Database();
-db.insert({username:"pelaaja", points:1000}); 
-```
-
-palauttaa
-
-```json
-{
-    "info":"Pisteiden tallennus onnistui"
-}
-```
-
-Jos tallennus ei onnisunut palauttaa
-
-```json
-{
-    "err":"Pisteiden tallennus epäonnistui"
-}
-```
-
-### search(table, params, username)
-    Etsii tietokannasta käyttäjän tiedot.
-    Funktio palauttaa listassa etsityt kohteet tai json-muodossa
-    jos etsittiin vain tiettyä asiaa tietokannasta. Eli jos parametri `username`
-    on määritelty (eli ei tyhjä) palauttaa json-olion. Jos parametri `username` ei ole
-    määritelty palauttaa funktio listan, joka sisältää halutut kohteet json-muodossa tai
-    tyhjän listan jos mitään ei löydetty.
-    Parametrit: table (string) taulukko mistä halutaan tieto, params (string) toimii samalla tavalla
-    kuin MySQLI:n parametrit eli jos params `*` palauttaisi funktio koko tietokannan rivin, username (string)
-    käyttäjänimi.
-    `username` ei ole pakollinen parametri, mutta muut ovat.
-
-    **pistä vielä esimerkkitilanteet**
-
-### updatePoints(username, points)
-
-    Päivittää käyttäjän mahdollisen piste-ennätyksen.
-    Parametreiksi funktio ottaa käyttäjätunnuksen ja pistemäärän.
-palauttaa onnistuneessa tilanteessa
-
-```js
-const db = new Database();
-db.update("pelaaja1", 1200);
-```
-
-palauttaa
-
+Onnistuneessa tilanteessa palauttaa
 ```json
 {
     "info":"Tallennus onnistui"
 }
 ```
 
-Mahdollisessa virhetilanteessa kuten, että tietokanta
-ei ole päällä.
-palauttaa
-
+Epäonnistuneessa tilanteessa palautta
 ```json
 {
-    "info":"Tallennus epäonnistui"
+    "err":"Tallennus epäonnistui"
 }
 ```
 
-Jos koodissa on virhe
-palauttaa
-
+Jos haluttu taulukko on `users` ja sieltä löytyy jo syötetyllä
+käyttäjänimellä tietoja, palauttaa
 ```json
 {
-    "err":"Virhe pisteiden tallennuksessa"
+    "err":"Käyttäjä on jo olemassa"
 }
 ```
 
+Jos syötettyä taulukkoa ei löydy palauttaa
+```json
+{
+    "err":"Haluttua taulukkoa ei ole olemassa"
+}
+```
+
+Virhetilanteessa palauttaa
+```json
+{
+    "err":"Tallentamisen aikana tapahtui virhe"
+}
+```
+
+#### user-taulu
+    Sisältää käyttäjänimen (string) ja salasanan (string).
+    Salasana on suojattu bcryptillä. 
+    Molemmat tiedot ovat pakollisia taulukkoon lisätessä.
+
+#### tokens-taulu
+   Sisältää käyttäjänimen (string), käyttäjän tokenin (string) ja lisäysaika (datetime).
+   Käyttäjänimi ja tokeni ovat pakollisia tietoja tietokantaa lisätessä. Lisäysaika
+   syöttää itsensä automaattisesti, joten sitä ei ole pakollista antaa tietokannalle.
+
+#### points-taulukko
+    Sisältää käyttäjänimen (string) ja pelaajan piste-ennätyksen (integer).
+    Molemmat tiedot ovat pakollisia taulukkoon lisätessä. 
+
+#### players-taulukko
+    Sisältää käyttäjänimen (string), pelaajan osumapisteet (integer), pelaajan koordinaatit (x (integer), y (integer)),
+    pelaajan leveyden (integer) ja pelaajan pituuden (integer).
+    Kaikki tiedot ovat pakolliset taulukkoon lisätessä.
+
+### search(table, params, username)
+    Etsii tietokannasta käyttäjän tiedot.
+    Funktio palauttaa listassa etsityt kohteet tai json-muodossa jos etsittiin 
+    vain tiettyä asiaa tietokannasta. Eli jos siis parametri `username` on määritelty (eli ei tyhjä) 
+    palauttaa json-olion. Jos parametri `username` ei ole määritelty palauttaa 
+    funktio listan, joka sisältää halutut kohteet json-muodossa tai tyhjän listan 
+    jos mitään ei löydetty.
+    Parametrit: table (string) taulukko mistä halutaan tieto, params (string) ottaa vastaan taulukon rivin avaimen
+    kuten esimerkiksi `password` tai `*` , jolloin palautetaan kaikkien löydettyjen rivijen tiedot, username (string)
+    käyttäjänimi, jonka tiedot halutaan.
+    `username` ei ole pakollinen parametri, mutta muut ovat.
+
+Oletetaan esimerkin vuoksi, että users-taulukko sisältää
+seuraavat tiedot (merkitty json-muotoon selvyyden vuoksi):
+
+```json
+[
+    {
+        "username":"pelaaja1",
+        "password":"salasana1"
+    },
+    {
+        "username":"pelaaja2",
+        "password":"salasana2"
+    }
+]
+```
+
+Jos etsitään koko users-taulukko
+```js
+const db = new Database();
+db.search("users", "*");
+```
+
+Palauttaa
+```json
+[{"username":"pelaaja1","password":"salasana1"}, {"username":"pelaaja2","password":"salasana2"}]
+```
+
+Jos etsitään käyttäjää `pelaaja1`
+```js
+const db = new Database();
+db.search("users", "*", "pelaaja1");
+```
+
+Palauttaa
+```json
+{
+    "username":"pelaaja1",
+    "password":"salasana1"
+}
+```
+
+Jos etsitään käyttäjä `pelaaja2`, mutta halutaan vain
+käyttäjänimi
+```js
+const db = new Database();
+db.search("users", "username", "pelaaja2");
+```
+
+Palauttaa
+```json
+{
+    "username":"pelaaja2"
+}
+```
+
+Jos halutaan etsiä kaikki salasanat
+```js
+const db = new Database();
+db.search("users", "password");
+```
+
+Palauttaa
+```json
+[{"password":"salasana1"},{"password":"salasana2"}]
+```
+
+Jos mitään ei löydy jossain tilanteessa palauttaa tyhjän listan ([])
+
+
+Jos funktioon syötettyä taulukkoa ei ole tietokannassa palauttaa
+```json
+{
+    "err":"Haluttua taulukkoa ei ole olemassa"
+}
+```
+
+Virhetilanteessa palauttaa
+```json
+{
+    "err":"Virhe tietojen haussa tietokannasta"
+}
+```
+
+### delete(username, table)
+    
 
 ### verifyLogin(username, password)
 
