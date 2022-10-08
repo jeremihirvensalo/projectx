@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 const pool = mariadb.createPool({
     host:"localhost",
-    port:3307,
+    port:3306,
     user:"root",
     password:"1234",
     database:"projectx"
@@ -12,10 +12,22 @@ const pool = mariadb.createPool({
 let conn;
 
 module.exports = class Database{
-    async newInsert(user, table){
+    async insert(user, table){
         try{
+            conn = await pool.getConnection();
+            const checkTable = await conn.query("SHOW TABLES");
+            if(checkTable.meta) delete checkTable.meta;
+            let found = false;
+            for(let item of checkTable){
+                if(item.Tables_in_projectx === table){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) return {err:"Haluttua taulukkoa ei ole olemassa"};
+
             const player = await this.search(table, "username", user.username);
-            if(player.err) return res.json(player);
+            if(player.err) return player;
             else if(player.length > 0 && table === "users") return res.json({err:"Käyttäjä on jo olemassa"});
 
             const keys = Object.keys(user);
@@ -38,83 +50,19 @@ module.exports = class Database{
             }
 
             keyString = keyString.slice(0, -1);
-            const insertWords = `INSERT INTO ${table} (${keyString}) VALUES(${Qmarks})`;
-            return {info: insertWords,arr: valuesArr};
-            
+            const result = await conn.query(`INSERT INTO ${table} (${keyString}) VALUES(${Qmarks})`, valuesArr);
+            if(result.affectedRows > 0) return {info:"Tallennus onnistui"};
+
+            return {info:"Tallennus epäonnistui"};
         }catch(e){
             console.log(e.message);
-            return {err:"Tallennus epäonnistui"}
+            return {err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
         }
     }
 
-    async insert(user, table){ // rework needed
-        try{
-            conn = await pool.getConnection();
-            let result;
-
-            if(table === "users"){
-                result = await conn.query(`SELECT username FROM users WHERE username=?`, [user.username]);
-                if(!result.meta) new Error();
-                delete result.meta;
-                if(result.length != 0){
-                    return {err:"Käyttäjä on jo olemassa"}
-                }
-    
-                result = await bcrypt.hash(user.password, 10).then(async (hash) => {
-                    let data = await conn.query(`INSERT INTO ${table} VALUES(?,?)`, [user.username, hash]);
-                    if(data.affectedRows > 0){
-                        return {info:"Käyttäjän luonti onnistui"};
-                    }
-                    return {err:"Käyttäjän luonti epäonnistui"};
-                });
-                return result;
-            }else if(table === "userPoints"){
-                result = await conn.query("SELECT username FROM userPoints WHERE username=?",[user.username]);
-                delete result.meta;
-                if(result.length != 0){
-                    result = await conn.query(`UPDATE ${table} SET points=? WHERE username=?`, [user.points, user.username]);
-                    if(result.affectedRows > 0) return {info:"Pisteden tallennus onnistui"};
-                    return {err:"Pisteiden tallennus epäonnistui"};
-                }
-                result = await conn.query(`INSERT INTO ${table} VALUES(?,?)`, [user.username, user.points]);
-                if(result.affectedRows > 0) return {info:"Pisteiden tallennus onnistui"};
-                return {err:"Pisteiden tallennus epäonnistui"}
-            }else if(table === "tokens"){
-                const checkForToken = await this.search("tokens", "*", user.username);
-                if(checkForToken.username != undefined){
-                    result = await conn.query("UPDATE tokens SET token=?, date=CURRENT_TIMESTAMP WHERE username=?", [user.token, user.username]);
-                }else{
-                    result = await conn.query("INSERT INTO tokens VALUES(?,?,CURRENT_TIMESTAMP)", [user.username, user.token]);
-                }
-                if(result.affectedRows > 0){
-                    return {info:"Tokenin tallennus onnistui"};
-                }
-                return {err:"Tokenin tallennus epäonnistui"};
-            }else if(table === "players"){
-                let result = await conn.query("SELECT * FROM players");
-                if(result.meta) delete result.meta;
-                if(result.length === 2) return {err:"Tietokanta on täynnä pelaajia"};
-
-                for(let player of result){
-                    if(player.username === user.username){
-                        return {err:"Käyttäjänimi on jo varattu toiselle pelaajalle"};
-                    }
-                }
-
-                result = await conn.query("INSERT INTO players VALUES(?,?,?,?,?)",[user.username, user.x, user.y, user.w, user.h]);
-                if(result.affectedRows > 0) return {info:"Lisäys onnistui"};
-                return new Error();
-            }
-        }catch(e){
-            return {err:"Tallennus epäonnistui"};
-        }finally{
-            if(conn) conn.end();
-        }
-    }
-
-    async updatePW(username, password){
+    async updatePW(username, password){ // create API
         try{
             conn = await pool.getConnection();
             let result = await bcrypt.hash(password, 10).then(async (hash)=>{
@@ -132,9 +80,20 @@ module.exports = class Database{
         }
     }
 
-    async search(table, params, username){ // update API
+    async search(table, params, username){
         try{
             conn = await pool.getConnection();
+            const checkTable = await conn.query("SHOW TABLES");
+            if(checkTable.meta) delete checkTable.meta;
+            let found = false;
+            for(let item of checkTable){
+                if(item.Tables_in_projectx === table){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) return {err:"Haluttua taulukkoa ei ole olemassa"};
+
             let result;
             if(!username){
                 result = await conn.query(`SELECT ${params} FROM ${table}`);
@@ -216,7 +175,7 @@ module.exports = class Database{
         }
     }
 
-    async delete(username, key){
+    async delete(username, key){ // rework + update API
         try{
             conn = await pool.getConnection();
             if(!key){
@@ -236,12 +195,73 @@ module.exports = class Database{
                 }
                 return {err:"Poistossa meni jokin pieleen, mitään ei poistettu"};
             }
+            return {err:"Parametri 'key' on määritelty väärin, mitään ei poistettu"};
 
         }catch(e){
             return {err:"Poistaminen epäonnistui"};
         }finally{
             if(conn) conn.end();
         }
+    }
 
+    async newDelete(username, table){
+        try{
+            conn = await pool.getConnection();
+            if(!table){
+                // const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
+                // const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+                // const deletePoints = await conn.query("DELETE FROM points WHERE username=?", [username]);
+                // const deletePlayer = await conn.query("DELETE FROM players WHERE username=?", [username]);
+                
+                // better solution?
+                const tables = await conn.query("SHOW TABLES");
+                if(tables.meta) delete tables.meta;
+                let tableString = "";
+                let counter = 0;
+                const tableArr = [];
+                for(let item of tables){
+                    tableArr.push(item.Tables_in_projectx);
+                    tableString += `${item.Tables_in_projectx},`;
+                    counter++;
+                }
+                tableString = tableString.slice(0, -1);
+                
+                let sqlWords = "";
+                if(counter > 1){
+                    let andWords = "";
+                    sqlWords = `DELETE ${tableString} FROM ${tableArr[0]} USING ${tableArr[0]} `;
+                    for(let i = 1; i < counter; i++){
+                        sqlWords += `INNER JOIN ${tableArr[i]} `;
+                        andWords += `${tableArr[i-1]}.username=${tableArr[i]}.username `;
+                        if((i+1) !== counter) andWords += "AND "
+                    }
+                    sqlWords += "WHERE ";
+                    sqlWords += andWords;
+
+                    
+                }else{
+                    sqlWords = `DELETE FROM ${table} WHERE username=?`;
+                }
+
+                const result = await conn.query(sqlWords, [username]);
+                console.log(result);
+                // query here
+                
+                return {
+                    user:deleteUser.affectedRows > 0 ? true : false,
+                    token:deleteToken.affectedRows > 0 ? true : false,
+                    points:deletePoints.affectedRows > 0 ? true : false,
+                    player:deletePlayer.affectedRows > 0 ? true : false,
+                    info:"Poistaminen onnistui"
+                };
+            }
+
+            const result = await conn.query(`DELETE FROM ${table} WHERE username=?`, [username]);
+        }catch(e){
+            console.log(e.message);
+            return {err:"Poiston aikana tapahtui virhe"};
+        }finally{
+            if(conn) conn.end();
+        }
     }
 }
