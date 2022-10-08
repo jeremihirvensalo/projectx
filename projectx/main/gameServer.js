@@ -58,7 +58,7 @@ app.post("/move", async (req, res)=>{
 
 app.post("/testing", async (req, res)=>{
     const player = req.body;
-    const result = await db.newInsert(player, "tokens");
+    const result = await db.newDelete(player.username);
     res.json(result);
 });
 
