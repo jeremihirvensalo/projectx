@@ -21,6 +21,7 @@ create table points(
 
 create table players(
     username varchar(255) not null primary key,
+    hp integer not null
     x integer not null,
     y integer not null,
     w integer not null,
