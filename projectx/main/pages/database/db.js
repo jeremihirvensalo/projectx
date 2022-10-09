@@ -207,46 +207,26 @@ module.exports = class Database{
     async newDelete(username, table){
         try{
             conn = await pool.getConnection();
+            const tables = await conn.query("SHOW TABLES");
             if(!table){
-                // const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
-                // const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-                // const deletePoints = await conn.query("DELETE FROM points WHERE username=?", [username]);
-                // const deletePlayer = await conn.query("DELETE FROM players WHERE username=?", [username]);
-                
-                // better solution?
-                const tables = await conn.query("SHOW TABLES");
-                if(tables.meta) delete tables.meta;
-                let tableString = "";
-                let counter = 0;
-                const tableArr = [];
+
+                // new version
+                const resultArr = [];
                 for(let item of tables){
-                    tableArr.push(item.Tables_in_projectx);
-                    tableString += `${item.Tables_in_projectx},`;
-                    counter++;
+                    const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`)
+                    resultArr.push(result);
                 }
-                tableString = tableString.slice(0, -1);
                 
-                let sqlWords = "";
-                if(counter > 1){
-                    let andWords = "";
-                    sqlWords = `DELETE ${tableString} FROM ${tableArr[0]} USING ${tableArr[0]} `;
-                    for(let i = 1; i < counter; i++){
-                        sqlWords += `INNER JOIN ${tableArr[i]} `;
-                        andWords += `${tableArr[i-1]}.username=${tableArr[i]}.username `;
-                        if((i+1) !== counter) andWords += "AND "
-                    }
-                    sqlWords += "WHERE ";
-                    sqlWords += andWords;
-
-                    
-                }else{
-                    sqlWords = `DELETE FROM ${table} WHERE username=?`;
+                let resultJSON = {};
+                for(let item of resultArr){
+                    // resultJSON + if(item.affected rows > 0) 
                 }
 
-                const result = await conn.query(sqlWords, [username]);
-                console.log(result);
-                // query here
-                
+                // old working version  
+                const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
+                const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+                const deletePoints = await conn.query("DELETE FROM points WHERE username=?", [username]);
+                const deletePlayer = await conn.query("DELETE FROM players WHERE username=?", [username]);
                 return {
                     user:deleteUser.affectedRows > 0 ? true : false,
                     token:deleteToken.affectedRows > 0 ? true : false,
@@ -254,9 +234,19 @@ module.exports = class Database{
                     player:deletePlayer.affectedRows > 0 ? true : false,
                     info:"Poistaminen onnistui"
                 };
+                
             }
-
+            let found = false;
+            for(let item of tables){
+                if(item.Tables_in_projectx === table){
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) return {err:"Haluttua taulukkoa ei ole olemassa"};
             const result = await conn.query(`DELETE FROM ${table} WHERE username=?`, [username]);
+            if(result.affectedRows > 0) return {info:"Poisto onnistui"};
+            return {err:"Poisto epäonnistui"};
         }catch(e){
             console.log(e.message);
             return {err:"Poiston aikana tapahtui virhe"};
