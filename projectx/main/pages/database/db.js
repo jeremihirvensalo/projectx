@@ -175,36 +175,7 @@ module.exports = class Database{
         }
     }
 
-    // async delete(username, key){ // rework + update API
-    //     try{
-    //         conn = await pool.getConnection();
-    //         if(!key){
-    //             const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
-    //             const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-    //             const deletePoints = await conn.query("DELETE FROM userPoints WHERE username=?", [username]);
-    //             return {
-    //                 user:deleteUser.affectedRows > 0 ? true : false,
-    //                 token:deleteToken.affectedRows > 0 ? true : false,
-    //                 points:deletePoints.affectedRows > 0 ? true : false,
-    //                 info:"Poistaminen onnistui"
-    //             };
-    //         }else if(key === "token"){
-    //             const result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-    //             if(result.affectedRows > 0){
-    //                 return {info:"Poistaminen onnistui"};
-    //             }
-    //             return {err:"Poistossa meni jokin pieleen, mitään ei poistettu"};
-    //         }
-    //         return {err:"Parametri 'key' on määritelty väärin, mitään ei poistettu"};
-
-    //     }catch(e){
-    //         return {err:"Poistaminen epäonnistui"};
-    //     }finally{
-    //         if(conn) conn.end();
-    //     }
-    // }
-
-    async delete(username, table){ // update API
+    async delete(username, table){
         try{
             conn = await pool.getConnection();
             const tables = await conn.query("SHOW TABLES");
@@ -220,6 +191,7 @@ module.exports = class Database{
                     const itemJSON = {[item.table]:item.affectedRows > 0 ? true : false};
                     resultJSON = { ...resultJSON, ...itemJSON};
                 }
+                // pitäisi ehkä ilmoittaa jotenkin jos kaikista tauluista ei poistettu?
                 return resultJSON = {...resultJSON, ...{info:"Poistaminen onnistui"}};      
             }
             let found = false;
@@ -235,7 +207,6 @@ module.exports = class Database{
             if(result.affectedRows > 0) return {info:"Poisto onnistui"};
             return {err:"Poisto epäonnistui"};
         }catch(e){
-            console.log(e.message);
             return {err:"Poiston aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
