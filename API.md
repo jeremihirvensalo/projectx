@@ -787,6 +787,8 @@ Palauttaa `pelaaja1`
 }
 ```
 
+Jos tokeni puuttuu palauttaa statuskoodin 401
+
 ### POST /move
     Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
     nimi (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
@@ -855,3 +857,39 @@ Jos tokeni on väärä palauttaa:
     "err":false
 }
 ```
+
+### POST /delete
+    Kutsuttessa poistaa käyttäjän pelaajan tietokannasta ja palvelimen muistista.
+    Palauttaa JSON-muodossa vastauksen.
+    Bodyn mukana pitää olla käyttäjänimi `username` (string) ja token (string).
+
+Jos poisto onnistui palauttaa
+```json
+{
+    "info":true
+}
+```
+
+Jos poisto epäonnistui palauttaa
+```json
+{
+    "info":false
+}
+```
+
+Virhetilanteessa palauttaa
+```json
+{
+    "err":"Pelaajan poistamisessa tapahtui virhe"
+}
+```
+
+Jos käyttäjänimi puuttuu palauttaa
+```json
+{
+    "err":"Puuttelliset tiedot"
+}
+```
+
+
+Jos tokeni puuttuu tai on virheellinen palauttaa statuskoodin 401
