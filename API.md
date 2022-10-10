@@ -257,10 +257,88 @@ Virhetilanteessa palauttaa
 ```
 
 ### delete(username, table)
+    Funktio poistaa tietokannasta tietoja.
+    Parametreiksi ottaa username (string) käyttäjänimi ja table (string) taulukon josta tieto
+    halutaan poistaa.
+    Jos `table` parametria ei ole määritelty Funktio palauttaa onnistuneessa tilanteessa 
+    JSON-muodossa tiedon, että mistä tietoa on yritetty poistaa ja onko jotain poistettu (boolean).
+    Jos `table` on määritelty palauttaa funktio JSON-muodossa onnistuiko poistaminen vai ei.
+    Parametri `username` on pakollinen, mutta `table` voi jättää tyhjäksi, jolloin kaikista taulukoista
+    poistetaan `username` parametriin yhteensopivat osumat.
+
+    Oletetaan esimerkin takia, että tietokannassa on taulut "users", "points" ja "tokens"
+    "users"-taulu sisältö:
+```json
+[
+    {
+        "username":"pelaaja1",
+        "salasana":"salasana1"
+    },
+    {
+        "username":"pelaaja2",
+        "salasana":"salasana2"
+    }
+]
+```
+
+    "points"-taulun sisältö:
+```json
+[
+    {
+        "username":"pelaaja1",
+        "points":1000
+    }
+]
+```
+
+    "tokens"-taulu on tyhjä
+
+
+    Poistetaan käyttäjä "pelaaja1" ilman `table` parametria:
+```js
+const db = new Database();
+db.delete("pelaaja1");
+```
+
+Palauttaa
+```json
+{
+    "users":true,
+    "points":true,
+    "tokens":false,
+    "info":"Poistaminen onnistui"
+}
+```
     
+    Poistetaan käyttäjä "pelaaja1" kun `table` parametri on "users"
+```js
+const db = new Database();
+db.delete("pelaaja1", "users");
+```
+
+Palauttaa
+```json
+{
+    "info":"Poisto onnistui"
+}
+```
+
+Jos tietystä taulusta poistaminen epäonnistuu palauttaa
+```json
+{
+    "err":"Poisto epäonnistui"
+}
+```
+
+Virhetilanteessa funktio palauttaa
+```json
+{
+    "err":"Poiston aikana tapahtui virhe"
+}
+```
+
 
 ### verifyLogin(username, password)
-
     Tarkistaa, että käyttäjätunnus ja salasana ovat samat.
     Funktio palauttaa true tai false vastauksen ja ottaa parametreiksi
     käyttäjätunnuksen ja salasanan
