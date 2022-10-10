@@ -85,9 +85,16 @@ palauttaa `false`
     "Puhuu" tietokannan kanssa eli kirjoittaa ja hakee 
     dataa tietokannasta.
 
+## HUOM!
+
+    .env.example täytyy kopioida ja kopion nimi muuttaa muotoon .env
+    KOPIOON (ei siis .env.example) kuuluu kirjoittaa MariaDB käyttäjätunnukset, host ja port
+    Jos tätä ei ole tehty, ei tietokanta toimi
+
 ## Database
 
     Luokka joka sisältää tietokantaan liittyvät funktiot.
+
 
 ```js
 new Database();
