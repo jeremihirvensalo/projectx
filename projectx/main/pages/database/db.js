@@ -1,11 +1,13 @@
+require("dotenv").config({path:`${__dirname}/.env`});
+
 const mariadb = require("mariadb");
 const bcrypt = require("bcrypt");
 
 const pool = mariadb.createPool({
-    host:"localhost",
-    port:3306,
-    user:"root",
-    password:"1234",
+    host:process.env.DB_HOST,
+    port:process.env.DB_PORT,
+    user:process.env.DB_USER,
+    password:process.env.DB_PASSWORD,
     database:"projectx"
 });
 
@@ -30,6 +32,16 @@ module.exports = class Database{
             if(player.err) return player;
             else if(player.length > 0 && table === "users") return res.json({err:"Käyttäjä on jo olemassa"});
 
+            if(table === "users"){
+                const res = await bcrypt.hash(user.password, 10).then(async (hash)=>{
+                    
+                    const result = await conn.query(`INSERT INTO ${table} VALUES(?,?)`, [user.username, hash]);
+                    if(result.affectedRows > 0) return {info:"Tallennus onnistui"};
+                    return {info:"Tallennus epäonnistui"};
+                });
+                return res;
+            }
+
             const keys = Object.keys(user);
             const Qmarks = ("?,".repeat(keys.length)).slice(0, -1);
             const values = Object.values(user);
@@ -41,21 +53,13 @@ module.exports = class Database{
             for(let key of keys){
                 keyString += `${key},`; 
             }
-
-            const tableType = await conn.query(`DESCRIBE ${table}`);
-            if(tableType.meta) delete tableType.meta;
-            
-            for(let row of tableType){
-                console.log(row.Field);
-            }
-
             keyString = keyString.slice(0, -1);
+
             const result = await conn.query(`INSERT INTO ${table} (${keyString}) VALUES(${Qmarks})`, valuesArr);
             if(result.affectedRows > 0) return {info:"Tallennus onnistui"};
-
             return {info:"Tallennus epäonnistui"};
+
         }catch(e){
-            console.log(e.message);
             return {err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
