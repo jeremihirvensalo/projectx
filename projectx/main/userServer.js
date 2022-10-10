@@ -150,7 +150,7 @@ app.post("/points", async (req, res)=>{
     if(tokenDB.err || tokenDB.length === 0) return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
 
     if(db.compareTokens(user.token, tokenDB)){
-        const result = await db.insert(user, "userPoints");
+        const result = await db.insert(user, "points");
         return res.json(result);
     }
     return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
