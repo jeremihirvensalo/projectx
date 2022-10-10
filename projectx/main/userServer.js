@@ -73,7 +73,7 @@ app.post("/logout", async (req, res)=>{
         }
         if(!result.err){
             if(user.token == result.token){
-                result = await db.delete(user.username, "token");
+                result = await db.delete(user.username, "tokens");
                 if(result.info){
                     return res.json({logoutURL:"http://localhost:3000"});
                 } 
