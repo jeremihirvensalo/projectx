@@ -175,69 +175,56 @@ module.exports = class Database{
         }
     }
 
-    async delete(username, key){ // rework + update API
-        try{
-            conn = await pool.getConnection();
-            if(!key){
-                const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
-                const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-                const deletePoints = await conn.query("DELETE FROM userPoints WHERE username=?", [username]);
-                return {
-                    user:deleteUser.affectedRows > 0 ? true : false,
-                    token:deleteToken.affectedRows > 0 ? true : false,
-                    points:deletePoints.affectedRows > 0 ? true : false,
-                    info:"Poistaminen onnistui"
-                };
-            }else if(key === "token"){
-                const result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-                if(result.affectedRows > 0){
-                    return {info:"Poistaminen onnistui"};
-                }
-                return {err:"Poistossa meni jokin pieleen, mitään ei poistettu"};
-            }
-            return {err:"Parametri 'key' on määritelty väärin, mitään ei poistettu"};
+    // async delete(username, key){ // rework + update API
+    //     try{
+    //         conn = await pool.getConnection();
+    //         if(!key){
+    //             const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
+    //             const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+    //             const deletePoints = await conn.query("DELETE FROM userPoints WHERE username=?", [username]);
+    //             return {
+    //                 user:deleteUser.affectedRows > 0 ? true : false,
+    //                 token:deleteToken.affectedRows > 0 ? true : false,
+    //                 points:deletePoints.affectedRows > 0 ? true : false,
+    //                 info:"Poistaminen onnistui"
+    //             };
+    //         }else if(key === "token"){
+    //             const result = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
+    //             if(result.affectedRows > 0){
+    //                 return {info:"Poistaminen onnistui"};
+    //             }
+    //             return {err:"Poistossa meni jokin pieleen, mitään ei poistettu"};
+    //         }
+    //         return {err:"Parametri 'key' on määritelty väärin, mitään ei poistettu"};
 
-        }catch(e){
-            return {err:"Poistaminen epäonnistui"};
-        }finally{
-            if(conn) conn.end();
-        }
-    }
+    //     }catch(e){
+    //         return {err:"Poistaminen epäonnistui"};
+    //     }finally{
+    //         if(conn) conn.end();
+    //     }
+    // }
 
-    async newDelete(username, table){
+    async delete(username, table){ // update API
         try{
             conn = await pool.getConnection();
             const tables = await conn.query("SHOW TABLES");
             if(!table){
-
-                // new version
                 const resultArr = [];
                 for(let item of tables){
-                    const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`)
-                    resultArr.push(result);
+                    const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`);
+                    resultArr.push({table: item.Tables_in_projectx, affectedRows:result.affectedRows});
                 }
                 
                 let resultJSON = {};
                 for(let item of resultArr){
-                    // resultJSON + if(item.affected rows > 0) 
+                    const itemJSON = {[item.table]:item.affectedRows > 0 ? true : false};
+                    resultJSON = { ...resultJSON, ...itemJSON};
                 }
-
-                // old working version  
-                const deleteUser = await conn.query("DELETE FROM users WHERE username=?", [username]);
-                const deleteToken = await conn.query("DELETE FROM tokens WHERE username=?", [username]);
-                const deletePoints = await conn.query("DELETE FROM points WHERE username=?", [username]);
-                const deletePlayer = await conn.query("DELETE FROM players WHERE username=?", [username]);
-                return {
-                    user:deleteUser.affectedRows > 0 ? true : false,
-                    token:deleteToken.affectedRows > 0 ? true : false,
-                    points:deletePoints.affectedRows > 0 ? true : false,
-                    player:deletePlayer.affectedRows > 0 ? true : false,
-                    info:"Poistaminen onnistui"
-                };
-                
+                return resultJSON = {...resultJSON, ...{info:"Poistaminen onnistui"}};      
             }
             let found = false;
             for(let item of tables){
+                console.log(item.Tables_in_projectx, "User: " + table);
                 if(item.Tables_in_projectx === table){
                     found = true;
                     break;
