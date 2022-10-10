@@ -56,10 +56,4 @@ app.post("/move", async (req, res)=>{
 
 });
 
-app.post("/testing", async (req, res)=>{
-    const player = req.body;
-    const result = await db.newDelete(player.username);
-    res.json(result);
-});
-
 app.listen(config.port, ()=>console.log("Peliservu liekeis"));
