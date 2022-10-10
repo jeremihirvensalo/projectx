@@ -40,6 +40,8 @@ app.post("/player", async (req, res)=>{
             if(!userToken.err){
                 if(db.compareTokens(player.token, userToken.token)){
                     const result = await db.insert(player, "players");
+                    if(result.affectedRows > 0) players.push(player);
+
                     if(result.err) return res.json({info:false});
                     return res.json({info:true});
                 }
@@ -54,6 +56,27 @@ app.post("/player", async (req, res)=>{
 
 app.post("/move", async (req, res)=>{
 
+});
+
+app.post("/delete", async (req, res)=>{ // ei testattu
+    const player = req.body;
+    if(!player.token) return res.json({status:401});
+    if(!player.username) return res.json({err:"Puutteelliset tiedot"});
+
+    const searchToken = await db.search("tokens", "token", player.username);
+    if(searchToken.err) return res.json(searchToken);
+
+    if(db.compareTokens(player.token, searchToken)){
+        const result = await db.delete(player.username, "players");
+        for(let i = 0; i < players.length; i++){
+            if(players[i].username === player.username){
+                players.splice(i, 1);
+                break;
+            }
+        }
+        return res.json(result);
+    }  
+    return res.json({status:401});
 });
 
 app.listen(config.port, ()=>console.log("Peliservu liekeis"));
