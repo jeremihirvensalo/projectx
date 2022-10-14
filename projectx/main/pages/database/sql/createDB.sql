@@ -1,4 +1,4 @@
-drop database if exists projectx
+drop database if exists projectx;
 create database projectx;
 use projectx;
 
@@ -6,7 +6,6 @@ create table users(
     username varchar(255) not null primary key,
     password varchar(255) not null
 );
-insert into users values("123", "1234");
 
 create table tokens(
     username varchar(255) not null primary key,
@@ -21,7 +20,7 @@ create table points(
 
 create table players(
     username varchar(255) not null primary key,
-    hp integer not null
+    hp integer not null,
     x integer not null,
     y integer not null,
     w integer not null,
@@ -29,4 +28,5 @@ create table players(
 );
 
 create user if not exists "pxadmin"@"localhost" identified by "1234";
-grant all privileges on projectx to "pxadmin"@"localhost";
+grant all privileges on projectx.* to "pxadmin"@"localhost";
+flush privileges;
