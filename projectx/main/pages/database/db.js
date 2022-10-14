@@ -200,7 +200,6 @@ module.exports = class Database{
             }
             let found = false;
             for(let item of tables){
-                console.log(item.Tables_in_projectx, "User: " + table);
                 if(item.Tables_in_projectx === table){
                     found = true;
                     break;
