@@ -1,11 +1,9 @@
 const movement = {
-    ArrowDown: "DOWN",
     ArrowUp: "UP",
     ArrowLeft: "LEFT",
     ArrowRight: "RIGHT",
     KeyW: "UP",
     KeyA: "LEFT",
-    KeyS: "DOWN",
     KeyD: "RIGHT",
     Space: "BLOCK",
     KeyF: "PUNCH",
@@ -32,7 +30,7 @@ function start() {
     document.addEventListener("keydown", e => {
         if(keypressed) return;
         keypressed = true;
-        if (canvasEvents()) return; // this is fucking stupid. rework needed
+        if (canvasEvents()) return; // this is stupid. rework needed
         if (movement[e.code] == "BLOCK") {
             if (player.blockState()) return;
             else {
