@@ -10,9 +10,11 @@ let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
-    if(state.info === undefined || !state.token || !state.username) return res.json({err:"Tiedot puuttelliset"});
+    if(!state.token) return res.json({status:401});
     try{
-        // token check here
+        const searchToken = await db.search("tokens", "token", state.username);
+        if(!db.compareTokens(state.token, searchToken.token)) return res.json({state:401});
+        if(state.info === undefined || !state.token || !state.username) return res.json({err:"Tiedot puuttelliset"});
         if(!state.info){
             players = [];
             return res.json({info:true});
@@ -32,7 +34,6 @@ app.post("/player", async (req, res)=>{
     const player = req.body;
     if(!player.token) return res.json({status:401});
     try{
-        // token check here
         if(!player.x || !player.y || !player.w || !player.h || !player.username) return res.json({info:false});
         const user = await db.search("users", "username", player.username);
         if(user.username){
@@ -52,6 +53,7 @@ app.post("/player", async (req, res)=>{
                     if(result.err) return res.json({info:false});
                     return res.json({info:true});
                 }
+                return res.json({state:401});
             } 
         }else res.json({info:false});
         
@@ -62,7 +64,16 @@ app.post("/player", async (req, res)=>{
 });
 
 app.post("/move", async (req, res)=>{
+    const player = req.body;
+    if(!player.token) return res.json({status:401});
+    try{
+        const searchToken = await db.search("tokens", "token", player.username);
+        if(!searchToken.token || !db.compareTokens(player.token, searchToken.token)) return res.json({status:401});
 
+        res.json({info:true});
+    }catch(e){
+        return res.json({err:"Liikkeen tarkistuksessa virhe"});
+    }
 });
 
 app.post("/delete", async (req, res)=>{ // ei testattu
