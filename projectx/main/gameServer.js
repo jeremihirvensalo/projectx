@@ -39,7 +39,14 @@ app.post("/player", async (req, res)=>{
             const userToken = await db.search("tokens", "token", user.username);
             if(!userToken.err){
                 if(db.compareTokens(player.token, userToken.token)){
-                    const result = await db.insert(player, "players");
+                    const playerObject = {
+                        username:player.username,
+                        x:player.x,
+                        y:player.y,
+                        w:player.w,
+                        h:player.h
+                    }
+                    const result = await db.insert(playerObject, "players");
                     if(result.affectedRows > 0) players.push(player);
 
                     if(result.err) return res.json({info:false});
@@ -65,8 +72,7 @@ app.post("/delete", async (req, res)=>{ // ei testattu
 
     const searchToken = await db.search("tokens", "token", player.username);
     if(searchToken.err) return res.json(searchToken);
-
-    if(db.compareTokens(player.token, searchToken)){
+    if(db.compareTokens(player.token, searchToken.token)){
         const result = await db.delete(player.username, "players");
         for(let i = 0; i < players.length; i++){
             if(players[i].username === player.username){
