@@ -781,7 +781,8 @@ Palauttaa `pelaaja1`
     ja pelaajan nimen (string) joka säilötään tietokantaan.
     Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia. Jos jokin parametri puuttuu,
     ei lisäys onnistu. Pelaajilla ei voi olla samanimi.
-    Onnistuneessa lisäyksessa palauttaa json-muodossa:
+
+    Onnistuneessa lisäyksessä palauttaa json-muodossa:
 ```json
 {
     "info":true
@@ -794,12 +795,18 @@ Palauttaa `pelaaja1`
 }
 ```
 
-Jos tokeni puuttuu palauttaa statuskoodin 401
+    Jos tokeni puuttuu tai on väärä palauttaa:
+```json
+{
+    "state":401
+}
+```
 
 ### POST /move
     Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
-    nimi (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
+    nimi (string), tokeni (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
     Palauttaa json-muodossa booleanin.
+
     Jos liike on sallittu palauttaa:
 ```json
 {
@@ -810,6 +817,13 @@ Jos tokeni puuttuu palauttaa statuskoodin 401
 ```json
 {
     "info":false
+}
+```
+
+    Jos tokeni on väärä tai puuttuu palauttaa:
+```json
+{
+    "state":401
 }
 ```
 
@@ -818,6 +832,7 @@ Jos tokeni puuttuu palauttaa statuskoodin 401
     molempien pelaajien blockstate (boolean).
     Jos jokin parametri puuttuu, ei kutsu onnistu.
     Palauttaa json-muodossa booleanin.
+
     Jos liike on sallittu palauttaa:
 ```json
 {
@@ -830,38 +845,44 @@ Jos tokeni puuttuu palauttaa statuskoodin 401
     "info":false
 }
 ```
+    Jos tokeni on väärä tai puuttuu palauttaa:
+```json
+{
+    "state":401
+}
+```
 
 ### POST /game
     Pitää huolen siitä, että palvelin tietää milloin peli on alkanut ja milloin se loppuu.
     Ottaa vastaan pelaajan tokenin, pelaajan nimen, pelin alkaessa booleanin `true` ja pelin loppuessa `false`.
     Palauttaa json-muodossa vastauksen.
 
-Jos jotkin parametrit puuttuvat palauttaa:
+    Jos jotkin parametrit puuttuvat palauttaa:
 ```json
 {
     "err":"Tiedot puutteelliset"
 }
 ```
 
-Onnistuneessa tilanteessa palauttaa:
+    Onnistuneessa tilanteessa palauttaa:
 ```json
 {
     "info":true
 }
 ```
 
-Virhetilanteessa palauttaa:
+    Virhetilanteessa palauttaa:
 ```json
 {
     "err":"Ohjelmassa tapahtui virhe"
 }
 ```
-tai jonkin Database-luokan funktion search virheilmoituksen.
+    tai jonkin Database-luokan funktion search virheilmoituksen.
 
-Jos tokeni on väärä palauttaa:
+    Jos tokeni on väärä tai puuttuu palauttaa:
 ```json
 {
-    "err":false
+    "status":401
 }
 ```
 
@@ -870,33 +891,37 @@ Jos tokeni on väärä palauttaa:
     Palauttaa JSON-muodossa vastauksen.
     Bodyn mukana pitää olla käyttäjänimi `username` (string) ja token (string).
 
-Jos poisto onnistui palauttaa
+    Jos poisto onnistui palauttaa
 ```json
 {
     "info":true
 }
 ```
 
-Jos poisto epäonnistui palauttaa
+    Jos poisto epäonnistui palauttaa
 ```json
 {
     "info":false
 }
 ```
 
-Virhetilanteessa palauttaa
+    Virhetilanteessa palauttaa
 ```json
 {
     "err":"Pelaajan poistamisessa tapahtui virhe"
 }
 ```
 
-Jos käyttäjänimi puuttuu palauttaa
+    Jos käyttäjänimi puuttuu palauttaa
 ```json
 {
     "err":"Puuttelliset tiedot"
 }
 ```
 
-
-Jos tokeni puuttuu tai on virheellinen palauttaa statuskoodin 401
+    Jos tokeni puuttuu tai on väärä palauttaa
+```json
+{
+    "status":401
+}
+```
