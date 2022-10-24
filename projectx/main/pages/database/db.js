@@ -30,7 +30,7 @@ module.exports = class Database{
 
             const player = await this.search(table, "username", user.username);
             if(player.err) return player;
-            else if(player.length > 0 && table === "users") return res.json({err:"Käyttäjä on jo olemassa"});
+            else if(player.username && table === "users") return {err:"Käyttäjä on jo olemassa"};
 
             if(table === "users"){
                 const res = await bcrypt.hash(user.password, 10).then(async (hash)=>{
