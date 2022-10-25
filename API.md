@@ -854,7 +854,9 @@ Palauttaa `pelaaja1`
 
 ### POST /game
     Pitää huolen siitä, että palvelin tietää milloin peli on alkanut ja milloin se loppuu.
-    Ottaa vastaan pelaajan tokenin, pelaajan nimen, pelin alkaessa booleanin `true` ja pelin loppuessa `false`.
+    Ottaa vastaan pelaajan tokenin (string), pelaajan nimen (string), HTML canvas-elementin leveyden (integer), 
+    pelin alkaessa booleanin `true` ja pelin loppuessa `false`.
+    Jos canvas-elementin pituus puuttuu
     Palauttaa json-muodossa vastauksen.
 
     Jos jotkin parametrit puuttuvat palauttaa:
@@ -883,6 +885,13 @@ Palauttaa `pelaaja1`
 ```json
 {
     "status":401
+}
+```
+
+    Jos canvas-elementin pituus puuttuu palauttaa:
+```json
+{
+    "status":400
 }
 ```
 
