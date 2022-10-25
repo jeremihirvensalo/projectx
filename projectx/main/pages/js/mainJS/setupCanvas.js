@@ -13,6 +13,14 @@ const movement = {
 let keypressed = false;
 
 function start() {
+    if(window.innerWidth < 810){
+        document.getElementById("points").style.display = "none";
+        document.getElementById("canvas").style.display = "none";
+        document.getElementById("controlsInfo").style.display = "none";
+        document.getElementById("infoalue").innerHTML = "Näyttö on liian pieni!";
+        document.getElementById("infoalue").style.display = "block";
+        return;
+    }
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "grey"; // tähän background kuva
