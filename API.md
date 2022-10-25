@@ -888,7 +888,7 @@ Palauttaa `pelaaja1`
 }
 ```
 
-    Jos canvas-elementin pituus puuttuu palauttaa:
+    Jos canvas-elementin pituus puuttuu tai se on liian pieni palauttaa:
 ```json
 {
     "status":400
