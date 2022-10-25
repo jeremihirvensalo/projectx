@@ -161,6 +161,16 @@ canvas{
     margin:0;
 }
 
+.err{
+    display: none;
+    color:red;
+    margin: 20px;
+}
+
+#points{
+    margin:10px;
+}
+
 #restart{
     display: none;
     width: 200px;
@@ -168,6 +178,7 @@ canvas{
     background-color: #333;
     color: antiquewhite;
     font-weight: bold;
+    margin: 10px;
 }
 
 #restart:hover{
