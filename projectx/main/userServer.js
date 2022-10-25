@@ -35,7 +35,7 @@ app.post("/", async (req, res) => {
             return res.json(tokenResult.err);
         }
         if(id._idleTimeout) id=setInterval(async ()=>{await db.checkTokenDates()}, 1900000);
-        res.json({info:"Kirjautuminen onnistui", token:newToken});
+        return res.json({info:"Kirjautuminen onnistui", token:newToken});
     } else if (result.err) res.json(result);
     else return res.json({err:"Käyttäjätiedot väärin"});
 });
