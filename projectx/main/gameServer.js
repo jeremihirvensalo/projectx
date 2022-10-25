@@ -7,10 +7,14 @@ const db = new Database();
 app.use(express.json());
 
 let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let canvasWidth = -1;
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
     if(!state.token) return res.json({status:401});
+    if(!state.canvasWidth || state.canvasWidth < 800){
+        return res.json({err:"Canvaksen leveys liian pieni tai sitä ei annettu"});
+    }else if(state.canvasWidth && canvasWidth === -1) canvasWidth = state.canvasWidth;
     try{
         const searchToken = await db.search("tokens", "token", state.username);
         if(!db.compareTokens(state.token, searchToken.token)) return res.json({state:401});
@@ -63,12 +67,36 @@ app.post("/player", async (req, res)=>{
 
 });
 
-app.post("/move", async (req, res)=>{
-    const player = req.body;
-    if(!player.token) return res.json({status:401});
+app.post("/move", async (req, res)=>{ // vain token check testattu
+    const users = req.body;
+    let player;
+    let bot;
+    for(let user of users){ // pitäisi olla vain 2 olioita aina
+        if(user.token) player = user;
+        else bot = user;
+    }
+    if(!player) return res.json({status:401});
+    if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
     try{
         const searchToken = await db.search("tokens", "token", player.username);
         if(!searchToken.token || !db.compareTokens(player.token, searchToken.token)) return res.json({status:401});
+
+        let errString;
+        switch(player){
+            case !player.x:
+                errString = `Pelaajan ${player.name} parametri 'x' puuttuu`;
+                break;
+            case !player.y:
+                errString = `Pelaajan ${player.name} parametri 'y' puuttuu`;
+                break;
+            case !player.w:
+                errString = `Pelaajan ${player.name} parametri 'w' puuttuu`;
+                break;
+            case !player.h:
+                errString = `Pelaajan ${player.name} parametri 'h' puuttuu`;
+                break;
+        }
+        if(errString) return res.json({status:400,info:errString});
 
         res.json({info:true});
     }catch(e){
@@ -76,7 +104,7 @@ app.post("/move", async (req, res)=>{
     }
 });
 
-app.post("/delete", async (req, res)=>{ // ei testattu
+app.post("/delete", async (req, res)=>{
     const player = req.body;
     if(!player.token) return res.json({status:401});
     if(!player.username) return res.json({err:"Puutteelliset tiedot"});
