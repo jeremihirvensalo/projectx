@@ -803,8 +803,8 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /move
-    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
-    nimi (string), tokeni (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
+    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajien koordinaatit (json),
+    nimet (string) ja mahdolliset blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
     Palauttaa json-muodossa booleanin.
 
     Jos liike on sallittu palauttaa:
@@ -817,6 +817,20 @@ Palauttaa `pelaaja1`
 ```json
 {
     "info":false
+}
+```
+    Jos jokin pelaaja-olioiden parametreista puuttuu palauttaa:
+```json
+{
+    "status":400,
+    "info":"pelaajan *pelaajan nimi* parametri *parametri* puuttuu"
+}
+```
+    Jos pelaaja-olion nimi-parametri puuttuu palauttaa:
+```json
+{
+    "status":400,
+    "info":"pelaajan nimi puuttuu"
 }
 ```
 
