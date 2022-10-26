@@ -52,7 +52,8 @@ app.post("/game", async (req, res)=>{
     }
 });
 
-app.post("/player", async (req, res)=>{
+app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testattu (eikä uusinta versiota tästä)
+    if(players.length === 2) return res.json({info:false});
     const player = req.body;
     if(!player.token && !players[playerIndex].token) return res.json({status:401});
     try{
@@ -60,7 +61,7 @@ app.post("/player", async (req, res)=>{
         if(players.length > 0){
             for(let i = 0; i < players.length; i++){
                 if(player.username === players[i].username){ // tee clientin puolelle, että tajuaa 
-                    player.username = player.username + "_2"; // vaihtaa nimen jos se on jo olemassa + update API
+                    player.username = player.username + "_2"; // vaihtaa nimen jos se on jo olemassa + update API sille
                     break;
                 } 
             }
