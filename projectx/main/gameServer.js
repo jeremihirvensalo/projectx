@@ -6,8 +6,26 @@ const db = new Database();
 
 app.use(express.json());
 
-let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
-let canvasWidth = -1;
+let players = [ // jätä tyhjäksi valmiiseen versioon!!!
+    {
+        username:"123",
+        token:"0z30cclq02fm70xyljxtv0a",
+        x:100,
+        y:100,
+        w:100,
+        h:100
+    },
+    {
+        username:"bot",
+        x:120,
+        y:120,
+        w:120,
+        h:120
+    }
+]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
+let botIndex = 1;
+let canvasWidth = 800; //alkuarvo valmiissa versiossa = -1
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
@@ -36,14 +54,26 @@ app.post("/game", async (req, res)=>{
 
 app.post("/player", async (req, res)=>{
     const player = req.body;
-    if(!player.token) return res.json({status:401});
+    if(!player.token && !players[playerIndex].token) return res.json({status:401});
     try{
         if(!player.x || !player.y || !player.w || !player.h || !player.username) return res.json({info:false});
-        const user = await db.search("users", "username", player.username);
-        if(user.username){
-            const userToken = await db.search("tokens", "token", user.username);
+        if(players.length > 0){
+            for(let i = 0; i < players.length; i++){
+                if(player.username === players[i].username){ // tee clientin puolelle, että tajuaa 
+                    player.username = player.username + "_2"; // vaihtaa nimen jos se on jo olemassa + update API
+                    break;
+                } 
+            }
+        }
+        let user = {};
+        if(player.token) user = await db.search("users", "username", player.username);
+        
+        if(user.username || !player.token){
+            let userToken = {};
+            if(players.length === 1 && !players[playerIndex].token) userToken = await db.search("tokens", "token", user.username);
+            
             if(!userToken.err){
-                if(db.compareTokens(player.token, userToken.token)){
+                if(Object.keys(userToken).length === 0 || db.compareTokens(player.token, userToken.token)){
                     const playerObject = {
                         username:player.username,
                         x:player.x,
@@ -52,9 +82,12 @@ app.post("/player", async (req, res)=>{
                         h:player.h
                     }
                     const result = await db.insert(playerObject, "players");
-                    if(result.affectedRows > 0) players.push(player);
-
-                    if(result.err) return res.json({info:false});
+                    if(result.affectedRows > 0){
+                        if(player.token) playerIndex = players.length;
+                        else botIndex = players.length;
+                        players.push(player); 
+                    } 
+                    else if(result.err) return res.json({info:false});
                     return res.json({info:true});
                 }
                 return res.json({state:401});
@@ -67,39 +100,36 @@ app.post("/player", async (req, res)=>{
 
 });
 
-app.post("/move", async (req, res)=>{ // vain token check testattu
-    const users = req.body;
-    let player;
-    let bot;
-    for(let user of users){ // pitäisi olla vain 2 olioita aina
-        if(user.token) player = user;
-        else bot = user;
-    }
+app.post("/move", async (req, res)=>{
+    const player = req.body;
     if(!player) return res.json({status:401});
     if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
     try{
-        const searchToken = await db.search("tokens", "token", player.username);
-        if(!searchToken.token || !db.compareTokens(player.token, searchToken.token)) return res.json({status:401});
+        if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
+        if(!player.x || !player.y || !player.w || !player.h) return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
 
-        let errString;
-        switch(player){
-            case !player.x:
-                errString = `Pelaajan ${player.name} parametri 'x' puuttuu`;
-                break;
-            case !player.y:
-                errString = `Pelaajan ${player.name} parametri 'y' puuttuu`;
-                break;
-            case !player.w:
-                errString = `Pelaajan ${player.name} parametri 'w' puuttuu`;
-                break;
-            case !player.h:
-                errString = `Pelaajan ${player.name} parametri 'h' puuttuu`;
-                break;
+        let result = false;
+        // HUOM. tarkistus loopin voi hajottaa clientin puolelta tekemällä loopin joka aina vaikka lisää parametriin y + 75
+        // ja ohittaa pätkän koodia jossa arvo palautettaisiin takaisin oletukseen
+        for(let user of players){
+            if(user.username === player.username){ 
+                if(player.x !== user.x){
+                    if(player.x + 20 === user.x) result = true;
+                    else if(player.x - 20 === user.x) result = true;
+                }else if(player.y !== user.y){
+                    if(player.y + 75 === user.y) result = true; // jos default arvo on 100 ja kutsun tekee arvolla 25, mitään ei
+                    else if(player.y - 75 === user.y) result = true; // tapahdu, mutta kutsu menee silti läpi
+                }else if(player.w !== user.w || player.h !== user.h){
+                    result = false;
+                    break;
+                }
+            }
         }
-        if(errString) return res.json({status:400,info:errString});
-
+        if(!result) return res.json({info:false});
+        players[playerIndex] = player;
         res.json({info:true});
     }catch(e){
+        console.log(e.message);
         return res.json({err:"Liikkeen tarkistuksessa virhe"});
     }
 });
