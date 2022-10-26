@@ -780,18 +780,29 @@ Palauttaa `pelaaja1`
     Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit
     ja pelaajan nimen (string) joka säilötään tietokantaan.
     Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia. Jos jokin parametri puuttuu,
-    ei lisäys onnistu. Pelaajilla ei voi olla samanimi.
+    ei lisäys onnistu. Jos molemmilla pelaajilla on sama nimi, vaihdetaan jälkimmäisen lisäyksen nimen perään `_2`.
+    Palauttaa json-muodossa booleanin ja username (string), joka sisältää lisätyn käyttäjän nimen.
 
     Onnistuneessa lisäyksessä palauttaa json-muodossa:
 ```json
 {
-    "info":true
+    "info":true,
+    "username":"pelaaja1"
 }
 ```
     Epäonnistuneessa lisäyksessä palauttaa json-muodossa:
 ```json
 {
-    "info":false
+    "info":false,
+    "username":"pelaaja1"
+}
+```
+    Oletetaan, että palvelimelle on lisätty jo pelaaja nimellä `pelaaja1`.
+    Tässä tilanteessa, jos toista saman nimistä pelaajaa yritetään lisätä palauttaa:
+```json
+{
+    "info":false,
+    "username":"pelaaja1_2"
 }
 ```
 
@@ -803,9 +814,34 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /move
-    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajien koordinaatit (json),
-    nimet (string) ja mahdolliset blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu. 
+    Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
+    nimi (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu.
+    Poikkeuksena on, että botin tiedoissa ei saa olla token-parametria.
     Palauttaa json-muodossa booleanin.
+
+    Bodyn mukana tulevan datan muoto (oikea pelaaja):
+```json
+    {
+        "username":"pelaaja1",
+        "token":"randtoken123",
+        "x":100,
+        "y":100,
+        "w":20,
+        "h":20,
+        "blockstate":false
+    }
+```
+    Bodyn mukana tulevan datan muoto (botti)
+```json
+    {
+        "username":"bot",
+        "x":100,
+        "y":100,
+        "w":20,
+        "h":20,
+        "blockstate":false
+    }
+```
 
     Jos liike on sallittu palauttaa:
 ```json
@@ -823,7 +859,7 @@ Palauttaa `pelaaja1`
 ```json
 {
     "status":400,
-    "info":"pelaajan *pelaajan nimi* parametri *parametri* puuttuu"
+    "info":"pelaajan jokin tieto puuttuu"
 }
 ```
     Jos pelaaja-olion nimi-parametri puuttuu palauttaa:
@@ -833,7 +869,6 @@ Palauttaa `pelaaja1`
     "info":"pelaajan nimi puuttuu"
 }
 ```
-
     Jos tokeni on väärä tai puuttuu palauttaa:
 ```json
 {
@@ -842,10 +877,33 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /attack
-    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string) ja
-    molempien pelaajien blockstate (boolean).
-    Jos jokin parametri puuttuu, ei kutsu onnistu.
+    Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string), 
+    blockstate (boolean) ja koordinaatit (json). Poikkeuksena botilla ei saa olla token-parametria.
     Palauttaa json-muodossa booleanin.
+
+    Bodyn mukana tulevan datan muoto (oikea pelaaja):
+```json
+    {
+        "username":"pelaaja1",
+        "token":"randtoken123",
+        "x":100,
+        "y":100,
+        "w":20,
+        "h":20,
+        "blockstate":false
+    }
+```
+    Bodyn mukana tulevan datan muoto (botti)
+```json
+    {
+        "username":"bot",
+        "x":100,
+        "y":100,
+        "w":20,
+        "h":20,
+        "blockstate":false
+    }
+```
 
     Jos liike on sallittu palauttaa:
 ```json
