@@ -30,6 +30,7 @@ let players = [ // jätä tyhjäksi valmiiseen versioon!!!
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 1;
 let canvasWidth = 800; //alkuarvo valmiissa versiossa = -1
+const defaultY = 245; // pelaajien positio Y canvaksella
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
@@ -121,17 +122,16 @@ app.post("/move", async (req, res)=>{
         return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
         if(player.blockstate) return res.json({info:false});
         
-        // HUOM. tarkistus loopin voi hajottaa clientin puolelta tekemällä loopin joka aina vaikka lisää parametriin y + 75
-        // ja ohittaa pätkän koodia jossa arvo palautettaisiin takaisin oletukseen
         let result = false;
         for(let user of players){
-            if(user.username === player.username){ 
+            if(user.username === player.username){
+                // seuraavat arvot ovat oletuksia, mutta voidaan vaihtaa muuttujiksi 
                 if(player.x !== user.x){
-                    if(player.x + 20 === user.x) result = true; // nämä arvot ovat oletuksia, mutta voidaan vaihtaa muuttujiksi
-                    else if(player.x - 20 === user.x) result = true;
+                    if(player.x + 20 === user.x && player.x + 20 < canvasWidth - players[botIndex].x) result = true;
+                    else if(player.x - 20 === user.x && player.x - 20 > 0) result = true;
                 }else if(player.y !== user.y){
-                    if(player.y + 75 === user.y) result = true; // jos default arvo on 100 ja kutsun tekee arvolla 25, mitään ei
-                    else if(player.y - 75 === user.y) result = true; // tapahdu, mutta kutsu menee silti läpi
+                    if(player.y + 75 === user.y && player.y - 75 === defaultY) result = true;
+                    else if(player.y - 75 === user.y && player.y === defaultY + 75) result = true;
                 }else if(player.w !== user.w || player.h !== user.h){
                     result = false;
                     break;
