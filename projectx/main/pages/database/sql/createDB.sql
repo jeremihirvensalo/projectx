@@ -24,7 +24,9 @@ create table players(
     x integer not null,
     y integer not null,
     w integer not null,
-    h integer not null
+    h integer not null,
+    hp integer not null,
+    blockstate bool not null
 );
 
 create user if not exists "pxadmin"@"localhost" identified by "1234";
