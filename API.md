@@ -801,8 +801,14 @@ Palauttaa `pelaaja1`
     Tässä tilanteessa, jos toista saman nimistä pelaajaa yritetään lisätä palauttaa:
 ```json
 {
-    "info":false,
+    "info":true,
     "username":"pelaaja1_2"
+}
+```
+    Jos pelaajia on jo 2 palvelimella palauttaa:
+```json
+{
+    "info":false
 }
 ```
 
