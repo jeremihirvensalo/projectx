@@ -11,16 +11,20 @@ let players = [ // jätä tyhjäksi valmiiseen versioon!!!
         username:"123",
         token:"0z30cclq02fm70xyljxtv0a",
         x:100,
-        y:100,
-        w:100,
-        h:100
+        y:20,
+        w:80,
+        h:120,
+        hp:100,
+        blockstate:false
     },
     {
         username:"bot",
-        x:120,
-        y:120,
-        w:120,
-        h:120
+        x:300,
+        y:20,
+        w:80,
+        h:120,
+        hp:100,
+        blockstate:false
     }
 ]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
@@ -56,7 +60,11 @@ app.post("/player", async (req, res)=>{
     const player = req.body;
     if(!player.token && !players[playerIndex].token) return res.json({status:401});
     try{
-        if(!player.x || !player.y || !player.w || !player.h || !player.username) return res.json({info:false});
+        if(!player.x || !player.y || !player.w || !player.h || !player.username || player.blockstate === undefined)
+        return res.json({info:false});
+
+        if(typeof player.blockstate !== "boolean") return res.json({info:false});
+
         if(players.length > 0){
             for(let i = 0; i < players.length; i++){
                 if(player.username === players[i].username){ // tee clientin puolelle, että tajuaa 
@@ -79,7 +87,9 @@ app.post("/player", async (req, res)=>{
                         x:player.x,
                         y:player.y,
                         w:player.w,
-                        h:player.h
+                        h:player.h,
+                        hp:player.hp,
+                        blockstate:player.blockstate
                     }
                     const result = await db.insert(playerObject, "players");
                     if(result.affectedRows > 0){
@@ -106,15 +116,17 @@ app.post("/move", async (req, res)=>{
     if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
     try{
         if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
-        if(!player.x || !player.y || !player.w || !player.h) return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
-
-        let result = false;
+        if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
+        return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
+        if(player.blockstate) return res.json({info:false});
+        
         // HUOM. tarkistus loopin voi hajottaa clientin puolelta tekemällä loopin joka aina vaikka lisää parametriin y + 75
         // ja ohittaa pätkän koodia jossa arvo palautettaisiin takaisin oletukseen
+        let result = false;
         for(let user of players){
             if(user.username === player.username){ 
                 if(player.x !== user.x){
-                    if(player.x + 20 === user.x) result = true;
+                    if(player.x + 20 === user.x) result = true; // nämä arvot ovat oletuksia, mutta voidaan vaihtaa muuttujiksi
                     else if(player.x - 20 === user.x) result = true;
                 }else if(player.y !== user.y){
                     if(player.y + 75 === user.y) result = true; // jos default arvo on 100 ja kutsun tekee arvolla 25, mitään ei
@@ -129,9 +141,48 @@ app.post("/move", async (req, res)=>{
         players[playerIndex] = player;
         res.json({info:true});
     }catch(e){
-        console.log(e.message);
         return res.json({err:"Liikkeen tarkistuksessa virhe"});
     }
+});
+
+app.post("/attack", (req, res)=>{
+    const player = req.body;
+
+    // token and player check
+    if(!player || !player.username || (!player.token && !players[playerIndex].token)) return res.json({status:401});
+    else if(player.username === players[playerIndex].username){
+        if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
+    }else if(player.username !== players[botIndex].username) return res.json({status:400,info:"Käyttäjää ei löydy"});
+
+    // parameters check
+    if(!player.x || !player.y || !player.w || !player.h || player.blockstate === undefined) 
+    return res.json({status:400,info:"Jokin pelaajan tieto puuttuu"});
+
+    if(typeof player.blockstate !== "boolean") return res.json({status:400,info:"Pelaajan data on virheellistä"});
+
+    let whosIndex;
+    if(player.token) whosIndex = playerIndex;
+    else whosIndex = botIndex;
+
+    if(player !== players[whosIndex]){
+        const playerKeys = Object.keys(players[whosIndex]);
+        const userKeys = Object.keys(player);
+        for(let key of playerKeys){
+            let found = false;
+            for(let userKey of userKeys){
+                if(userKey === key){
+                    found = true;
+                    break;
+                } 
+            }
+            if(!found) return res.json({status:400,info:"Pelaajan data on virheellistä"});
+        }
+    }
+    // take damage check
+    if(player.x > players[whosIndex].x && (player.x - players[whosIndex].x) < 71) return res.json({info:true,damage:true});
+    else if(player.x < players[whosIndex].x && (players[whosIndex] - player.x) < 71) return res.json({info:true,damage:true});
+
+    return res.json({info:true,damage:false});
 });
 
 app.post("/delete", async (req, res)=>{
