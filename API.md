@@ -777,7 +777,7 @@ Palauttaa `pelaaja1`
 ```
 
 ### POST /player
-    Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit
+    Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit, osumapisteet (integer)
     ja pelaajan nimen (string) joka säilötään tietokantaan.
     Jos tietokannassa on jo 2 pelaajaa, ei voida lisätä lisää pelaajia. Jos jokin parametri puuttuu,
     ei lisäys onnistu. Jos molemmilla pelaajilla on sama nimi, vaihdetaan jälkimmäisen lisäyksen nimen perään `_2`.
@@ -815,8 +815,9 @@ Palauttaa `pelaaja1`
 
 ### POST /move
     Tarkistaa halutun liikkumisen vasemmalle tai oikealle. Bodyn mukana tulee tokeni (string), pelaajan koordinaatit (json),
-    nimi (string) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu.
+    nimi (string), osumapisteet (integer) ja blockstate (boolean). Jos jokin parametreistä puuttuu, ei kutsu onnistu.
     Poikkeuksena on, että botin tiedoissa ei saa olla token-parametria.
+    Blockstate täytyy olla `false`, jotta kutsu menee läpi.
     Palauttaa json-muodossa booleanin.
 
     Bodyn mukana tulevan datan muoto (oikea pelaaja):
@@ -828,6 +829,7 @@ Palauttaa `pelaaja1`
         "y":100,
         "w":20,
         "h":20,
+        "hp":100,
         "blockstate":false
     }
 ```
@@ -839,6 +841,7 @@ Palauttaa `pelaaja1`
         "y":100,
         "w":20,
         "h":20,
+        "hp":100,
         "blockstate":false
     }
 ```
@@ -849,7 +852,7 @@ Palauttaa `pelaaja1`
     "info":true
 }
 ```
-    Jos liike ei ole sallittu palauttaa:
+    Blockstate on `true` palauttaa:
 ```json
 {
     "info":false
@@ -869,6 +872,13 @@ Palauttaa `pelaaja1`
     "info":"pelaajan nimi puuttuu"
 }
 ```
+    Jos pelaaja-olio on vääränlainen palauttaa:
+```json
+{
+    "status":400,
+    "info":"pelaajan data on virheellistä"
+}
+```
     Jos tokeni on väärä tai puuttuu palauttaa:
 ```json
 {
@@ -878,7 +888,8 @@ Palauttaa `pelaaja1`
 
 ### POST /attack
     Tarkistaa pelaajan tekemän lyönnin aitouden. Bodyn mukana tulee tokeni (string), nimi (string), 
-    blockstate (boolean) ja koordinaatit (json). Poikkeuksena botilla ei saa olla token-parametria.
+    blockstate (boolean), osumapisteet (integer) ja koordinaatit (json). Poikkeuksena botilla ei saa olla token-parametria.
+    Jos pelaajaa ei löydy tulkitaan se virheelliseksi kutsuksi. Blockstate täytyy olla `false`, jotta kutsu menee läpi
     Palauttaa json-muodossa booleanin.
 
     Bodyn mukana tulevan datan muoto (oikea pelaaja):
@@ -890,6 +901,7 @@ Palauttaa `pelaaja1`
         "y":100,
         "w":20,
         "h":20,
+        "hp":100,
         "blockstate":false
     }
 ```
@@ -901,6 +913,7 @@ Palauttaa `pelaaja1`
         "y":100,
         "w":20,
         "h":20,
+        "hp":100,
         "blockstate":false
     }
 ```
@@ -908,13 +921,41 @@ Palauttaa `pelaaja1`
     Jos liike on sallittu palauttaa:
 ```json
 {
-    "info":true
+    "info":true,
+    "damage":false
+}
+```
+    Jos liike on sallittu ja vastustaja on lyöntietäisyydellä palauttaa:
+```json
+{
+    "info":true,
+    "damage":true
 }
 ```
     Jos liike ei ole sallittu palauttaa:
 ```json
 {
     "info":false
+}
+```
+    Blockstate on `true` palauttaa:
+```json
+{
+    "info":false
+}
+```
+    Jos pelaajaa ei löydy palvelimelta palauttaa:
+```json
+{
+    "status":400,
+    "info":"Käyttäjää ei löydy"
+}
+```
+    Jos jokin pelaaja-olion parametri puuttuu palauttaa:
+```json
+{
+    "status":400,
+    "info":"Jokin pelaajan tieto puuttuu"
 }
 ```
     Jos tokeni on väärä tai puuttuu palauttaa:
