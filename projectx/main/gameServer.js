@@ -180,8 +180,10 @@ app.post("/attack", (req, res)=>{
         }
     }
     // take damage check
-    if(player.x > players[whosIndex].x && (player.x - players[whosIndex].x) < 71) return res.json({info:true,damage:true});
-    else if(player.x < players[whosIndex].x && (players[whosIndex] - player.x) < 71) return res.json({info:true,damage:true});
+    if(player.x > players[whosIndex].x && (player.x - players[whosIndex].x) < 71 && player.username === players[whosIndex].username)
+    return res.json({info:true,damage:true});
+    else if(player.x < players[whosIndex].x && (players[whosIndex] - player.x) < 71 && player.username === players[whosIndex].username)
+    return res.json({info:true,damage:true});
 
     return res.json({info:true,damage:false});
 });
