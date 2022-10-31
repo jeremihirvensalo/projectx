@@ -25,8 +25,8 @@ function start() {
     }
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "grey"; // tähän background kuva
-    ctx.fillRect(0, 0, 800, 400);
+    ctx.fillStyle = "grey"; // tähän background kuva + sen funktiot yms
+    ctx.fillRect(0, 0, 800, 400); // tää on osa tätä nykystä backgroundia
     player = new Character(ctx, 60, 245, 90, 150, "green", 100);
     bot = new Character(ctx, 650, 245, 90, 150, "red", 100);
     const hp = new HP(ctx, player, bot);
@@ -40,7 +40,7 @@ function start() {
     document.addEventListener("keydown", e => {
         if(keypressed) return;
         keypressed = true;
-        if (canvasEvents()) return; // this is stupid. rework needed
+        if (canvasEvents()) return;
         if (movement[e.code] == "BLOCK") {
             if (player.blockState()) return;
             else {
@@ -57,7 +57,7 @@ function start() {
     });
 }
 
-function returnPlayers(){ // write API
+function returnPlayers(){
     return {player:player,bot:bot}
 }
 
