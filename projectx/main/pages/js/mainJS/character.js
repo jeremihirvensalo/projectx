@@ -70,6 +70,24 @@ class Character{
             canAttack = true;
         }, 230)
     }
+ 
+    punchL(bot, hp){ // tätä ei testattu
+        if(!canAttack) return;
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect((this.userH.w - this.x), (this.y + 40), 70, (this.userH / 3));
+        canAttack = false;
+        setTimeout(()=>{
+            this.piirraCanvas();
+            bot.piirraChar();
+            this.piirraChar()
+        }, 100);
+        if((bot.getCoords().x - this.x) <=160){ // tää if varmaa vääri. kannattaa testaa
+            hp.takeHit(10, "bot"); // kovakoodattu eli aina botti ottaa osuman
+        }
+        setTimeout(()=>{
+            canAttack = false;
+        }, 230);
+    }
 
     kick(bot, hp){
         if(!canAttack) return;
@@ -82,10 +100,28 @@ class Character{
             this.piirraChar();
         }, 100);
         if((bot.getCoords().x - this.x) <= 160){
-            hp.takeHit(10, "bot"); //kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, "bot"); // kovakoodattu eli aina botti ottaa osuman
         }
         setTimeout(()=>{
             canAttack = true;
+        }, 230);
+    }
+
+    kickL(bot, hp){
+        if(!canAttack) return;
+        this.fillStyle = this.color;
+        this.ctx.fillRect((this.userW - this.x), (this.y + 95), 70, (this.userH / 3));
+        canAttack = false;
+        setTimeout(()=>{
+            this.piirraCanvas();
+            bot.piirraChar();
+            this.piirraChar();
+        }, 100);
+        if((bot.getCoords().x - this.x) <= 160){
+            hp.takeHit(10, "bot") // kovakoodattu eli aina botti ottaa osuman
+        }
+        setTimeout(()=>{
+            canAttack = false;
         }, 230);
     }
 
