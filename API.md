@@ -724,6 +724,9 @@ Palauttaa `pelaaja1`
 ### getAttackStatus()
     Parametriton funktio, joka kertoo voiko pelaaja hyökätä. Palauttaa booleanin.
 
+### getName()
+    Parametriton funktio, joka palauttaa pelaaja-olion nimen (string).
+
 ### reset()
     Parametriton funktio, joka palauttaa pelaajan kierroksen aloitusarvoihin.
     Eli pelaajan koorditaatit, leveys ja korkeus palautuu kierroksen alkutilaan.
