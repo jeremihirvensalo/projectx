@@ -3,7 +3,7 @@ let canAttack = true;
 let points = 0;
 
 class Character{
-    constructor(ctx, x, y, userW, userH, color, hp){
+    constructor(ctx, x, y, userW, userH, color, hp, name){
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -11,6 +11,7 @@ class Character{
         this.userH = userH;
         this.color = color;
         this.hp = hp;
+        this.name = name;
         this.startPos = {
             x: x,
             y: y,
@@ -64,7 +65,7 @@ class Character{
             this.piirraChar();
         }, 100);
         if((bot.getCoords().x - this.x) <= 160){
-            hp.takeHit(10, "bot"); //kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, bot.getName()); //kovakoodattu eli aina botti ottaa osuman
         }
         setTimeout(()=>{
             canAttack = true;
@@ -82,7 +83,7 @@ class Character{
             this.piirraChar()
         }, 100);
         if((bot.getCoords().x - this.x) <=160){ // tää if varmaa vääri. kannattaa testaa
-            hp.takeHit(10, "bot"); // kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             canAttack = false;
@@ -100,7 +101,7 @@ class Character{
             this.piirraChar();
         }, 100);
         if((bot.getCoords().x - this.x) <= 160){
-            hp.takeHit(10, "bot"); // kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
             canAttack = true;
@@ -118,7 +119,7 @@ class Character{
             this.piirraChar();
         }, 100);
         if((bot.getCoords().x - this.x) <= 160){
-            hp.takeHit(10, "bot") // kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             canAttack = false;
@@ -154,6 +155,10 @@ class Character{
 
     getAttackStatus(){
         return canAttack;
+    }
+
+    getName(){
+        return this.name;
     }
 
     reset(){
