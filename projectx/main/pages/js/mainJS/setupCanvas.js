@@ -27,10 +27,10 @@ function start() {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "grey"; // tähän background kuva + sen funktiot yms
     ctx.fillRect(0, 0, 800, 400); // tää on osa tätä nykystä backgroundia
-    player = new Character(ctx, 60, 245, 90, 150, "green", 100);
-    bot = new Character(ctx, 650, 245, 90, 150, "red", 100);
-    const hp = new HP(ctx, player, bot);
     const playerName = getCookieValue("username");
+    player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
+    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot");
+    const hp = new HP(ctx, player, bot);
     hp.drawBarL(playerName);
     hp.drawBarR("Bot");
     stopCanvasEvents(false);
