@@ -11,6 +11,8 @@ const movement = {
 };
 
 let keypressed = false;
+let player;
+let bot;
 
 function start() {
     if(window.innerWidth < 810){
@@ -25,8 +27,8 @@ function start() {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "grey"; // tähän background kuva
     ctx.fillRect(0, 0, 800, 400);
-    const player = new Character(ctx, 60, 245, 90, 150, "green", 100);
-    const bot = new Character(ctx, 650, 245, 90, 150, "red", 100);
+    player = new Character(ctx, 60, 245, 90, 150, "green", 100);
+    bot = new Character(ctx, 650, 245, 90, 150, "red", 100);
     const hp = new HP(ctx, player, bot);
     const playerName = getCookieValue("username");
     hp.drawBarL(playerName);
@@ -53,6 +55,10 @@ function start() {
         if (canvasEvents()) return;
         if (movement[e.code] == "BLOCK") player.block(false);
     });
+}
+
+function returnPlayers(){ // write API
+    return {player:player,bot:bot}
 }
 
 function showPoints(points){
