@@ -653,6 +653,15 @@ Palauttaa `pelaaja1`
 ### showPoints(points)
     Funktio, joka päivittää sivulle pelaajan pisteet. Parametriksi ottaa pelaajan pisteet (integer)
 
+### returnPlayers()
+    Parametriton funktio, joka palauttaa molemmat pelaaja-oliot. Vaikka pelaajia ei olisi vielä määritelty,
+    voidaan funktio kutsua. Siinä tilanteessa palautuisi:
+```json
+{
+    "player":"undefined",
+    "bot":"undefined"
+}
+```
 
 ## character.js
     Luokka, joka luo pelaajan. Luokka ottaa parametreiksi ctx, x, y, userW, userH, color, hp
