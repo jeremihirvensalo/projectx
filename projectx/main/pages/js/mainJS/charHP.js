@@ -38,12 +38,13 @@ class HP{
     drawDMG(amount, who){ // 360/10 = 36 eli defaulttina damage on 36
         // amount ilmoittaa kuin moninkertaisesti lyönti tapahtuu. Default=1
         this.ctx.fillStyle = "red";
-        if(who == "bot"){
+        if(who == this.bot.getName()){
             // this.botStart += 36*amount;
             botRedBlock += 36;
             this.ctx.fillRect(this.botStart, 35, botRedBlock, 30);
         }else{
             playerRedBlock += 36;
+            this.playerStart -= 36;
             this.ctx.fillRect(this.playerStart, 35, playerRedBlock, 30);
         }
     }
@@ -56,7 +57,7 @@ class HP{
             }
             return;
         }
-        if(who == "bot"){
+        if(who == this.bot.getName()){
             this.botHP -= amount;
             this.player.awardPoints();
             showPoints(this.player.getPoints());
@@ -77,13 +78,14 @@ class HP{
     reset(){
         stopCanvasEvents(true);
         document.getElementById("restart").style.display = "block";
+        hpWidth = 360;
+        botRedBlock = 0;
+        playerRedBlock = 0;
         this.botHP = 100;
         this.playerHP = 100;
         this.player.reset();
         this.bot.reset();
-        hpWidth = 360;
-        botRedBlock = 0;
-        playerRedBlock = 0;
+        this.playerStart = 25 + hpWidth;
         document.getElementById("restart").addEventListener("click", start);
     }
 }
