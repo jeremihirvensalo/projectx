@@ -64,29 +64,36 @@ class Character{
             bot.piirraChar();
             this.piirraChar();
         }, 100);
+
+        if(this.getCoords().x > bot.getCoords().x){
+            setTimeout(()=>{
+                canAttack = true;
+            }, 230);
+            return;
+        } 
         if((bot.getCoords().x - this.x) <= 160){
-            hp.takeHit(10, bot.getName()); //kovakoodattu eli aina botti ottaa osuman
+            hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             canAttack = true;
-        }, 230)
+        }, 230);
     }
  
-    punchL(bot, hp){ // tätä ei testattu
+    punchL(bot, hp){
         if(!canAttack) return;
         this.ctx.fillStyle = this.color;
-        this.ctx.fillRect((this.userH.w - this.x), (this.y + 40), 70, (this.userH / 3));
+        this.ctx.fillRect((this.x - this.userW + 20), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
             this.piirraChar()
         }, 100);
-        if((bot.getCoords().x - this.x) <=160){ // tää if varmaa vääri. kannattaa testaa
+        if((this.getCoords().x - bot.getCoords().x) <=160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            canAttack = false;
+            canAttack = true;
         }, 230);
     }
 
@@ -100,6 +107,13 @@ class Character{
             bot.piirraChar();
             this.piirraChar();
         }, 100);
+
+        if(this.getCoords().x > bot.getCoords().x){
+            setTimeout(()=>{
+                canAttack = true;
+            }, 230);
+            return;
+        }
         if((bot.getCoords().x - this.x) <= 160){
             hp.takeHit(10, bot.getName()); 
         }
@@ -110,19 +124,19 @@ class Character{
 
     kickL(bot, hp){
         if(!canAttack) return;
-        this.fillStyle = this.color;
-        this.ctx.fillRect((this.userW - this.x), (this.y + 95), 70, (this.userH / 3));
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect((this.x - this.userW + 20), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
             this.piirraChar();
         }, 100);
-        if((bot.getCoords().x - this.x) <= 160){
+        if((this.getCoords().x - bot.getCoords().x) <= 160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            canAttack = false;
+            canAttack = true;
         }, 230);
     }
 
