@@ -23,8 +23,14 @@ function suoritaToiminto(player, bot, toiminto, hp) {
         case "PUNCH":
             player.punch(bot, hp);
             break;
+        case "PUNCHL":
+            player.punchL(bot, hp);
+            break;
         case "KICK":
             player.kick(bot, hp);
+            break;
+        case "KICKL":
+            player.kickL(bot, hp);
             break;
     }
 }

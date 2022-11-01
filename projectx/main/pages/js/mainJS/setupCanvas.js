@@ -7,7 +7,9 @@ const movement = {
     KeyD: "RIGHT",
     Space: "BLOCK",
     KeyF: "PUNCH",
-    KeyG: "KICK"
+    KeyR: "PUNCHL",
+    KeyG: "KICK",
+    KeyC: "KICKL"
 };
 
 let keypressed = false;
@@ -29,7 +31,7 @@ function start() {
     ctx.fillRect(0, 0, 800, 400); // tää on osa tätä nykystä backgroundia
     const playerName = getCookieValue("username");
     player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
-    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot");
+    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot"); 
     const hp = new HP(ctx, player, bot);
     hp.drawBarL(playerName);
     hp.drawBarR("Bot");
