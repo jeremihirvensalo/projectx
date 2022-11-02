@@ -16,7 +16,7 @@ let keypressed = false;
 let player;
 let bot;
 
-function start() {
+async function start() {
     if(window.innerWidth < 810){
         document.getElementById("points").style.display = "none";
         document.getElementById("canvas").style.display = "none";
@@ -33,6 +33,23 @@ function start() {
     player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
     bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot"); 
     const hp = new HP(ctx, player, bot);
+
+    let playerObject = formatPlayer(player, getCookieValue("username"));
+    let options = {
+        method:"POST",
+        body: JSON.stringify(playerObject),
+        headers: {
+            "Content-Type":"application/json"
+        }
+    }
+    let result = await fetch("http://localhost:3001/player", options).then(async data =>{
+        return await data.json();
+    });
+    if(!result.info){
+        document.getElementById("infoalue").style.display = "block";
+        document.getElementById("infoalue").innerHTML = "Virhe pelaajan lisäyksessä";
+        return;
+    }
     hp.drawBarL(playerName);
     hp.drawBarR("Bot");
     stopCanvasEvents(false);
@@ -66,6 +83,22 @@ function returnPlayers(){
 function showPoints(points){
     document.getElementById("points").innerHTML = "Points: " + points;
 }
+
+function formatPlayer(player, username){ // write API
+    const playerCRDS = player.getCoords();
+    const playerObject = {
+        token: getCookieValue("token"),
+        username: username,
+        x: playerCRDS.x,
+        y: playerCRDS.y,
+        w: playerCRDS.w,
+        h: playerCRDS.h,
+        hp: player.getHP(),
+        blockstate: player.blockState()
+    }
+    return playerObject;
+}
+
 (function () {
     document.addEventListener("DOMContentLoaded", start);
 })();
