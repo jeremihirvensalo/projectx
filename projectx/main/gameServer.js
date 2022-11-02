@@ -1,35 +1,17 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const config = require("./config.json")[0].gameServer;
 const Database = require("./pages/database/db.js");
 const db = new Database();
 
 app.use(express.json());
+app.use(cors());
 
-let players = [ // jätä tyhjäksi valmiiseen versioon!!!
-    {
-        username:"123",
-        token:"0z30cclq02fm70xyljxtv0a",
-        x:100,
-        y:20,
-        w:80,
-        h:120,
-        hp:100,
-        blockstate:false
-    },
-    {
-        username:"bot",
-        x:300,
-        y:20,
-        w:80,
-        h:120,
-        hp:100,
-        blockstate:false
-    }
-]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
-let botIndex = 1;
-let canvasWidth = 800; //alkuarvo valmiissa versiossa = -1
+let botIndex = 0;
+let canvasWidth = -1; //alkuarvo valmiissa versiossa = -1
 const defaultY = 245; // pelaajien positio Y canvaksella
 
 app.post("/game", async (req, res)=>{
@@ -60,13 +42,13 @@ app.post("/game", async (req, res)=>{
 app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testattu (eikä uusinta versiota tästä)
     if(players.length === 2) return res.json({info:false});
     const player = req.body;
+    console.log(player);
     if(!player.token && !players[playerIndex].token) return res.json({status:401});
     try{
-        if(!player.x || !player.y || !player.w || !player.h || !player.username || player.blockstate === undefined)
+        if(!player.x || !player.y || !player.w || !player.h || !player.username || !player.hp || player.blockstate === undefined)
         return res.json({info:false});
 
         if(typeof player.blockstate !== "boolean") return res.json({info:false});
-
         if(players.length > 0){
             for(let i = 0; i < players.length; i++){
                 if(player.username === players[i].username){ // tee clientin puolelle, että tajuaa 
