@@ -1065,3 +1065,81 @@ Palauttaa `pelaaja1`
     "status":401
 }
 ```
+
+### POST /continue
+    Reitti valmistaa pelin jatkamisen yhden kierroksen jälkeen. Jos käyttäjä on hävinnyt aloittaa uuden pelin, mutta
+    jos botti on hävinnyt aloittaa uuden kierroksen.
+    Ottaa vastaan tokenin, molempien käyttäjän ja botin pelaaja-oliot. Lisäksi botille voi määritellä lisätiedon mukana
+    enemmän osumapisteitä.
+    Jos pelaaja-oliot tai tokeni puuttuu ei kutsu mene läpi(HUOM! botin pelaaja-olio ei sisällä tokenia).
+    Lisätiedot eivät ole pakollisia.
+    Reitti antaa vastauksen json-muodossa.
+
+Oletetaan, että kutsun mukana tulee seuraavat tiedot:
+```json
+[
+    {
+        "username":"123",
+        "token":"9t1w5mwodrez378yun7evg",
+        "x":90,
+        "y":50,
+        "w":120,
+        "h":80,
+        "hp":100,
+        "blockstate":false
+    },
+    {
+        "username":"bot",
+        "x":90,
+        "y":50,
+        "w":120,
+        "h":80,
+        "hp":0,
+        "blockstate":false,
+        "newHP":120
+    }
+]
+```
+
+Jos kutsu menee läpi palauttaa:
+```json
+{
+    "info":true,
+    "details":[
+        {
+            "username":"123",
+            "token":"9t1w5mwodrez378yun7evg",
+            "x":90,
+            "y":50,
+            "w":120,
+            "h":80,
+            "hp":100,
+            "blockstate":false
+        },
+        {
+            "username":"bot",
+            "x":90,
+            "y":50,
+            "w":120,
+            "h":80,
+            "hp":120,
+            "blockstate":false
+        }
+    ]
+}
+```
+
+Jos pelaaja-olioiden parametrit eivät täsmää palvelimella olevien olioiden kanssa:
+```json
+{
+    "info":false,
+    "err":"Oliot eivät täsmää"
+}
+```
+
+Jos token on väärä tai puuttuu:
+```json
+{
+    "status":401
+}
+```
