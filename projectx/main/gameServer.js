@@ -190,4 +190,22 @@ app.post("/delete", async (req, res)=>{
     return res.json({status:401});
 });
 
+app.post("/continue", async (req,res)=>{
+    const users = req.body;
+    let player;
+    let bot;
+    for(let user of users){
+        if(user.username === players[playerIndex].username) player = user;
+        else bot = user;
+    }
+
+    // check parameters
+
+    if(!player.token) return res.json({status:401});
+    else if(!db.compareTokens(player.token,players[playerIndex].token)) return res.json({status:401});
+
+
+
+});
+
 app.listen(config.port, ()=>console.log("Peliservu liekeis"));
