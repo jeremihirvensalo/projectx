@@ -1137,6 +1137,14 @@ Jos pelaaja-olioiden parametrit eivät täsmää palvelimella olevien olioiden k
 }
 ```
 
+Jos tietokannan kanssa tapahtui virhe:
+```json
+{
+    "info":false,
+    "err":"Tietokannassa tapahtui virhe"
+}
+```
+
 Jos token on väärä tai puuttuu:
 ```json
 {
