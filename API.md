@@ -1141,7 +1141,7 @@ Jos tietokannan kanssa tapahtui virhe:
 ```json
 {
     "info":false,
-    "err":"Tietokannassa tapahtui virhe"
+    "err":"*tietokannan tarjoama virheilmoitus*"
 }
 ```
 
