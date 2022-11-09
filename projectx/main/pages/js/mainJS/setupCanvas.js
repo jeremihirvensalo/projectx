@@ -34,22 +34,16 @@ async function start() {
     bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot"); 
     const hp = new HP(ctx, player, bot);
 
-    let playerObject = formatPlayer(player, getCookieValue("username"));
-    let options = {
-        method:"POST",
-        body: JSON.stringify(playerObject),
-        headers: {
-            "Content-Type":"application/json"
-        }
-    }
-    let result = await fetch("http://localhost:3001/player", options).then(async data =>{
-        return await data.json();
+    // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
+    const addUsers = await new Promise(async (resolve,reject)=>{
+        const addUser = await addPlayer(player, getCookieValue("username"));
+        const addBot = await addPlayer(bot);
+        if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
+        resolve(`Käyttäjien lisäys onnistui`);
     });
-    if(!result.info){
-        document.getElementById("infoalue").style.display = "block";
-        document.getElementById("infoalue").innerHTML = "Virhe pelaajan lisäyksessä";
-        return;
-    }
+
+    console.log(addUsers);
+    
     hp.drawBarL(playerName);
     hp.drawBarR("Bot");
     stopCanvasEvents(false);
@@ -84,10 +78,9 @@ function showPoints(points){
     document.getElementById("points").innerHTML = "Points: " + points;
 }
 
-function formatPlayer(player, username){ // write API
+function formatPlayer(player, username, isBot){ // write API
     const playerCRDS = player.getCoords();
     const playerObject = {
-        token: getCookieValue("token"),
         username: username,
         x: playerCRDS.x,
         y: playerCRDS.y,
@@ -96,7 +89,37 @@ function formatPlayer(player, username){ // write API
         hp: player.getHP(),
         blockstate: player.blockState()
     }
+
+    if(!isBot) return {...playerObject, ...{token:getCookieValue("token")}};
     return playerObject;
+}
+
+async function addPlayer(player, username){ // write API
+    try{
+        const params = [];
+        if(!username) params.push("bot",true);
+        else params.push(getCookieValue("username"), false);
+        const playerObject = formatPlayer(player, params[0], params[1]);
+        const options = {
+            method:"POST",
+            body: JSON.stringify(playerObject),
+            headers: {
+                "Content-Type":"application/json"
+            }
+        }
+        let result = await fetch("http://localhost:3001/player", options).then(async data =>{
+            return await data.json();
+        });
+        if(!result.info){
+            document.getElementById("infoalue").style.display = "block";
+            document.getElementById("infoalue").innerHTML = `Virhe pelaajan '${playerObject.username}' lisäyksessä`;
+            return {info:false, err:`Virhe pelaajan '${playerObject.username}' lisäyksessä`};
+        }
+        return {info:true, username: playerObject.username};
+    }catch(e){
+        return {info:false, err:"Odottamaton virhe tapahtui pelaajien lisäyksessä"}
+    }
+
 }
 
 (function () {

@@ -42,8 +42,7 @@ app.post("/game", async (req, res)=>{
 app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testattu (eikä uusinta versiota tästä)
     if(players.length === 2) return res.json({info:false});
     const player = req.body;
-    console.log(player);
-    if(!player.token && !players[playerIndex].token) return res.json({status:401});
+    if(!player.token && players[playerIndex] === undefined) return res.json({status:401});
     try{
         if(!player.x || !player.y || !player.w || !player.h || !player.username || !player.hp || player.blockstate === undefined)
         return res.json({info:false});
@@ -62,8 +61,8 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
         
         if(user.username || !player.token){
             let userToken = {};
-            if(players.length === 1 && !players[playerIndex].token) userToken = await db.search("tokens", "token", user.username);
-            
+            if(players[playerIndex] === undefined) // jos botti lisätään ekana tulee kusee tähän luultavasti
+            userToken = await db.search("tokens", "token", user.username);
             if(!userToken.err){
                 if(Object.keys(userToken).length === 0 || db.compareTokens(player.token, userToken.token)){
                     const playerObject = {
@@ -76,12 +75,13 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
                         blockstate:player.blockstate
                     }
                     const result = await db.insert(playerObject, "players");
-                    if(result.affectedRows > 0){
+                    if(!result.err){
                         if(player.token) playerIndex = players.length;
                         else botIndex = players.length;
                         players.push(player); 
                     } 
                     else if(result.err) return res.json({info:false});
+                    
                     return res.json({info:true});
                 }
                 return res.json({state:401});
