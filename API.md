@@ -820,14 +820,15 @@ Palauttaa `pelaaja1`
     Jos pelaajia on jo 2 palvelimella palauttaa:
 ```json
 {
-    "info":false
+    "info":false,
+    "status":409
 }
 ```
 
     Jos tokeni puuttuu tai on väärä palauttaa:
 ```json
 {
-    "state":401
+    "status":401
 }
 ```
 
