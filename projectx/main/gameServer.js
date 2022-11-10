@@ -8,7 +8,27 @@ const db = new Database();
 app.use(express.json());
 app.use(cors());
 
-let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let players = [
+    {
+        username:"123",
+        token:"1kby58j0inc9ah627ufa9",
+        x:100,
+        y:100,
+        w:100,
+        h:100,
+        hp:100,
+        blockstate:false
+    },
+    {
+        username:"bot",
+        x:100,
+        y:100,
+        w:100,
+        h:100,
+        hp:100,
+        blockstate:false
+    }
+]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0;
 let canvasWidth = -1; //alkuarvo valmiissa versiossa = -1
@@ -194,13 +214,16 @@ app.post("/continue", async (req,res)=>{
     const users = req.body;
     let player;
     let bot;
+    if(users.lenght) return res.json({status:400});
     for(let user of users){
         if(user.username === players[playerIndex].username) player = user;
         else bot = user;
     }
-
-    // check parameters
-
+    if(!player.token) return res.json({status:401});
+   
+    if(!player.x || !player.y || !player.w || !player.h || !player.hp || typeof player.blockstate !== "boolean")
+    return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellisessä muodossa"});
+    // botin tarkistus vielä => vois tehä loopilla
     if(!player.token) return res.json({status:401});
     else if(!db.compareTokens(player.token,players[playerIndex].token)) return res.json({status:401});
 
