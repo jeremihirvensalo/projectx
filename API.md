@@ -1143,7 +1143,16 @@ Jos jokin pelaaja-olion parametri puuttuu tai on väärässä muodossa:
 {
     "info":false,
     "status":400,
-    "err":"Jokin parametri puuttui tai oli virheellisessä muodossa"
+    "err":"Jokin parametri puuttui tai oli virheellinen"
+}
+```
+
+Jos jommankumman pelaaja-olion username-parametri puuttuu:
+```json
+{
+    "info":false,
+    "status":400,
+    "err":"Username-parametri puuttuu toiselta pelaajalta tai on virheellinen"
 }
 ```
 
