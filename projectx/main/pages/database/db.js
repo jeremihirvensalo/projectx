@@ -179,11 +179,11 @@ module.exports = class Database{
         }
     }
 
-    async delete(username, table){
+    async delete(delAllContent, table, username){ // update API
         try{
             conn = await pool.getConnection();
             const tables = await conn.query("SHOW TABLES");
-            if(!table){
+            if(delAllContent){
                 const resultArr = [];
                 for(let item of tables){
                     const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`);
@@ -206,7 +206,10 @@ module.exports = class Database{
                 }
             }
             if(!found) return {err:"Haluttua taulukkoa ei ole olemassa"};
-            const result = await conn.query(`DELETE FROM ${table} WHERE username=?`, [username]);
+            let result
+            if(username) result = await conn.query(`DELETE FROM ${table} WHERE username=?`, [username]);
+            else result = await conn.query(`DELETE FROM ${table}`);
+            
             if(result.affectedRows > 0) return {info:"Poisto onnistui"};
             return {err:"Poisto epäonnistui"};
         }catch(e){
