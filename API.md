@@ -1133,7 +1133,17 @@ Jos pelaaja-olioiden parametrit eivät täsmää palvelimella olevien olioiden k
 ```json
 {
     "info":false,
+    "status":400,
     "err":"Oliot eivät täsmää"
+}
+```
+
+Jos jokin pelaaja-olion parametri puuttuu tai on väärässä muodossa:
+```json
+{
+    "info":false,
+    "status":400,
+    "err":"Jokin parametri puuttui tai oli virheellisessä muodossa"
 }
 ```
 
