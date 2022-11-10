@@ -263,15 +263,15 @@ Virhetilanteessa palauttaa
 }
 ```
 
-### delete(username, table)
+### delete(delAllContent, table, username)
     Funktio poistaa tietokannasta tietoja.
     Parametreiksi ottaa username (string) käyttäjänimi ja table (string) taulukon josta tieto
-    halutaan poistaa.
-    Jos `table` parametria ei ole määritelty Funktio palauttaa onnistuneessa tilanteessa 
+    halutaan poistaa. delAllContent on boolean ja jos se on `true`, poistuu KAIKISTA tauluista KAIKKI tiedot.
+    Jos `delAllContent` parametri on `true` Funktio palauttaa onnistuneessa tilanteessa 
     JSON-muodossa tiedon, että mistä tietoa on yritetty poistaa ja onko jotain poistettu (boolean).
     Jos `table` on määritelty palauttaa funktio JSON-muodossa onnistuiko poistaminen vai ei.
-    Parametri `username` on pakollinen, mutta `table` voi jättää tyhjäksi, jolloin kaikista taulukoista
-    poistetaan `username` parametriin yhteensopivat osumat.
+    Jos parametri `table` on määritelty, mutta username ei, poistuu halutusta taulusta kaikki tiedot.
+    Jos myös `username` on määritelty, poistetaan halutusta taulusta kyseisen käyttäjän tiedot.
 
     Oletetaan esimerkin takia, että tietokannassa on taulut "users", "points" ja "tokens"
     "users"-taulu sisältö:
