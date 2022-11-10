@@ -8,31 +8,15 @@ const db = new Database();
 app.use(express.json());
 app.use(cors());
 
-let players = [
-    {
-        username:"123",
-        token:"1kby58j0inc9ah627ufa9",
-        x:100,
-        y:100,
-        w:100,
-        h:100,
-        hp:100,
-        blockstate:false
-    },
-    {
-        username:"bot",
-        x:100,
-        y:100,
-        w:100,
-        h:100,
-        hp:100,
-        blockstate:false
-    }
-]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
-let botIndex = 0;
-let canvasWidth = -1; //alkuarvo valmiissa versiossa = -1
+let botIndex = 0; 
+let canvasWidth = -1;
 const defaultY = 245; // pelaajien positio Y canvaksella
+const playerDefaultX = 60; // player alku x koordinaatti
+const botDefaultX = 650; // bot alku x koordinaatti
+const defaultHP = 100 // osumapisteiden oletusarvo
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
@@ -220,14 +204,71 @@ app.post("/continue", async (req,res)=>{
         else bot = user;
     }
     if(!player.token) return res.json({status:401});
-   
-    if(!player.x || !player.y || !player.w || !player.h || !player.hp || typeof player.blockstate !== "boolean")
-    return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellisessä muodossa"});
-    // botin tarkistus vielä => vois tehä loopilla
+    if(!player.username || !bot.username)
+    return res.json({info:false,status:400,err:"Username-parametri puuttuu toiselta pelaajalta tai on virheellinen"});
+
+    const keys = Object.keys(players[botIndex]); // otetaan botin avaimet, jotta ei pidä huolehtia token-parametrista
+    for(let user of users){
+        let whoIndex;
+        if(user.username === players[playerIndex].username) whoIndex = playerIndex;
+        else if(user.username === players[botIndex].username) whoIndex = botIndex;
+        else return res.json({info:false,status:400,err:"Username-parametri puuttuu toiselta pelaajalta tai on virheellinen"});
+
+        for(let key of keys){
+            if(key === "blockstate"){
+                if(user[key] === undefined || typeof user[key] !== "boolean")
+                return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellinen"});
+            }else{
+                if(user[key] !== players[whoIndex][key])
+                return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellinen"});
+            }
+        }
+    }
     if(!player.token) return res.json({status:401});
     else if(!db.compareTokens(player.token,players[playerIndex].token)) return res.json({status:401});
 
+    // asetetaan pelaajat takaisin aloitus positioihin
+    const startParams = [
+        {
+            username: player.username,
+            x: playerDefaultX,
+            y: defaultY,
+            hp: defaultHP
+        },
+        {
+            username: bot.username,
+            x: botDefaultX,
+            y: defaultY,
+            hp: bot.newHP ? bot.newHP : defaultHP
+        }
+    ];
 
+    for(let param of startParams){
+        let whoIndex = param.username === players[playerIndex].username ? playerIndex : botIndex;
+        for(let key of keys){
+            if(param[key] !== undefined){
+                players[whoIndex][key] = param[key];
+            }
+        }        
+        
+    }
+
+    try{
+        const resultArr = [];
+        let counter = 0;
+        for(let user of players){
+            const deleteResult = await db.delete(user.username,"players");
+            if(players[counter].token) delete players[counter].token;
+            const insertResult = await db.insert(players[counter], "players");
+            resultArr.push(deleteResult.info ? deleteResult.info : deleteResult.err);
+            resultArr.push(insertResult.info ? insertResult.info : insertResult.err);
+            counter++;
+        }
+
+        return res.json({info:true,details:resultArr});
+    }catch(e){
+        return res.json({info:false,details:e.message});
+    }
 
 });
 

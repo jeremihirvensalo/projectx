@@ -36,13 +36,21 @@ async function start() {
 
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
     const addUsers = await new Promise(async (resolve,reject)=>{
-        const addUser = await addPlayer(player, getCookieValue("username"));
-        const addBot = await addPlayer(bot);
-        if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
-        resolve(`Käyttäjien lisäys onnistui`);
-    });
+        if(parseInt($("#points").attr("value")) > 0) {
+            const prepareRound = await nextRound([formatPlayer(player, getCookieValue("username"),false),formatPlayer(bot,"bot",true)]);
+            if(!prepareRound.info){
+                $("#infoalue").html(prepareRound.err);
+                reject(prepareRound.err);
+            }
+            resolve("Uuden kierroksen aloitus onnistui");
+        }else{
+            const addUser = await addPlayer(player, getCookieValue("username"));
+            const addBot = await addPlayer(bot);
+            if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
+            resolve(`Käyttäjien lisäys onnistui`);
+        }
 
-    console.log(addUsers);
+    });
     
     hp.drawBarL(playerName);
     hp.drawBarR("Bot");
@@ -75,6 +83,7 @@ function returnPlayers(){
 }
 
 function showPoints(points){
+    $("#points").attr("value",points);
     document.getElementById("points").innerHTML = "Points: " + points;
 }
 
@@ -120,6 +129,44 @@ async function addPlayer(player, username){ // write API
         return {info:false, err:"Odottamaton virhe tapahtui pelaajien lisäyksessä"}
     }
 
+}
+
+async function nextRound(usersObj){ // write API
+    try{
+        const options = {
+            method:"POST",
+            body:JSON.stringify(usersObj),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }
+
+        const result = await fetch("http://localhost:3001/continue",options).then(async (data)=>{
+            return await data.json();
+        });
+        const check = statusCheck(result);
+        if(!check.info) $("#infoalue").html(check.details);
+        else if(check.info) return {info:true};
+        return {info:false, err:check.err};
+    }catch(e){
+        console.log(e.message);
+        return {err:"Odottamaton virhe tapahtui uuden kierokksen aloituksessa"};
+    }
+}
+
+function statusCheck(result){ // write API
+    if(result.status){
+        switch(result){
+            case result.status === 401:
+                window.location.href = "http://locahost:3000/";
+                return {info:false, details:"Token check fail"};
+            case result.status === 400:
+                return {info:false, details:result.err};
+            default:
+                return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}') `};
+        }
+    }
+    return {info:true, details:"Status-parametria ei löytynyt"};
 }
 
 (function () {
