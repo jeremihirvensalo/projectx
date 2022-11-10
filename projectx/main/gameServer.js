@@ -64,8 +64,8 @@ app.post("/game", async (req, res)=>{
 });
 
 app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testattu (eikä uusinta versiota tästä)
-    if(players.length === 2) return res.json({info:false});
     const player = req.body;
+    if(players.length === 2) return res.json({info:false,username:player.username,status:409});
     if(!player.token && players[playerIndex] === undefined) return res.json({status:401});
     try{
         if(!player.x || !player.y || !player.w || !player.h || !player.username || !player.hp || player.blockstate === undefined)
@@ -105,7 +105,6 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
                         players.push(player); 
                     } 
                     else if(result.err){
-                        if(players.length === 2) return res.json({info:false,username:player.username,status:409});
                         return res.json({info:false});
                     } 
                     
