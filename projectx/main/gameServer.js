@@ -8,7 +8,27 @@ const db = new Database();
 app.use(express.json());
 app.use(cors());
 
-let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let players = [
+    // {
+    //     username:"bot",
+    //     token:"99i70zkaxqqxv41br7yse",
+    //     x:80,
+    //     y:80,
+    //     w:80,
+    //     h:80,
+    //     hp:100,
+    //     blockstate:false
+    // },
+    // {
+    //     username:"bot",
+    //     x:100,
+    //     y:100,
+    //     w:100,
+    //     h:100,
+    //     hp:100,
+    //     blockstate:false
+    // }
+]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
 
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0; 
@@ -84,9 +104,12 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
                         else botIndex = players.length;
                         players.push(player); 
                     } 
-                    else if(result.err) return res.json({info:false});
+                    else if(result.err){
+                        if(players.length === 2) return res.json({info:false,username:player.username,status:409});
+                        return res.json({info:false});
+                    } 
                     
-                    return res.json({info:true});
+                    return res.json({info:true,username:player.username});
                 }
                 return res.json({state:401});
             } 
@@ -182,7 +205,7 @@ app.post("/delete", async (req, res)=>{
     const searchToken = await db.search("tokens", "token", player.username);
     if(searchToken.err) return res.json(searchToken);
     if(db.compareTokens(player.token, searchToken.token)){
-        const result = await db.delete(player.username, "players");
+        const result = await db.delete(false, "players", player.username);
         for(let i = 0; i < players.length; i++){
             if(players[i].username === player.username){
                 players.splice(i, 1);
@@ -250,14 +273,13 @@ app.post("/continue", async (req,res)=>{
                 players[whoIndex][key] = param[key];
             }
         }        
-        
     }
 
     try{
         const resultArr = [];
         let counter = 0;
         for(let user of players){
-            const deleteResult = await db.delete(user.username,"players");
+            const deleteResult = await db.delete(false, "players", user.username);
             if(players[counter].token) delete players[counter].token;
             const insertResult = await db.insert(players[counter], "players");
             resultArr.push(deleteResult.info ? deleteResult.info : deleteResult.err);

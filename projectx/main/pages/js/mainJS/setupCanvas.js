@@ -15,6 +15,7 @@ const movement = {
 let keypressed = false;
 let player;
 let bot;
+let botUsername = "bot";
 
 async function start() {
     if(window.innerWidth < 810){
@@ -30,17 +31,18 @@ async function start() {
     ctx.fillStyle = "grey"; // tähän background kuva + sen funktiot yms
     ctx.fillRect(0, 0, 800, 400); // tää on osa tätä nykystä backgroundia
     const playerName = getCookieValue("username");
+    if(playerName === botUsername) botUsername += "_2";
     player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
-    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, "bot"); 
+    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, botUsername); 
     const hp = new HP(ctx, player, bot);
 
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
     const addUsers = await new Promise(async (resolve,reject)=>{
         if(parseInt($("#points").attr("value")) > 0) {
-            const prepareRound = await nextRound([formatPlayer(player, getCookieValue("username"),false),formatPlayer(bot,"bot",true)]);
-            if(!prepareRound.info){
-                $("#infoalue").html(prepareRound.err);
-                reject(prepareRound.err);
+            const prepRound = await nextRound([formatPlayer(player, getCookieValue("username"),false),formatPlayer(bot,botUsername,true)]);
+            if(!prepRound.info){
+                $("#infoalue").html(prepRound.err);
+                reject(prepRound.err);
             }
             resolve("Uuden kierroksen aloitus onnistui");
         }else{
@@ -53,7 +55,7 @@ async function start() {
     });
     
     hp.drawBarL(playerName);
-    hp.drawBarR("Bot");
+    hp.drawBarR(botUsername);
     stopCanvasEvents(false);
     const restart = document.getElementById("restart");
     if(restart.style.display != "none") restart.style.display = "none";
@@ -106,7 +108,7 @@ function formatPlayer(player, username, isBot){ // write API
 async function addPlayer(player, username){ // write API
     try{
         const params = [];
-        if(!username) params.push("bot",true);
+        if(!username) params.push(botUsername,true);
         else params.push(getCookieValue("username"), false);
         const playerObject = formatPlayer(player, params[0], params[1]);
         const options = {
@@ -119,12 +121,14 @@ async function addPlayer(player, username){ // write API
         let result = await fetch("http://localhost:3001/player", options).then(async data =>{
             return await data.json();
         });
-        if(!result.info){
+        const check = statusCheck(result);
+        if(!result.info && check.status !== 409){
             document.getElementById("infoalue").style.display = "block";
             document.getElementById("infoalue").innerHTML = `Virhe pelaajan '${playerObject.username}' lisäyksessä`;
             return {info:false, err:`Virhe pelaajan '${playerObject.username}' lisäyksessä`};
         }
-        return {info:true, username: playerObject.username};
+        if(check.status === 409) botUsername = result.username;
+        return {info:true, username: result.username};
     }catch(e){
         return {info:false, err:"Odottamaton virhe tapahtui pelaajien lisäyksessä"}
     }
@@ -162,6 +166,8 @@ function statusCheck(result){ // write API
                 return {info:false, details:"Token check fail"};
             case result.status === 400:
                 return {info:false, details:result.err};
+            case result.status === 409:
+                return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa"}
             default:
                 return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}') `};
         }

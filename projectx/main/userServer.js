@@ -73,7 +73,8 @@ app.post("/logout", async (req, res)=>{
         }
         if(!result.err){
             if(user.token == result.token){
-                result = await db.delete(user.username, "tokens");
+                result = await db.delete(false, "tokens", user.username);
+                // tähän player table delete
                 if(result.info){
                     return res.json({logoutURL:"http://localhost:3000"});
                 } 
@@ -100,7 +101,7 @@ app.post("/delete", async (req, res)=>{ // rework? on aika sekava
         else return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
 
         if(result === true){
-            result = await db.delete(user.username);
+            result = await db.delete(true);
             if(result.err){
                 return res.json({err:result.err});
             }
