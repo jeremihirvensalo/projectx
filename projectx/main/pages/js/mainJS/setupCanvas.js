@@ -33,7 +33,7 @@ async function start() {
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
     player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
-    bot = new Character(ctx, 650, 245, 90, 150, "red", 100, botUsername); 
+    bot = new Bot(ctx, 650, 245, 90, 150, "red", 100, botUsername); 
     const hp = new HP(ctx, player, bot);
 
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun

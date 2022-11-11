@@ -1,8 +1,6 @@
-let blockState = false;
-let canAttack = true;
-let points = 0;
+// Tää on hieno botti joka ei 100% oo vaa pelaaja - score ja pari outoo global variablee
+class Bot{
 
-class Character{
     constructor(ctx, x, y, userW, userH, color, hp, name){
         this.ctx = ctx;
         this.x = x;
@@ -20,10 +18,14 @@ class Character{
             color: color
         };
         this.piirraChar();
+
+        this.blockState = false;
+        this.canAttack = true;
+
     }
 
     goLeft(amount){
-        if((this.x - amount) > 0) this.x -= amount; //jos haluaa pelaajan kiinni seinään (this.x - amount) > -10
+        if((this.x - amount) > 0) this.x -= amount;
         this.piirraChar();
     }
     
@@ -48,18 +50,18 @@ class Character{
     }
 
     block(state){
-        blockState = state;
+        this.blockState = state;
     }
 
     blockState(){
-        return blockState;
+        return this.blockState;
     }
 
     punch(bot, hp){
-        if(!canAttack) return;
+        if(!this.canAttack) return;
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect((this.x + this.userW), (this.y + 40), 70, (this.userH / 3));
-        canAttack = false;
+        this.canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
@@ -68,7 +70,7 @@ class Character{
 
         if(this.getCoords().x > bot.getCoords().x){
             setTimeout(()=>{
-                canAttack = true;
+                this.canAttack = true;
             }, 230);
             return;
         } 
@@ -76,15 +78,15 @@ class Character{
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
  
     punchL(bot, hp){
-        if(!canAttack) return;
+        if(!this.canAttack) return;
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 40), 70, (this.userH / 3));
-        canAttack = false;
+        this.canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
@@ -94,15 +96,15 @@ class Character{
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
     kick(bot, hp){
-        if(!canAttack) return;
+        if(!this.canAttack) return;
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect((this.x + this.userW), (this.y + 95), 70, (this.userH / 3));
-        canAttack = false;
+        this.canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
@@ -111,7 +113,7 @@ class Character{
 
         if(this.getCoords().x > bot.getCoords().x){
             setTimeout(()=>{
-                canAttack = true;
+                this.canAttack = true;
             }, 230);
             return;
         }
@@ -119,15 +121,15 @@ class Character{
             hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
     kickL(bot, hp){
-        if(!canAttack) return;
+        if(!this.canAttack) return;
         this.ctx.fillStyle = this.color;
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 95), 70, (this.userH / 3));
-        canAttack = false;
+        this.canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraChar();
@@ -137,17 +139,10 @@ class Character{
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
-    awardPoints(){
-        points += 100;
-    }
-
-    getPoints(){
-        return points;
-    }
 
     getCoords(){
         return {x:this.x, y:this.y, w:this.userW, h:this.userH};
@@ -169,7 +164,7 @@ class Character{
     }
 
     getAttackStatus(){
-        return canAttack;
+        return this.canAttack;
     }
 
     getName(){
