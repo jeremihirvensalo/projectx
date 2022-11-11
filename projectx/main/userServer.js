@@ -31,7 +31,9 @@ app.post("/", async (req, res) => {
     if (result) {
         const newToken = token();
         const tokenResult = await db.insert({username:user.username,token:newToken}, "tokens");
-        if(tokenResult.err){
+        if(tokenResult.status === 409){
+            // update token here
+        }else if(tokenResult.err){
             return res.json(tokenResult);
         }
         if(id._idleTimeout) id=setInterval(async ()=>{await db.checkTokenDates()}, 1900000);
@@ -155,6 +157,12 @@ app.post("/points", async (req, res)=>{
         return res.json(result);
     }
     return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
+});
+
+app.post("/testing",async (req, res)=>{
+    const player = req.body;
+    const result = await db.update(player);
+    res.json(result);
 });
 
 app.listen(port, async() =>{

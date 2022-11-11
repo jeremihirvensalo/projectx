@@ -60,6 +60,7 @@ module.exports = class Database{
             return {info:"Tallennus epäonnistui"};
 
         }catch(e){
+            if(e.errno === 1062) return {status:409,err:"Käyttäjä on jo tietokannassa"}; // update API
             return {err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
@@ -81,6 +82,45 @@ module.exports = class Database{
             return {err:"Virhe käyttäjätietojen päivityksessä!"};
         }finally{
             if(conn) conn.end();
+        }
+    }
+
+    async update(user, table){
+        if(!user.username || Object.keys(user).length < 2) return {info:false,err:"Vaaditut parametrit puuttuvat",status:400};
+        try{
+            conn = await pool.getConnection();
+            const tables = await conn.query("SHOW TABLES");
+            if(!table){
+                const keys = Object.keys(user);
+                const foundKeys = [];
+                
+                for(let item of tables){
+                    foundKeys.push({table:[item.Tables_in_projectx]});
+                    const desc = await conn.query(`DESCRIBE ${item.Tables_in_projectx}`);
+                    delete desc.meta;
+                    for(let row of desc){
+                        if(user[row.Field] !== undefined && row.Field !== "username") foundKeys[foundKeys.length - 1].table.push(row.Field);
+                    }
+                    if(foundKeys[foundKeys.length - 1].table.length === 1) foundKeys.pop();
+                }
+                
+                // loopilla läpi löytyneet ja päivitä
+                // on muodossa: [ { table: [ 'tokens', 'token' ] } ]
+
+                return;
+            }
+            let found = false;
+            for(let item of tables){
+                if(item.Tables_in_projectx === table){
+                    found = true;
+                }
+            }
+            if(!found) return {info:false,err:"Haluttua taulukkoa ei ole olemassa",status:400};
+
+            // tarkista mitkä parametrit löytyy taulukosta
+
+        }catch(e){
+            return {info:false,err:"Odottamaton virhe tapahtui päivityksessä",status:500};
         }
     }
 
