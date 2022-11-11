@@ -10,7 +10,7 @@ create table users(
 create table tokens(
     username varchar(255) not null primary key,
     token varchar(255) not null,
-    date datetime default curdate()
+    date datetime default current_timestamp on update current_timestamp
 );
 
 create table points(
