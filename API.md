@@ -165,7 +165,7 @@ Virhetilanteessa palauttaa
 
 #### players-taulukko
     Sisältää käyttäjänimen (string), pelaajan osumapisteet (integer), pelaajan koordinaatit (x (integer), y (integer)),
-    pelaajan leveyden (integer) ja pelaajan pituuden (integer).
+    pelaajan leveyden (integer), pelaajan pituuden (integer), osumapisteet (integer) ja blockstate (boolean).
     Kaikki tiedot ovat pakolliset taulukkoon lisätessä.
 
 ### search(table, params, username)
@@ -344,6 +344,122 @@ Virhetilanteessa funktio palauttaa
 }
 ```
 
+### update(user, table)
+    Päivittää käyttäjän tiedot halutusta taulusta tai kaikista tauluista joista hänet löydetään.
+    funktio ottaa vastaan user(json-object) parametrin, joka sisältää käyttäjätunnuksen kuten myös ainakin yhden uuden arvon 
+    joka halutaan päivittää. Parametri table(string) sisältää taulukon nimen, josta tieto halutaan päivittää. Jos table-parametria ei
+    olla määritelty päivittää funktio kaikista taulukoista käyttäjän tiedot. `user` parametri on pakollinen, mutta `table` ei. 
+    Funktio palauttaa json-muodossa vastauksen, joka sisältää kaikki taulukot joihin on tehty tai yritetty tehdä muutoksia ja niiden tulokset, 
+    kuten myös booleanin ilmoittamaan nopeasti tekikö ohjelma mitään.
+
+(Esimerkeissä oletetaan, että lukija tietää minkälaisia tietokannan taulujen rakenteet ovat. Jos et tiedä katso
+main => pages => database => sql => createDB.sql tai lue ylempää)
+
+Funktioon laitetaan seuraavat tiedot
+```js
+update({username:"123",token:"randtoken"},"tokens");
+```
+Palauttaa onnistuneessa tilanteessa:
+```json
+{
+    "info":true,
+    "details":["tokens","Päivitys onnistui"]
+}
+```
+
+Funktioon voi laittaa monelle taululle tietoja samaan aikaan:
+```js
+const obj = {
+    username:"123",
+    token:"randtoken",
+    points:2000
+}
+
+update(obj);
+```
+(HUOM! JOTTA ERITAULUJEN TIETOJEN PÄIVITYS ONNISTUU YHDELLÄ KUTSULLA, EI `table` SAA OLLA MÄÄRITELTY)
+Palauttaisi onnistuneessa tilanteessa:
+
+```json
+{
+    "info":true,
+    "details":[
+        "tokens",
+        "Päivitys onnistui",
+        "points",
+        "Päivitys onnistui"
+    ]
+}
+```
+
+Epäonnistuneessa tilanteessa palautuu:
+```json
+{
+    "info":false,
+    "err":"Odottamaton virhe tapahtui päivityksessä",
+    "status":500
+}
+```
+
+Jos `user` parametri on tyhjä tai sieltä puuttuu vaaditut minimitiedot:
+```json
+{
+    "info":false,
+    "err":"Vaaditut parametrit puuttuvat",
+    "status":400
+}
+```
+
+Jos `user` parametri sisältää minimitiedot, mutta päivitetyksi haluttua tieto ei löydy tietokannasta:
+```json
+{
+    "info":false,
+    "err":"Haluttua tietoa *parametri esim. 'voitot'* ei ole olemassa",
+    "status":400
+}
+```
+
+Jos `user` parametri sisältää tietoja jotka löytyvät ja joita ei löydy:
+```json
+{
+    "info":true,
+    "details":[
+        "points",
+        "Päivitys onnistui"
+    ],
+    "err":"Haluttua tietoa *parametri esim. 'voitot'* ei ole olemassa"
+}
+```
+
+Jos `user` parametri sisältää monesta taulusta tietoja, mutta `table` on määritelty:
+```js
+const obj = {
+    username:"123",
+    token:"randtoken",
+    points:2000
+}
+
+update(obj,"tokens");
+```
+Palauttaa
+```json
+{
+    "info":true,
+    "details":[
+        "tokens",
+        "Päivitys onnistui"
+    ]
+}
+```
+
+Jos `table` parametri ei ole yksi tietokannan taulukoista:
+```json
+{
+    "info":false,
+    "err":"Haluttua taulukkoa ei ole olemassa",
+    "status":400
+}
+```
 
 ### verifyLogin(username, password)
     Tarkistaa, että käyttäjätunnus ja salasana ovat samat.
