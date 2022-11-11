@@ -32,7 +32,9 @@ app.post("/", async (req, res) => {
         const newToken = token();
         const tokenResult = await db.insert({username:user.username,token:newToken}, "tokens");
         if(tokenResult.status === 409){
-            // update token here
+            const updateToken = await db.update({username:user.username,token:newToken},"tokens");
+            if(updateToken.err) return res.json(updateToken);
+
         }else if(tokenResult.err){
             return res.json(tokenResult);
         }
@@ -76,7 +78,7 @@ app.post("/logout", async (req, res)=>{
         if(!result.err){
             if(user.token == result.token){
                 result = await db.delete(false, "tokens", user.username);
-                // tähän player table delete
+                await db.delete(false, "players");
                 if(result.info){
                     return res.json({logoutURL:"http://localhost:3000"});
                 } 
@@ -157,12 +159,6 @@ app.post("/points", async (req, res)=>{
         return res.json(result);
     }
     return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
-});
-
-app.post("/testing",async (req, res)=>{
-    const player = req.body;
-    const result = await db.update(player);
-    res.json(result);
 });
 
 app.listen(port, async() =>{
