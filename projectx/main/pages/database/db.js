@@ -91,24 +91,40 @@ module.exports = class Database{
             conn = await pool.getConnection();
             const tables = await conn.query("SHOW TABLES");
             if(!table){
-                const keys = Object.keys(user);
                 const foundKeys = [];
                 
                 for(let item of tables){
-                    foundKeys.push({table:[item.Tables_in_projectx]});
+                    foundKeys.push({table:item.Tables_in_projectx,params:"",values:[]});
                     const desc = await conn.query(`DESCRIBE ${item.Tables_in_projectx}`);
                     delete desc.meta;
                     for(let row of desc){
-                        if(user[row.Field] !== undefined && row.Field !== "username") foundKeys[foundKeys.length - 1].table.push(row.Field);
+                        if(user[row.Field] !== undefined && row.Field !== "username"){
+                            foundKeys[foundKeys.length - 1].params += `${row.Field}=?,`;
+                            foundKeys[foundKeys.length - 1].values.push(user[row.Field]);
+                        }
                     }
-                    if(foundKeys[foundKeys.length - 1].table.length === 1) foundKeys.pop();
+                    if(foundKeys[foundKeys.length - 1].params.length === 0) foundKeys.pop();
                 }
-                
-                // loopilla läpi löytyneet ja päivitä
-                // on muodossa: [ { table: [ 'tokens', 'token' ] } ]
-
-                return;
+                if(foundKeys.length === 0){
+                    const keys = Object.keys(user);
+                    for(let i = 0; i < keys.length; i++){
+                        if(keys[i] === "username"){
+                            keys.splice(i,1);
+                            break;
+                        }
+                    }
+                    return {info:false,err:`Haluttua tietoa '${keys}' ei ole olemassa`,status:400};
+                } 
+                const resultArr = [];
+                for(let item of foundKeys){
+                    item.params = item.params.slice(0,-1);
+                    item.values.push(user.username);
+                    const result = await conn.query(`UPDATE ${item.table} SET ${item.params} WHERE username=?`,item.values);
+                    resultArr.push(item.table,result.affectedRows > 0 ? "Päivitys onnisui" : "Päivitys epäonnistui");
+                }
+                return {info:true,details:resultArr};
             }
+
             let found = false;
             for(let item of tables){
                 if(item.Tables_in_projectx === table){
@@ -116,9 +132,31 @@ module.exports = class Database{
                 }
             }
             if(!found) return {info:false,err:"Haluttua taulukkoa ei ole olemassa",status:400};
+            const desc = await conn.query(`DESCRIBE ${table}`);
+            delete desc.meta;
 
-            // tarkista mitkä parametrit löytyy taulukosta
+            const keys = {
+                params:"",
+                values:[]
+            };
+            for(let item of desc){
+                if(user[item.Field] !== undefined && item.Field !== "username"){
+                    keys.params += `${item.Field}=?,`;
+                    keys.values.push(user[item.Field]);
+                }
+            }
+            if(keys.values.length === 0){
+                delete user.username;
+                const unfoundKeys = Object.keys(user);
+                return {info:false,err:`Haluttua tietoa '${unfoundKeys.toString()}' ei ole olemassa`};
+            } 
 
+            keys.params = keys.params.slice(0,-1);
+            keys.values.push(user.username);
+            const result = await conn.query(`UPDATE ${table} SET ${keys.params} WHERE username=?`,keys.values);
+            const resultArr = [table, result.affectedRows > 0 ? "Päivitys onnistui" : "Päivitys epäonnistui"];
+
+            return {info: (result.affectedRows > 0 ? true : false),details:resultArr};  
         }catch(e){
             return {info:false,err:"Odottamaton virhe tapahtui päivityksessä",status:500};
         }
