@@ -32,7 +32,7 @@ app.post("/", async (req, res) => {
         const newToken = token();
         const tokenResult = await db.insert({username:user.username,token:newToken}, "tokens");
         if(tokenResult.err){
-            return res.json(tokenResult.err);
+            return res.json(tokenResult);
         }
         if(id._idleTimeout) id=setInterval(async ()=>{await db.checkTokenDates()}, 1900000);
         return res.json({info:"Kirjautuminen onnistui", token:newToken});
