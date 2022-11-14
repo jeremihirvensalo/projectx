@@ -779,6 +779,143 @@ Palauttaa `pelaaja1`
 }
 ```
 
+### formatPlayer(player, isBot)
+    Funktio laittaa pelaaja-oliot oikeaan muotoon palvelinta varten. Jos halutaan käsitellä botin pelaaja-olio 
+    täytyy parametri `isBot` olla `true`, muuten `false`. Jos käsitellään oikean pelaajan oliota `isBot` parametria
+    ei täydy edes määritellä.
+    Ottaa vastaan player (player-olio) ja isBot (boolean). Vastaus tulee json-muodossa.
+
+Jos pelaaja-olio on pelaajan:
+```json
+{
+    "username":"pelaaja1",
+    "x":100,
+    "y":100,
+    "w":100,
+    "h":100,
+    "hp":100,
+    "blockstate":false,
+    "token":"randtoken123"
+}
+```
+
+Jos kysessä on botti:
+```json
+{
+    "username":"botti",
+    "x":100,
+    "y":100,
+    "w":100,
+    "h":100,
+    "hp":100,
+    "blockstate":false
+}
+```
+
+### addPlayer(player, isBot)
+    Funktio käsittelee pelaaja-olion ja lähettää sen palvelimelle lisättäväksi peliin.
+    Ottaa vastaa player (pelaaja-olio) ja isBot (boolean). Jos `isBot` on `true`, käsittelee 
+    funktio pelaaja-olion bottina.
+    Palauttaa json-muodossa vastauksen.
+
+Onnistuneessa tilanteessa palauttaa:
+```json
+{
+    "info":true,
+    "username":"pelaaja1"
+}
+```
+
+Jos jokin menee pieleen:
+```json
+{
+    "info":false,
+    "err":"Virhe pelaajan '*pelaajan nimi*' lisäyksessä"
+}
+```
+
+Jos ohjelma hajoaa:
+```json
+{
+    "info":false,
+    "err":"Odottamaton virhe tapahtui pelaajien lisäyksessä"
+}
+```
+
+### nextRound(usersObj)
+    Funktio aloittaa uuden kierroksen. Ottaa vastaan molemmat pelaaja-oliot listassa.
+    Palauttaa json-muodossa vastauksen.
+
+Onnistuneessa tilanteessa:
+```json
+{
+    "info":true
+}
+```
+
+Jos jokin meni pieleen:
+```json
+{
+    "info":false,
+    "err":"*statusCheck funktiosta saatu viesti*"
+}
+```
+
+Jos ohjelma hajosi virheeseen:
+```json
+{
+    "err":"Odottamaton virhe tapahtui uuden kierokksen aloituksessa"
+}
+```
+
+### statusCheck(result)
+    Funktio tarkistaa palvelimelta saadun vastauksen, jos se sisältää `status` parametrin.
+    Jos parametri löytyy tarkistaa mikä statuskoodi sielä on. 
+    Ottaa vastaan result (json) parametrin ja palauttaa json-muodossa vastauksen.
+    HUOM! Vastauksen `info` parametri on vähän hämäävä. Se kertoo vain, että voiko ohjelma jatkaa toimintaa.
+    Eli jos statuskoodi on 401, tokeni on ollut väärä tai sitä ei ole tullut palvelimelle, jolloin pelaaja 
+    täytyy heittää ulos sivulta => "info:false".
+
+Jos statuskoodi on 401:
+```json
+{
+    "info":false,
+    "details":"Token check fail"
+}
+```
+
+Jos statuskoodi on 400:
+```json
+{
+    "info":false,
+    "details":"*result-parametrista löytyvä err-parametri*"
+}
+```
+
+Jos statuskoodi on 409:
+```json
+{
+    "info":true,
+    "details":"Pelaaja oli jo luultavasti tietokannassa"
+}
+```
+
+Jos statuskoodi on ohjelmalle tuntematon:
+```json
+{
+    "info":true,
+    "details":"Ohjelmistolle tuntematon statuskoodi ('*statuskoodi*')"
+}
+```
+
+Jos parametri `result` ei sisällä statuskoodia:
+```json
+{
+    "info":true,
+    "details":"Status-parametria ei löytynyt"
+}
+```
+
 ## character.js
     Luokka, joka luo pelaajan. Luokka ottaa parametreiksi ctx, x, y, userW, userH, color, hp
     eli canvaksen kontekstin (canvas context), x ja y koordinaatit johon pelaaja luodaan canvaksella (integer),
