@@ -39,15 +39,15 @@ async function start() {
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
     const addUsers = await new Promise(async (resolve,reject)=>{
         if(parseInt($("#points").attr("value")) > 0) {
-            const prepRound = await nextRound([formatPlayer(player, getCookieValue("username"),false),formatPlayer(bot,botUsername,true)]);
+            const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
             if(!prepRound.info){
                 $("#infoalue").html(prepRound.err);
                 reject(prepRound.err);
             }
             resolve("Uuden kierroksen aloitus onnistui");
         }else{
-            const addUser = await addPlayer(player, getCookieValue("username"));
-            const addBot = await addPlayer(bot);
+            const addUser = await addPlayer(player, false);
+            const addBot = await addPlayer(bot, true);
             if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
             resolve(`Käyttäjien lisäys onnistui`);
         }
@@ -89,10 +89,10 @@ function showPoints(points){
     document.getElementById("points").innerHTML = "Points: " + points;
 }
 
-function formatPlayer(player, username, isBot){ // write API
+function formatPlayer(player, isBot){
     const playerCRDS = player.getCoords();
     const playerObject = {
-        username: username,
+        username: player.getName(),
         x: playerCRDS.x,
         y: playerCRDS.y,
         w: playerCRDS.w,
@@ -105,12 +105,9 @@ function formatPlayer(player, username, isBot){ // write API
     return playerObject;
 }
 
-async function addPlayer(player, username){ // write API
+async function addPlayer(player, isBot){
     try{
-        const params = [];
-        if(!username) params.push(botUsername,true);
-        else params.push(getCookieValue("username"), false);
-        const playerObject = formatPlayer(player, params[0], params[1]);
+        const playerObject = formatPlayer(player, isBot);
         const options = {
             method:"POST",
             body: JSON.stringify(playerObject),
@@ -135,7 +132,7 @@ async function addPlayer(player, username){ // write API
 
 }
 
-async function nextRound(usersObj){ // write API
+async function nextRound(usersObj){
     try{
         const options = {
             method:"POST",
@@ -153,12 +150,11 @@ async function nextRound(usersObj){ // write API
         else if(check.info) return {info:true};
         return {info:false, err:check.err};
     }catch(e){
-        console.log(e.message);
         return {err:"Odottamaton virhe tapahtui uuden kierokksen aloituksessa"};
     }
 }
 
-function statusCheck(result){ // write API
+function statusCheck(result){
     if(result.status){
         switch(result){
             case result.status === 401:
@@ -169,7 +165,7 @@ function statusCheck(result){ // write API
             case result.status === 409:
                 return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa"}
             default:
-                return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}') `};
+                return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`};
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
