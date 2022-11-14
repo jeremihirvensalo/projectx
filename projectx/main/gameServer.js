@@ -8,27 +8,7 @@ const db = new Database();
 app.use(express.json());
 app.use(cors());
 
-let players = [
-    // {
-    //     username:"bot",
-    //     token:"99i70zkaxqqxv41br7yse",
-    //     x:80,
-    //     y:80,
-    //     w:80,
-    //     h:80,
-    //     hp:100,
-    //     blockstate:false
-    // },
-    // {
-    //     username:"bot",
-    //     x:100,
-    //     y:100,
-    //     w:100,
-    //     h:100,
-    //     hp:100,
-    //     blockstate:false
-    // }
-]; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
+let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua pelin aikana
 
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0; 
@@ -156,7 +136,6 @@ app.post("/move", async (req, res)=>{
 
 app.post("/attack", (req, res)=>{
     const player = req.body;
-
     // token and player check
     if(!player || !player.username || (!player.token && !players[playerIndex].token)) return res.json({status:401});
     else if(player.username === players[playerIndex].username){
@@ -293,4 +272,7 @@ app.post("/continue", async (req,res)=>{
 
 });
 
-app.listen(config.port, ()=>console.log("Peliservu liekeis"));
+app.listen(config.port, async ()=>{
+    console.log("Peliservu liekeis");
+    await db.delete(false, "players");
+});
