@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node main/userServer.js",
     "server": "node main/gameServer.js",
-    "dev": "nodemon main/userServer.js"
+    "dev": "nodemon main/gameServer.js"
   },
   "keywords": [],
   "author": "",
