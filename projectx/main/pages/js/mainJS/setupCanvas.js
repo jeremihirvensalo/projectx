@@ -39,23 +39,28 @@ async function start() {
     const hp = new HP(ctx, player, bot);
 
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
-    const addUsers = await new Promise(async (resolve,reject)=>{
-        if(parseInt($("#points").attr("value")) > 0) {
-            const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
-            if(!prepRound.info){
-                $("#infoalue").html(prepRound.err);
-                reject(prepRound.err);
+    try{
+        await new Promise(async (resolve,reject)=>{
+            if(parseInt($("#points").attr("value")) > 0) {
+                const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
+                if(!prepRound.info){
+                    $("#infoalue").html(prepRound.err);
+                    reject(prepRound.err);
+                }
+                resolve("Uuden kierroksen aloitus onnistui");
+            }else{
+                const addUser = await addPlayer(player, false);
+                const addBot = await addPlayer(bot, true);
+                if(!addUser.info && !addBot.info) 
+                reject({bothFailed: true,err:`Virhe pelaajan '${addUser.username }, ${addBot.username}' lisäyksessä`});
+                else if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
+                resolve(`Käyttäjien lisäys onnistui`);
             }
-            resolve("Uuden kierroksen aloitus onnistui");
-        }else{
-            const addUser = await addPlayer(player, false);
-            const addBot = await addPlayer(bot, true);
-            if(!addUser.info || !addBot.info) reject(!addUser.info ? addUser.err : addBot.err);
-            resolve(`Käyttäjien lisäys onnistui`);
-        }
+        });
+    }catch(e){
+        $("#infoalue").html(e.err);
+    }
 
-    });
-    
     hp.drawBarL(playerName);
     hp.drawBarR(botUsername);
     stopCanvasEvents(false);
@@ -63,6 +68,7 @@ async function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
     document.addEventListener("keydown", e => {
+        e.preventDefault();
         if(keypressed) return;
         keypressed = true;
         if (canvasEvents()) return;
@@ -121,11 +127,9 @@ async function addPlayer(player, isBot){
             return await data.json();
         });
         const check = statusCheck(result);
-        if(!result.info && check.status !== 409){
-            document.getElementById("infoalue").style.display = "block";
-            document.getElementById("infoalue").innerHTML = `Virhe pelaajan '${playerObject.username}' lisäyksessä`;
-            return {info:false, err:`Virhe pelaajan '${playerObject.username}' lisäyksessä`};
-        }
+        if(!result.info && check.status !== 409) 
+        return {info:false, err:`Virhe pelaajan '${playerObject.username}' lisäyksessä`,username:playerObject.username};
+        
         if(check.status === 409) botUsername = result.username;
         return {info:true, username: result.username};
     }catch(e){
@@ -158,16 +162,26 @@ async function nextRound(usersObj){
 
 function statusCheck(result){
     if(result.status){
-        switch(result){
-            case result.status === 401:
-                window.location.href = "http://locahost:3000/";
-                return {info:false, details:"Token check fail"};
-            case result.status === 400:
-                return {info:false, details:result.err};
-            case result.status === 409:
-                return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa"}
-            default:
-                return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`};
+        const knownCodes = [400,401,409];
+        let foundCode;
+        for(let code of knownCodes){
+            if(result.status === code){
+                foundCode = code;
+                break;
+            }
+        }
+        if(foundCode){
+            switch(foundCode){
+                case 401:
+                    window.location.href = "http://locahost:3000/";
+                    return {info:false, details:"Token check fail", status:401};
+                case 400:
+                    return {info:false, details:result.err,status:400};
+                case 409:
+                    return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409}
+                default:
+                    return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`,status:foundCode};
+            }
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
