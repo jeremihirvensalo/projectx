@@ -26,10 +26,12 @@ async function start() {
         document.getElementById("infoalue").style.display = "block";
         return;
     }
+    const canvasBG = document.getElementById("canvasBG");
+    const ctxBG = canvasBG.getContext("2d");
+    drawBG(ctxBG) // tämä on background image piirtofunktio. Jos et tiedä/ymmärrä toimintaa => API (löytyy rivin 920 lähistöltä)
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "grey"; // tähän background kuva + sen funktiot yms
-    ctx.fillRect(0, 0, 800, 400); // tää on osa tätä nykystä backgroundia
+
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
     player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
@@ -169,6 +171,15 @@ function statusCheck(result){
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
+}
+
+function drawBG(ctxBG, imgs){
+    if(!imgs) {
+        ctxBG.fillStyle = "grey";
+        ctxBG.fillRect(0, 0, 800, 400);
+    }else{
+        // tähän background image?
+    }
 }
 
 (function () {
