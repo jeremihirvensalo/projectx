@@ -830,7 +830,8 @@ Jos jokin menee pieleen:
 ```json
 {
     "info":false,
-    "err":"Virhe pelaajan '*pelaajan nimi*' lisäyksessä"
+    "err":"Virhe pelaajan '*pelaajan nimi*' lisäyksessä",
+    "username":"pelaaja1"
 }
 ```
 
