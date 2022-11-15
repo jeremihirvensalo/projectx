@@ -34,3 +34,25 @@ function suoritaToiminto(player, bot, toiminto, hp) {
             break;
     }
 }
+
+async function verifyMove(player){ // write API
+    try{
+        const formattedPlayer = formatPlayer(player);
+        const options = {
+            method:"POST",
+            body:JSON.stringify(formattedPlayer),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }
+        const result = await fetch("http://localhost:3001/move",options).then(async (data)=>{
+            return await data.json();
+        });
+        const check = statusCheck(result);
+        if(!check.info || !result.info) return false;
+        return true;
+    }catch(e){
+        return false;
+    }
+
+}
