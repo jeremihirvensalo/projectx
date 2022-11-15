@@ -916,6 +916,12 @@ Jos parametri `result` ei sisällä statuskoodia:
 }
 ```
 
+### drawBG(ctxBG, imgs)
+    Piirtää canvakselle taustakuvan. Ottaa parametreiksi ctxBG (canvaksen konteksti), imgs (kuvat/kuva).
+    ctxBG täytyy olla sen canvaksen konteksti, jonne ei piirretä pelaajia. Parametri `imgs` on lista kuvien tai
+    kuvan lähteistä. Esimerkiksi arr[0] => "./esimerkki/reitti/kuva.png".
+    Funktio ei palauta mitään.
+
 ## character.js
     Luokka, joka luo pelaajan. Luokka ottaa parametreiksi ctx, x, y, userW, userH, color, hp
     eli canvaksen kontekstin (canvas context), x ja y koordinaatit johon pelaaja luodaan canvaksella (integer),
