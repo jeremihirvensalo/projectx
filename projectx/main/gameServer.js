@@ -12,7 +12,7 @@ let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua
 
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0; 
-let canvasWidth = -1;
+let canvasWidth = 800; // valmiissa versiossa = -1
 const defaultY = 245; // pelaajien positio Y canvaksella
 const playerDefaultX = 60; // player alku x koordinaatti
 const botDefaultX = 650; // bot alku x koordinaatti
@@ -126,8 +126,11 @@ app.post("/move", async (req, res)=>{
                 }
             }
         }
+        console.log(result);
+        console.log("1: ",player.x, players[playerIndex].x);
         if(!result) return res.json({info:false});
         players[playerIndex] = player;
+        console.log("2: ",player.x, players[playerIndex].x);
         res.json({info:true});
     }catch(e){
         return res.json({err:"Liikkeen tarkistuksessa virhe"});

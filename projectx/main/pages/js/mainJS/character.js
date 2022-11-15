@@ -22,26 +22,30 @@ class Character{
         this.piirraChar();
     }
 
-    async goLeft(amount){
-        // this.x -= amount;
-        // const result = await verifyMove(this);
-        // this.x += amount;
-        // if(!result) return;
+    async goLeft(amount){ // update API
+        this.x -= amount;
+        const result = await verifyMove(this);
+        this.x += amount;
+        if(!result) return false;
+        this.piirraCanvas();
         if((this.x - amount) > 0) this.x -= amount; //jos haluaa pelaajan kiinni seinään (this.x - amount) > -10
         this.piirraChar();
+        return true;
     }
     
     async goRight(amount, botX){
         this.x += amount;
         const result = await verifyMove(this);
         this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)
-        if(!result) return;
+        if(!result) return false;
+        this.piirraCanvas();
         let ogAmount = this.x;
         if((this.x + amount) < (800 - this.userW)) this.x += amount; // canvas width: 800
         if((this.x) == (botX - this.userW)){
             if(ogAmount != this.x) this.x -= amount;
         }
         this.piirraChar();
+        return true;
 
     }
 
