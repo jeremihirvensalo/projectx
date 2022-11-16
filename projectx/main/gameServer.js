@@ -126,10 +126,8 @@ app.post("/move", async (req, res)=>{
                 }
             }
         }
-        console.log("1: ",player.x, players[playerIndex].x);
         if(!result) return res.json({info:false});
         players[playerIndex] = player;
-        console.log("2: ",player.x, players[playerIndex].x);
         res.json({info:true});
     }catch(e){
         return res.json({err:"Liikkeen tarkistuksessa virhe"});
@@ -236,7 +234,6 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
         }
 
     }catch(e){
-        console.log(e);
         return res.json({info:false,details: e.err ? e.err : "Jokin meni pieleen tietokannan kanssa"}); // update API?
     }
 
@@ -259,10 +256,23 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
     }
 
     // asetetaan pelaajat takaisin aloitus positioihin
-    delete player.token;
     players[playerIndex] = player;
     players[botIndex] = bot;
     return res.json({info:true});
+});
+
+app.post("/reset",async (req,res)=>{
+    const obj = req.body;
+    if(!obj) return res.json({status:400});
+    if(!obj.token || !db.compareTokens(obj.token,players[playerIndex].token)) return res.json({status:401});
+
+    const playersDB = await db.search("players");
+    if(playersDB.err) return res.json({err:playersDB.err});
+    for(let user of playersDB){
+        if(user.username === players[playerIndex].username) players[playerIndex] = {...user,...{token:obj.token}};
+        else players[botIndex] = user;
+    }
+    return res.json({details:players});
 });
 
 app.listen(config.port, async ()=>{

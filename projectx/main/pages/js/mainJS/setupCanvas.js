@@ -87,6 +87,11 @@ async function start() {
         if (canvasEvents()) return;
         if (movement[e.code] == "BLOCK") player.block(false);
     });
+
+    $(window).bind("beforeunload", async function(){
+        const result = await resetServer();
+        console.log(result);
+    });
 }
 
 function returnPlayers(){
@@ -152,7 +157,6 @@ async function nextRound(usersObj){
         const result = await fetch("http://localhost:3001/continue",options).then(async (data)=>{
             return await data.json();
         });
-        console.log(result);
         const check = statusCheck(result);
         if(!check.info) $("#infoalue").html(check.details);
         else if(check.info) return {info:true};
@@ -187,6 +191,28 @@ function statusCheck(result){
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
+}
+
+async function resetServer(){
+    try{
+        const options = {
+            method:"POST",
+            body:JSON.stringify({token:getCookieValue("token")}),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }
+        const result = await fetch("http://localhost:3001/reset",options).then(async (data)=>{
+            return await data.json();
+        });
+
+        const check = statusCheck(result);
+        if(!check.info) $("#infoalue").html(check.details);
+        else if(check.info) return {info:true};
+        return {info:false, err:result.err ? result.err : "Palvelimella tapahtui jotain outoa"};
+    }catch(e){
+        return {err:"Jokin meni pieleen"};
+    }
 }
 
 function drawBG(ctxBG, imgs){
