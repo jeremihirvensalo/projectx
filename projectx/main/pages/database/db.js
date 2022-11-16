@@ -178,7 +178,7 @@ module.exports = class Database{
 
             let result;
             if(!username){
-                result = await conn.query(`SELECT ${params} FROM ${table}`);
+                result = await conn.query(`SELECT ${params ? params : "*"} FROM ${table}`);
                 if(result.meta) delete result.meta;
                 return result;
             }
