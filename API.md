@@ -1431,3 +1431,56 @@ Jos token on väärä tai puuttuu:
     "status":401
 }
 ```
+
+### POST /reset
+    Reitti muuttaa palvelimen muistissa olevat pelaajat takaisin aloitusarvoihin. Rakennettu yksinomaan 
+    käsittelemään käyttäjän laukaisemat sivun päivitykset. 
+    Ottaa vastaan vain käyttäjän tokenin. Jos tokeni puuttuu tai on virheellinen ei kutsu mene läpi. 
+    Jos kutsu onnistuu palautetaan palvelimen muistissa olevat pelaajat taulukossa.
+    Reitti palauttaa vastauksen json-muodossa.
+
+Datan muoto:
+```json
+{
+    "token":"randtoken123"
+}
+```
+
+Onnistuneessa tilanteessa:
+```json
+[
+    {
+        "username": "pelaaja1",
+        "x": 500,
+        "y": 245,
+        "w": 90,
+        "h": 150,
+        "hp": 100,
+        "blockstate": false,
+        "token": "hxq239qb0h5wicm519dc2"
+    },
+    {
+        "username": "botti",
+        "x": 500,
+        "y": 245,
+        "w": 90,
+        "h": 150,
+        "hp": 100,
+        "blockstate": false
+    }
+]
+```
+
+Jos bodyn mukana ei tule mitään dataa:
+```json
+{
+    "status":400
+}
+```
+
+Jos tokeni puuttuu tai on virheellinen:
+```json
+{
+    "status":401
+}
+```
