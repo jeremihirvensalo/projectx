@@ -1,4 +1,4 @@
-function suoritaToiminto(player, bot, toiminto, hp) {
+async function suoritaToiminto(player, bot, toiminto, hp) {
     let botCRDS = bot.getCoords();
     let playerCRDS = player.getCoords();
     if(player.blockState() || playerCRDS.y != 245) return; // jos pelaaja on ilmassa tai torjumassa ei voida liikkua
@@ -6,12 +6,12 @@ function suoritaToiminto(player, bot, toiminto, hp) {
     switch (toiminto) {
         case "LEFT":
             // player.piirraCanvas();
-            allowed = player.goLeft(20);
+            allowed = await player.goLeft(20);
             if(allowed) bot.piirraChar();
             break;
         case "RIGHT":
             // player.piirraCanvas();
-            allowed = player.goRight(20, botCRDS.x);
+            allowed = await player.goRight(20, botCRDS.x);
             if(allowed) bot.piirraChar();
             break;
         case "UP":

@@ -58,7 +58,8 @@ async function start() {
             }
         });
     }catch(e){
-        $("#infoalue").html(e.err);
+        console.log(e);
+        $("#infoalue").html("Odottamaton virhe tapahtui");
     }
 
     hp.drawBarL(playerName);
@@ -151,10 +152,11 @@ async function nextRound(usersObj){
         const result = await fetch("http://localhost:3001/continue",options).then(async (data)=>{
             return await data.json();
         });
+        console.log(result);
         const check = statusCheck(result);
         if(!check.info) $("#infoalue").html(check.details);
         else if(check.info) return {info:true};
-        return {info:false, err:check.err};
+        return {info:false, err:result.err};
     }catch(e){
         return {err:"Odottamaton virhe tapahtui uuden kierokksen aloituksessa"};
     }
@@ -173,7 +175,7 @@ function statusCheck(result){
         if(foundCode){
             switch(foundCode){
                 case 401:
-                    window.location.href = "http://locahost:3000/";
+                    window.location.href = "http://localhost:3000/";
                     return {info:false, details:"Token check fail", status:401};
                 case 400:
                     return {info:false, details:result.err,status:400};

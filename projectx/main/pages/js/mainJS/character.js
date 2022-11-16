@@ -33,7 +33,7 @@ class Character{
         return true;
     }
     
-    async goRight(amount, botX){
+    async goRight(amount, botX){ // update API
         this.x += amount;
         const result = await verifyMove(this);
         this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)

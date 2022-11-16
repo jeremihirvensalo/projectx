@@ -115,8 +115,8 @@ app.post("/move", async (req, res)=>{
             if(user.username === player.username){
                 // seuraavat arvot ovat oletuksia, mutta voidaan vaihtaa muuttujiksi 
                 if(player.x !== user.x){
-                    if(player.x + 20 === user.x && player.x + 20 < canvasWidth - players[botIndex].x) result = true;
-                    else if(player.x - 20 === user.x && player.x - 20 > 0) result = true;
+                    if(player.x + 20 === user.x) result = true; // liikkuu vasemmalle
+                    else if(player.x - 20 === user.x && player.x < players[botIndex].x - user.w) result = true; // liikkuu oikealle
                 }else if(player.y !== user.y){
                     if(player.y + 75 === user.y && player.y - 75 === defaultY) result = true;
                     else if(player.y - 75 === user.y && player.y === defaultY + 75) result = true;
@@ -126,7 +126,6 @@ app.post("/move", async (req, res)=>{
                 }
             }
         }
-        console.log(result);
         console.log("1: ",player.x, players[playerIndex].x);
         if(!result) return res.json({info:false});
         players[playerIndex] = player;
@@ -198,18 +197,48 @@ app.post("/delete", async (req, res)=>{
     return res.json({status:401});
 });
 
-app.post("/continue", async (req,res)=>{
+app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti tehä paljo paremmin
     const users = req.body;
     let player;
     let bot;
-    if(users.lenght) return res.json({status:400});
-    for(let user of users){
-        if(user.username === players[playerIndex].username) player = user;
-        else bot = user;
+    if(users.length !== 2) 
+    return res.json({err:`Palvelin sai virheellisen määrän pelaajia (${users.lenght})`,status:400}); // update API
+
+    if(!users[0].username || !users[1].username)
+    return res.json({info:false,status:400,err:"Username-parametri puuttuu toiselta pelaajalta"});
+
+    try{
+        const playersDB = await db.search("players");
+        if(playersDB.length !== 2) 
+        throw new Error({err:`Tietokannasta löytyi virheellinen määrä pelaajia (${playersDB.lenght})`}); // update API
+
+        for(let user of playersDB){
+            if(user.username === players[playerIndex].username){
+                let foundToken;
+                for(let item of users){
+                    if(item.username === user.username && !item.token) return res.json({status:401});
+                    else if(item.token) foundToken = item.token;
+                }
+                player = {...user,...{token:foundToken}};
+            } 
+            else bot = user;
+        }
+        if(!db.compareTokens(player.token,players[playerIndex].token)) return res.json({status:401});
+
+        for(let user of players){
+            for(let userDB of playersDB){
+                if(user.username === userDB.username){
+                    user = userDB;
+                    if(players[playerIndex].username === user.username) players[playerIndex] = user;
+                    else players[botIndex] = user;
+                }
+            }
+        }
+
+    }catch(e){
+        console.log(e);
+        return res.json({info:false,details: e.err ? e.err : "Jokin meni pieleen tietokannan kanssa"}); // update API?
     }
-    if(!player.token) return res.json({status:401});
-    if(!player.username || !bot.username)
-    return res.json({info:false,status:400,err:"Username-parametri puuttuu toiselta pelaajalta tai on virheellinen"});
 
     const keys = Object.keys(players[botIndex]); // otetaan botin avaimet, jotta ei pidä huolehtia token-parametrista
     for(let user of users){
@@ -220,59 +249,20 @@ app.post("/continue", async (req,res)=>{
 
         for(let key of keys){
             if(key === "blockstate"){
-                if(user[key] === undefined || typeof user[key] !== "boolean")
+                if(user[key] === undefined || (typeof user[key] !== "boolean" && key === "blockstate"))
                 return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellinen"});
             }else{
-                if(user[key] !== players[whoIndex][key])
+                if(user[key] !== players[whoIndex][key]) 
                 return res.json({info:false,status:400,err:"Jokin parametri puuttui tai oli virheellinen"});
             }
         }
     }
-    if(!player.token) return res.json({status:401});
-    else if(!db.compareTokens(player.token,players[playerIndex].token)) return res.json({status:401});
 
     // asetetaan pelaajat takaisin aloitus positioihin
-    const startParams = [
-        {
-            username: player.username,
-            x: playerDefaultX,
-            y: defaultY,
-            hp: defaultHP
-        },
-        {
-            username: bot.username,
-            x: botDefaultX,
-            y: defaultY,
-            hp: bot.newHP ? bot.newHP : defaultHP
-        }
-    ];
-
-    for(let param of startParams){
-        let whoIndex = param.username === players[playerIndex].username ? playerIndex : botIndex;
-        for(let key of keys){
-            if(param[key] !== undefined){
-                players[whoIndex][key] = param[key];
-            }
-        }        
-    }
-
-    try{
-        const resultArr = [];
-        let counter = 0;
-        for(let user of players){
-            const deleteResult = await db.delete(false, "players", user.username);
-            if(players[counter].token) delete players[counter].token;
-            const insertResult = await db.insert(players[counter], "players");
-            resultArr.push(deleteResult.info ? deleteResult.info : deleteResult.err);
-            resultArr.push(insertResult.info ? insertResult.info : insertResult.err);
-            counter++;
-        }
-
-        return res.json({info:true,details:resultArr});
-    }catch(e){
-        return res.json({info:false,details:e.message});
-    }
-
+    delete player.token;
+    players[playerIndex] = player;
+    players[botIndex] = bot;
+    return res.json({info:true});
 });
 
 app.listen(config.port, async ()=>{
