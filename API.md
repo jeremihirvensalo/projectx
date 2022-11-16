@@ -917,6 +917,32 @@ Jos parametri `result` ei sisällä statuskoodia:
 }
 ```
 
+### resetServer()
+    Parametriton funktio joka kertoo palvelimelle, että käyttäjä haluaa päivittää sivun. 
+    Palauttaa vastauksen json-muodossa.
+
+Onnistuneessa tilanteessa:
+```json
+{
+    "info":true
+}
+```
+
+Jos odottamaton virhe tapahtuu:
+```json
+{
+    "err":"Jokin meni pieleen"
+}
+```
+
+Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
+```json
+{
+    "info":false,
+    "err":"*palvelimen errorviesti tai 'Palvelimella tapahtui jotain outoa'*"
+}
+```
+
 ### drawBG(ctxBG, imgs)
     Piirtää canvakselle taustakuvan. Ottaa parametreiksi ctxBG (canvaksen konteksti), imgs (kuvat/kuva).
     ctxBG täytyy olla sen canvaksen konteksti, jonne ei piirretä pelaajia. Parametri `imgs` on lista kuvien tai
