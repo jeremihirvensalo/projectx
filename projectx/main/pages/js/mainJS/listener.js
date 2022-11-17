@@ -30,6 +30,22 @@ let eventStatus = false;
                 console.log(e);
             }
         });
+
+        $("#user").on("mouseover", function(){
+            $("#userContent").slideDown({
+                start: function(){
+                    $(this).css("display","grid");
+                },
+                duration:200
+            });
+            $(this).on("mouseleave", function(){
+                $("#userContent").slideUp(100);
+            });
+        });
+
+        // $("#user").on("mouseout","#username",function(){
+        //     $("#userContent").slideUp(100);
+        // });
     });
 
     document.getElementById("settings").addEventListener("click", ()=>{
