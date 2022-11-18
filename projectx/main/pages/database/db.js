@@ -159,6 +159,8 @@ module.exports = class Database{
             return {info: (result.affectedRows > 0 ? true : false),details:resultArr};  
         }catch(e){
             return {info:false,err:"Odottamaton virhe tapahtui päivityksessä",status:500};
+        }finally{
+            if(conn) conn.end();
         }
     }
 
@@ -189,6 +191,8 @@ module.exports = class Database{
 
         }catch(e){
             return {err:"Virhe tietojen haussa tietokannasta"};
+        }finally{
+            if(conn) conn.end();
         }
     }
 
