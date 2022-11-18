@@ -957,14 +957,17 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
 
 ### goLeft(amount)
     Funktio, joka liikuttaa pelaajaa vasemmalle. Parametriksi ottaa liikkumismäärän (integer).
+    Palauttaa booleanin (`true` kun onnistuu ja `false` jos ei onnistu).
 
 ### goRight(amount, botX)
     Funktio, joka liikuttaa pelaajaa oikealle. Parametreiksi ottaa liikkumismäärän (integer) ja
     toisen pelaajan eli botin x-koordinaatin (integer).
+    Palauttaa booleanin (`true` kun onnistuu ja `false` jos ei onnistu).
 
 ### jump(amount, bot)
     Funktio, jonka avulla pelaaja hyppää. Parametreiksi funktio ottaa hypyn korkeuden (integer)
     ja toisen pelaajan eli botin (character-luokka).
+    Palauttaa booleanin (`true` kun onnistuu ja `false` jos ei onnistu).
 
 ### block(state)
     Funktio asettaa pelaajan torjumistilaan. Parametriksi ottaa booleanin.
@@ -1425,6 +1428,15 @@ Jos pelaaja-olioiden parametrit eivät täsmää palvelimella olevien olioiden k
 }
 ```
 
+Palvelin sai virheellisen määrän pelaajia (!== 2):
+```json
+{
+    "info":false,
+    "err":"Palvelin sai virheellisen määrän pelaajia (*montako pelaajaa tuli palvelimelle*)",
+    "status":400
+}
+```
+
 Jos jokin pelaaja-olion parametri puuttuu tai on väärässä muodossa:
 ```json
 {
@@ -1448,6 +1460,23 @@ Jos tietokannan kanssa tapahtui virhe:
 {
     "info":false,
     "err":"*tietokannan tarjoama virheilmoitus*"
+}
+```
+
+Tietokannasta löytyi virheellinen määrä pelaajia (!== 2):
+```json
+{
+    "info":false,
+    "details":"Tietokannasta löytyi virheellinen määrä pelaajia (*montako pelaajaa löytyi*)",
+    "status":400
+}
+```
+
+Jos palvelin hajoaa pahasti:
+```json
+{
+    "info":false,
+    "details": "*catchiin tuotu virheilmoitus* tai 'Jokin meni pieleen palvelimen tai tietokannan kanssa'"
 }
 ```
 
