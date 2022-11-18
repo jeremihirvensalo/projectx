@@ -200,7 +200,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
     let player;
     let bot;
     if(users.length !== 2) 
-    return res.json({err:`Palvelin sai virheellisen määrän pelaajia (${users.lenght})`,status:400}); // update API
+    return res.json({info:false,err:`Palvelin sai virheellisen määrän pelaajia (${users.lenght})`,status:400});
 
     if(!users[0].username || !users[1].username)
     return res.json({info:false,status:400,err:"Username-parametri puuttuu toiselta pelaajalta"});
@@ -208,7 +208,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
     try{
         const playersDB = await db.search("players");
         if(playersDB.length !== 2) 
-        throw new Error({err:`Tietokannasta löytyi virheellinen määrä pelaajia (${playersDB.lenght})`}); // update API
+        throw new Error({err:`Tietokannasta löytyi virheellinen määrä pelaajia (${playersDB.lenght})`});
 
         for(let user of playersDB){
             if(user.username === players[playerIndex].username){
@@ -234,7 +234,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
         }
 
     }catch(e){
-        return res.json({info:false,details: e.err ? e.err : "Jokin meni pieleen tietokannan kanssa"}); // update API?
+        return res.json({info:false,details: e.err ? e.err : "Jokin meni pieleen palvelimen tai tietokannan kanssa"});
     }
 
     const keys = Object.keys(players[botIndex]); // otetaan botin avaimet, jotta ei pidä huolehtia token-parametrista
@@ -258,7 +258,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
     // asetetaan pelaajat takaisin aloitus positioihin
     players[playerIndex] = player;
     players[botIndex] = bot;
-    return res.json({info:true});
+    return res.json({info:true,details:players});
 });
 
 app.post("/reset",async (req,res)=>{

@@ -22,7 +22,7 @@ class Character{
         this.piirraChar();
     }
 
-    async goLeft(amount){ // update API
+    async goLeft(amount){
         this.x -= amount;
         const result = await verifyMove(this);
         this.x += amount;
@@ -33,7 +33,7 @@ class Character{
         return true;
     }
     
-    async goRight(amount, botX){ // update API
+    async goRight(amount, botX){
         this.x += amount;
         const result = await verifyMove(this);
         this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)
