@@ -19,15 +19,11 @@ let eventStatus = false;
                     return await result.json();
                 });
                 console.log("Logout answer received");
-                if(data.logoutURL) {
-                    window.location.replace(`${data.logoutURL}`);
-                }else{ 
-                    console.log(data); 
-                    // näytä virhe jotenkin
-                }
+                if(data.logoutURL) window.location.replace(`${data.logoutURL}`);
+                else $("#infoalue").html(data.err);
 
             }catch(e){
-                console.log(e);
+                $("#infoalue").html(e.message);
             }
         });
 
@@ -42,10 +38,6 @@ let eventStatus = false;
                 $("#userContent").slideUp(100);
             });
         });
-
-        // $("#user").on("mouseout","#username",function(){
-        //     $("#userContent").slideUp(100);
-        // });
     });
 
     document.getElementById("settings").addEventListener("click", ()=>{
