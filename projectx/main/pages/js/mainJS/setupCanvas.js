@@ -69,7 +69,7 @@ async function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
     document.addEventListener("keydown", e => {
-        e.preventDefault();
+        // e.preventDefault(); 
         if(keypressed) return;
         keypressed = true;
         if (canvasEvents()) return;
