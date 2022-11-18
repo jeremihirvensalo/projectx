@@ -57,7 +57,7 @@ app.post("/newLogin", async (req, res) => {
 app.post("/token", async (req, res)=>{
     const user = req.body;
     let result = await db.search("tokens", "token", user.username);
-    if(result.err == undefined){
+    if(result.token && !result.err){
         result = db.compareTokens(user.token, result.token);
         res.json({info:result});
     }else{
