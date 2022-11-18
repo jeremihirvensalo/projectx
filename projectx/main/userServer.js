@@ -40,14 +40,14 @@ app.post("/", async (req, res) => {
         }
         if(id._idleTimeout) id=setInterval(async ()=>{await db.checkTokenDates()}, 1900000);
         return res.json({info:"Kirjautuminen onnistui", token:newToken});
-    } else if (result.err) res.json(result);
+    } else if (result.err) return res.json(result);
     else return res.json({err:"Käyttäjätiedot väärin"});
 });
 
 app.post("/newLogin", async (req, res) => {
     const user = req.body;
     if (!user.username || !user.password) {
-        res.json({ err: "Virheellinen data" });
+        return res.json({ err: "Virheellinen data" });
     }
 
     const result = await db.insert(user, "users");
@@ -59,9 +59,10 @@ app.post("/token", async (req, res)=>{
     let result = await db.search("tokens", "token", user.username);
     if(result.token && !result.err){
         result = db.compareTokens(user.token, result.token);
-        res.json({info:result});
+        return res.json({info:result});
     }else{
-        res.json(result);
+        console.log(result);
+        return res.json(result);
     }
 });
 
@@ -86,9 +87,9 @@ app.post("/logout", async (req, res)=>{
         }
     }
     if(result.err){
-        res.json({err:result.err});
+        return res.json({err:result.err});
     }else if(result == undefined){
-        res.json({err:"Jokin meni pahasti pieleen ulos kirjautuessa"});
+        return res.json({err:"Jokin meni pahasti pieleen ulos kirjautuessa"});
     }
 });
 
@@ -113,10 +114,10 @@ app.post("/delete", async (req, res)=>{ // rework? on aika sekava
             return res.json({err:"Kirjautumistiedot väärin!"});
             
         }else if(result.info){
-            res.json({info:result.info, newURL:"http://localhost:3000"});
+            return res.json({info:result.info, newURL:"http://localhost:3000"});
         }
     }else{
-        res.json({err:"Käyttäjätunnuksia ei tullut palvelimelle"});
+        return res.json({err:"Käyttäjätunnuksia ei tullut palvelimelle"});
     }
 });
 
@@ -130,18 +131,15 @@ app.post("/changePW", async (req, res)=>{
                 result = await db.verifyLogin(user.username, user.oldPW);
             }
         }
-        if(!result){
-            res.json({err:"Kirjautumistiedot väärin"});
-        }else if(result.check == false){
-            res.json({err:"Token check fail", newURL:"http://localhost:3000"});
-        }else if(result){
+        if(!result) return res.json({err:"Kirjautumistiedot väärin"});
+        else if(result.check == false) return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
+        else{
             result = await db.updatePW(user.username, user.newPW);
-            res.json(result);
-        }else{
-            res.json(result);
+            return res.json(result);
         }
+
     }else{
-        res.json({err:"Tiedot puutteelliset!"});
+        return res.json({err:"Tiedot puutteelliset!"});
     }
 });
 
