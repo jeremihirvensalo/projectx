@@ -11,16 +11,14 @@
             }
         }
         console.log("Token check requested");
-        const data = await fetch("http://localhost:3000/token", options).then(async (result)=>{
-            return await result.json();
-        });
+        const result = await fetch("http://localhost:3000/token", options);
+        const data = await result.json();
         console.log("Token check answered");
-        if(!data.info){
-            window.location.href = "http://localhost:3000";
-        }
+        if(!data.info) window.location.href = "http://localhost:3000";
+        
     }catch(e){
         console.log(e);
-        console.log("Virhe ohjelmassa");
+        $("#infoalue").html("Virhe ohjelmassa");
     }
 })();
 
