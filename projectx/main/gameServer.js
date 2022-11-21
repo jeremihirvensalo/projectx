@@ -109,7 +109,7 @@ app.post("/move", async (req, res)=>{
         if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
         return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
         if(player.blockstate) return res.json({info:false});
-        
+
         let result = false;
         for(let user of players){
             if(user.username === player.username){
@@ -118,8 +118,8 @@ app.post("/move", async (req, res)=>{
                     if(player.x + 20 === user.x) result = true; // liikkuu vasemmalle
                     else if(player.x - 20 === user.x && player.x < players[botIndex].x - user.w) result = true; // liikkuu oikealle
                 }else if(player.y !== user.y){
-                    if(player.y + 75 === user.y && player.y - 75 === defaultY) result = true;
-                    else if(player.y - 75 === user.y && player.y === defaultY + 75) result = true;
+                    if(player.y + 75 === user.y && player.y + 75 === defaultY) result = true;
+                    else if(player.y - 75 === user.y && player.y === defaultY) result = true;
                 }else if(player.w !== user.w || player.h !== user.h){
                     result = false;
                     break;
@@ -263,6 +263,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
 
 app.post("/reset",async (req,res)=>{
     const obj = req.body;
+    if(players[playerIndex] === undefined) return res.json({err:"Palvelimella ei ole pelaajia",status:500});
     if(!obj) return res.json({status:400});
     if(!obj.token || !db.compareTokens(obj.token,players[playerIndex].token)) return res.json({status:401});
 

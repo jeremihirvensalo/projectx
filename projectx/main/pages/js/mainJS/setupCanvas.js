@@ -184,7 +184,9 @@ function statusCheck(result){
                 case 400:
                     return {info:false, details:result.err,status:400};
                 case 409:
-                    return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409}
+                    return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409};
+                case 500:
+                    return {info:false,details:result.err,status:500};
                 default:
                     return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`,status:foundCode};
             }

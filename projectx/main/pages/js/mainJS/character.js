@@ -38,6 +38,7 @@ class Character{
         const result = await verifyMove(this);
         this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)
         if(!result) return false;
+        
         this.piirraCanvas();
         let ogAmount = this.x;
         if((this.x + amount) < (800 - this.userW)) this.x += amount; // canvas width: 800
@@ -49,15 +50,26 @@ class Character{
 
     }
 
-    jump(amount, bot){
+    async jump(amount, bot){
         this.y -= amount;
-        this.piirraChar();
-        setTimeout(()=>{
+        const result = await verifyMove(this);
+        if(!result){
             this.y += amount;
+            return false;
+        }
+        this.piirraCanvas();
+        bot.piirraChar();
+        this.piirraChar();
+        setTimeout(async ()=>{
+            this.y += amount;
+            const result2 = await verifyMove(this);
+            if(!result2) return false;
+            
             this.piirraCanvas();
             bot.piirraChar();
             this.piirraChar();
         }, 300);
+        return true;
     }
 
     block(state){
@@ -175,7 +187,7 @@ class Character{
         // this.ctx.fillStyle = "grey"; // tähän taustakuva
         // this.ctx.clearRect(0, 170, 800, 400); // vain canvaksen alaosa piirretään uusiksi
         // this.ctx.fillRect(0, 170, 800, 400);
-        this.ctx.clearRect(0, 170, 800, 400);
+        this.ctx.clearRect(0, 160, 800, 400);
     }
 
     getHP(){

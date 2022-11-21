@@ -5,20 +5,17 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
     let allowed = false;
     switch (toiminto) {
         case "LEFT":
-            // player.piirraCanvas();
             allowed = await player.goLeft(20);
             if(allowed) bot.piirraChar();
             break;
         case "RIGHT":
-            // player.piirraCanvas();
             allowed = await player.goRight(20, botCRDS.x);
             if(allowed) bot.piirraChar();
             break;
         case "UP":
             if (playerCRDS.y == 245) {
-                player.piirraCanvas();
-                player.jump(75, bot);
-                bot.piirraChar();
+                allowed = await player.jump(75, bot);
+                if(allowed) bot.piirraChar();
             }
             break;
         case "PUNCH":
