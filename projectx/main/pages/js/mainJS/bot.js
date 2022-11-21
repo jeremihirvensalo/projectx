@@ -1,4 +1,4 @@
-// Tää on hieno botti joka ei 100% oo vaa pelaaja - score ja pari outoo global variablee
+// Tää on bonari botti joka ei 100% oo vaa pelaaja - score ja pari outoo global variablee
 class Bot extends Character{
 
     // constructor(ctx, x, y, userW, userH, color, hp, name){
