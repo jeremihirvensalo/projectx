@@ -68,6 +68,9 @@ async function start() {
     const restart = document.getElementById("restart");
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
+
+    // tähä botin alotus
+
     document.addEventListener("keydown", e => {
         // e.preventDefault(); 
         if(keypressed) return;
