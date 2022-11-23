@@ -70,7 +70,8 @@ function alusta() {
     // nappis.lisaaNappain(NAPPAIN.NUOLI_VASEN, TOIMINTO.VASEN);
     // nappis.lisaaNappain(NAPPAIN.NUOLI_OIKEA, TOIMINTO.OIKEA);
     // nappis.lisaaNappain(NAPPAIN.D, TOIMINTO.OIKEA)
-
+    piirtoalusta = $("#canvas");
+    konteksti = piirtoalusta.getContext("2d"); // jos ei toimi koita ilman jquerya
     kuvat.kuva = new Image();
     kuvat.kuva.src = kuvat.nimi;
     kuvat.kuva.onload = kuvatLadattu;
@@ -93,27 +94,27 @@ function tuliTormays(ukkelilaatikko) {
     }
     return false;
 }
-function suoritaToiminto(toiminto) {
-    switch (toiminto) {
-        case TOIMINTO.ALAS:
-            if (tuliTormays(ukkeli.getTormaysLaatikko(0, 10))) return;
-            ukkeli.siirryAlas(10);
-            break;
-        case TOIMINTO.YLOS:
-            if (tuliTormays(ukkeli.getTormaysLaatikko(0, -10))) return;
-            ukkeli.siirryYlos(10);
-            break;
-        case TOIMINTO.VASEN:
-            if (tuliTormays(ukkeli.getTormaysLaatikko(-10))) return;
-            ukkeli.siirryVasen(10);
-            break;
-        case TOIMINTO.OIKEA:
-            if (tuliTormays(ukkeli.getTormaysLaatikko(10))) return;
-            ukkeli.siirryOikea(10);
-            break;
-    }
-    piirra();
-}
+// function suoritaToiminto(toiminto) {
+//     switch (toiminto) {
+//         case TOIMINTO.ALAS:
+//             if (tuliTormays(ukkeli.getTormaysLaatikko(0, 10))) return;
+//             ukkeli.siirryAlas(10);
+//             break;
+//         case TOIMINTO.YLOS:
+//             if (tuliTormays(ukkeli.getTormaysLaatikko(0, -10))) return;
+//             ukkeli.siirryYlos(10);
+//             break;
+//         case TOIMINTO.VASEN:
+//             if (tuliTormays(ukkeli.getTormaysLaatikko(-10))) return;
+//             ukkeli.siirryVasen(10);
+//             break;
+//         case TOIMINTO.OIKEA:
+//             if (tuliTormays(ukkeli.getTormaysLaatikko(10))) return;
+//             ukkeli.siirryOikea(10);
+//             break;
+//     }
+//     piirra();
+// }
 
 function piirra() {
     konteksti.clearRect(0, 0, piirtoalusta.width, piirtoalusta.height);
