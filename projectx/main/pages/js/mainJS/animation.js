@@ -14,13 +14,10 @@ const movement = {
     KeyC: "KICKL"
 };
 
-let nappis;
-let piirtoalusta;
-let konteksti;
-let ukkeli;
-let ladatutKuvatLkm = 0;
-
-const esteet = [];
+// let piirtoalusta;
+// let konteksti;
+// let ukkeli;
+// let ladatutKuvatLkm = 0;
 
 let kuvat = {
     nimi: 'abobo.png',
@@ -63,31 +60,58 @@ let kuvat = {
     ]
 }
 
-function alusta() {
-    piirtoalusta = $("#canvas");
-    konteksti = piirtoalusta.getContext("2d"); // jos ei toimi koita ilman jquerya
-    kuvat.kuva = new Image();
-    kuvat.kuva.src = kuvat.nimi;
-    kuvat.kuva.onload = kuvatLadattu;
-}
+class Animations{ // write API
+    constructor(canvas, ctx, player, bot, loadedImgsCount){
+        this.piirtoalusta = canvas;
+        this.konteksti = ctx;
+        this.player = player;
+        this.bot = bot;
+        this.ladatutKuvatLkm = loadedImgsCount;
 
-function kuvatLadattu() {
-    if (++ladatutKuvatLkm === 1) lisaaKasittelijat();
-}
-
-function lisaaKasittelijat() {
-    ukkeli = new Ukkeli(kuvat, 40, 40);
-    piirra();
-}
-
-function tuliTormays(ukkelilaatikko) {
-    for (let este of esteet) {
-        if (este.onTormays(ukkelilaatikko)) {
-            return true;
-        }
+        this.playerUkkeli;
+        this.botUkkeli;
+        this.alusta();
     }
-    return false;
+
+    alusta(){
+        kuvat.kuva = new Image();
+        kuvat.kuva.src = kuvat.nimi;
+        kuvat.kuva.onload = this.kuvatLadattu;
+    }
+
+    kuvatLadattu(){
+        if (++ladatutKuvatLkm === 1) this.lisaaKasittelijat();
+    }
+
+    lisaaKasittelijat(){
+        const playerCRDS = this.player.getCoords();
+        this.playerUkkeli = new Ukkeli(kuvat, playerCRDS.x, playerCRDS.y);
+        this.piirra();
+    }
+
+    piirra() {
+        this.konteksti.clearRect(0, 0, this.piirtoalusta.width, this.piirtoalusta.height);
+        this.playerUkkeli.piirra(konteksti);
+    }
 }
+
+// function alusta() {
+//     piirtoalusta = $("#canvas");
+//     konteksti = piirtoalusta.getContext("2d"); // jos ei toimi koita ilman jquerya
+//     kuvat.kuva = new Image();
+//     kuvat.kuva.src = kuvat.nimi;
+//     kuvat.kuva.onload = kuvatLadattu;
+// }
+
+// function kuvatLadattu() {
+//     if (++ladatutKuvatLkm === 1) lisaaKasittelijat();
+// }
+
+// function lisaaKasittelijat() {
+//     ukkeli = new Ukkeli(kuvat, 40, 40);
+//     piirra();
+// }
+
 // function suoritaToiminto(toiminto) {
 //     switch (toiminto) {
 //         case TOIMINTO.ALAS:
@@ -109,11 +133,3 @@ function tuliTormays(ukkelilaatikko) {
 //     }
 //     piirra();
 // }
-
-function piirra() {
-    konteksti.clearRect(0, 0, piirtoalusta.width, piirtoalusta.height);
-    for (let este of esteet) {
-        este.piirra(konteksti);
-    }
-    ukkeli.piirra(konteksti);
-}
