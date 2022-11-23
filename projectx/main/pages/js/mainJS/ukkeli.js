@@ -19,11 +19,6 @@ class Ukkeli extends Suorakulmio{
             this.x,this.y, pala.leveys,pala.korkeus);
     }
 
-    getTormaysLaatikko(dx=0,dy=0){
-        let kuva = this.aktiivisetKuvat[this.kuvanro];
-        return new Suorakulmio(this.x+dx, this.y+dy, kuva.leveys, kuva.korkeus);
-    }
-
     siirryAlas(dy){
         if (this.rivinro != 0) {
             this.kuvanro = 0;

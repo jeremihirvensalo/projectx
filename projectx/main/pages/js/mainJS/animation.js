@@ -64,12 +64,6 @@ let kuvat = {
 }
 
 function alusta() {
-    // nappis = new Nappaimisto();
-    // nappis.lisaaNappain(NAPPAIN.NUOLI_ALAS, TOIMINTO.ALAS);
-    // nappis.lisaaNappain(NAPPAIN.NUOLI_YLOS, TOIMINTO.YLOS);
-    // nappis.lisaaNappain(NAPPAIN.NUOLI_VASEN, TOIMINTO.VASEN);
-    // nappis.lisaaNappain(NAPPAIN.NUOLI_OIKEA, TOIMINTO.OIKEA);
-    // nappis.lisaaNappain(NAPPAIN.D, TOIMINTO.OIKEA)
     piirtoalusta = $("#canvas");
     konteksti = piirtoalusta.getContext("2d"); // jos ei toimi koita ilman jquerya
     kuvat.kuva = new Image();
