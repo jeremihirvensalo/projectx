@@ -1,18 +1,18 @@
 'use strict';
 
-const movement = {
-    ArrowUp: "UP",
-    ArrowLeft: "LEFT",
-    ArrowRight: "RIGHT",
-    KeyW: "UP",
-    KeyA: "LEFT",
-    KeyD: "RIGHT",
-    Space: "BLOCK",
-    KeyF: "PUNCH",
-    KeyR: "PUNCHL",
-    KeyG: "KICK",
-    KeyC: "KICKL"
-};
+// const movement = {
+//     ArrowUp: "UP",
+//     ArrowLeft: "LEFT",
+//     ArrowRight: "RIGHT",
+//     KeyW: "UP",
+//     KeyA: "LEFT",
+//     KeyD: "RIGHT",
+//     Space: "BLOCK",
+//     KeyF: "PUNCH",
+//     KeyR: "PUNCHL",
+//     KeyG: "KICK",
+//     KeyC: "KICKL"
+// };
 
 // let piirtoalusta;
 // let konteksti;
@@ -61,26 +61,27 @@ let kuvat = {
 }
 
 class Animations{ // write API
-    constructor(canvas, ctx, player, bot, loadedImgsCount){
+    constructor(canvas, ctx, loadedImgsCount = 0){
         this.piirtoalusta = canvas;
         this.konteksti = ctx;
-        this.player = player;
-        this.bot = bot;
-        this.ladatutKuvatLkm = loadedImgsCount;
-
+        this.player;
         this.playerUkkeli;
-        this.botUkkeli;
-        this.alusta();
+        this.ladatutKuvatLkm = loadedImgsCount;
+        // this.alusta();
+    }
+
+    setChar(player){
+        this.player = player;
     }
 
     alusta(){
         kuvat.kuva = new Image();
         kuvat.kuva.src = kuvat.nimi;
-        kuvat.kuva.onload = this.kuvatLadattu;
+        kuvat.kuva.onload = this.kuvatLadattu();
     }
 
     kuvatLadattu(){
-        if (++ladatutKuvatLkm === 1) this.lisaaKasittelijat();
+        if (++this.ladatutKuvatLkm === 1) this.lisaaKasittelijat();
     }
 
     lisaaKasittelijat(){
@@ -91,7 +92,7 @@ class Animations{ // write API
 
     piirra() {
         this.konteksti.clearRect(0, 0, this.piirtoalusta.width, this.piirtoalusta.height);
-        this.playerUkkeli.piirra(konteksti);
+        this.playerUkkeli.piirra(this.konteksti);
     }
 }
 

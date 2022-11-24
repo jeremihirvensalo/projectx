@@ -3,7 +3,7 @@ let canAttack = true;
 let points = 0;
 
 class Character{
-    constructor(ctx, x, y, userW, userH, color, hp, name){
+    constructor(ctx, x, y, userW, userH, color, hp, name, animation){ // update API
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -12,6 +12,7 @@ class Character{
         this.color = color;
         this.hp = hp;
         this.name = name;
+        this.animation = animation;
         this.startPos = {
             x: x,
             y: y,
@@ -19,7 +20,7 @@ class Character{
             h: userH,
             color: color
         };
-        this.piirraChar();
+        // this.piirraChar();
     }
 
     async goLeft(amount){
@@ -179,8 +180,9 @@ class Character{
     }
 
     piirraChar(){
-        this.ctx.fillStyle = this.color;
-        this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
+        // this.ctx.fillStyle = this.color;
+        // this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
+        this.animation.piirra();
     }
 
     piirraCanvas(){

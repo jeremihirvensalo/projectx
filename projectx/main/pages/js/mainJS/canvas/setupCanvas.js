@@ -16,6 +16,8 @@ let keypressed = false;
 let player;
 let bot;
 let botUsername = "bot";
+let playerAnim;
+let botAnim;
 
 async function start() {
     if(window.innerWidth < 810){
@@ -34,8 +36,14 @@ async function start() {
 
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
-    player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName);
-    bot = new Bot(ctx, 650, 245, 90, 150, "red", 100, botUsername); 
+    playerAnim = new Animations(canvas, ctx);
+    botAnim = new Animations(canvas, ctx);
+    player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName, playerAnim);
+    bot = new Bot(ctx, 650, 245, 90, 150, "red", 100, botUsername, botAnim);
+    playerAnim.setChar(player);
+    botAnim.setChar(bot);
+    playerAnim.alusta();
+    botAnim.alusta();
     const hp = new HP(ctx, player, bot);
 
     // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun

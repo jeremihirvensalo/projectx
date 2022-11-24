@@ -2,7 +2,7 @@
 
 class Ukkeli{
     constructor(kuvat, x=0, y=0){
-        super(x,y,kuvat.ALAS[0].leveys, kuvat.ALAS[0].korkeus);
+        // super(x,y,kuvat.ALAS[0].leveys, kuvat.ALAS[0].korkeus);
         this.kuvat=kuvat;
         this.aktiivisetKuvat=kuvat.ALAS;
         this.kuvanro=0;
