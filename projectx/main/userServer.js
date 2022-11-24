@@ -25,6 +25,11 @@ app.get("/main", (req, res)=>{
     res.sendFile(mainPath);
 });
 
+app.get("/abobo.png", (req, res)=>{
+    const aboboPath = path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo.png");
+    res.sendFile(aboboPath);
+});
+
 app.post("/", async (req, res) => {
     const user = req.body;
     const result = await db.verifyLogin(user.username, user.password);
@@ -61,8 +66,7 @@ app.post("/token", async (req, res)=>{
         result = db.compareTokens(user.token, result.token);
         return res.json({info:result});
     }else{
-        console.log(result);
-        return res.json(result);
+        return res.json(result.length > 0 ? result : {status:401});
     }
 });
 
