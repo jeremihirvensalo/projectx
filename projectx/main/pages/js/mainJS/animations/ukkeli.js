@@ -3,20 +3,23 @@
 class Ukkeli{
     constructor(kuvat, x=0, y=0){
         // super(x,y,kuvat.ALAS[0].leveys, kuvat.ALAS[0].korkeus);
+        this.x = x;
+        this.y = y;
         this.kuvat=kuvat;
         this.aktiivisetKuvat=kuvat.ALAS;
         this.kuvanro=0;
         this.rivinro=0;
     }
 
-    piirra(konteksti){
+    piirra(konteksti, x=this.y, y=this.y){
         let pala = this.aktiivisetKuvat[this.kuvanro];
         this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
         konteksti.drawImage(this.kuvat.kuva,
             //spritestä otettava pala
             pala.x,pala.y, pala.leveys,pala.korkeus,
             //mihin kohtaan piirretään kanvakselle
-            this.x,this.y, pala.leveys,pala.korkeus);
+            x,y, pala.leveys,pala.korkeus);
+
     }
 
     siirryAlas(dy){

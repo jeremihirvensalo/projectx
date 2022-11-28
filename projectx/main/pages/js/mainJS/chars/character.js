@@ -182,14 +182,14 @@ class Character{
     piirraChar(){
         // this.ctx.fillStyle = this.color;
         // this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
-        this.animation.piirra();
+        this.animation.piirra(this.x, this.y);
     }
 
     piirraCanvas(){
         // this.ctx.fillStyle = "grey"; // tähän taustakuva
         // this.ctx.clearRect(0, 170, 800, 400); // vain canvaksen alaosa piirretään uusiksi
         // this.ctx.fillRect(0, 170, 800, 400);
-        this.ctx.clearRect(0, 160, 800, 400);
+        this.ctx.clearRect(0, 170, 800, 400);
     }
 
     getHP(){

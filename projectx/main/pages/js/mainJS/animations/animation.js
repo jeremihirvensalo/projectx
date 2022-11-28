@@ -90,9 +90,9 @@ class Animations{ // write API
         this.piirra();
     }
 
-    piirra() {
-        this.konteksti.clearRect(0, 0, this.piirtoalusta.width, this.piirtoalusta.height);
-        this.playerUkkeli.piirra(this.konteksti);
+    piirra(x, y) {
+        // this.konteksti.clearRect(0, 0, this.piirtoalusta.width, this.piirtoalusta.height);
+        this.playerUkkeli.piirra(this.konteksti, x, y);
     }
 }
 
