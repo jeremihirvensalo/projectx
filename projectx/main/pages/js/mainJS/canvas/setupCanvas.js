@@ -33,20 +33,15 @@ async function start() {
     drawBG(ctxBG) // tämä on background image piirtofunktio. Jos et tiedä/ymmärrä toimintaa => API (löytyy rivin 920 lähistöltä)
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
-    playerAnim = new Animations(canvas, ctx);
-    botAnim = new Animations(canvas, ctx);
-    player = new Character(ctx, 60, 245, 90, 150, "green", 100, playerName, playerAnim);
-    bot = new Bot(ctx, 650, 245, 90, 150, "red", 100, botUsername, botAnim);
-    playerAnim.setChar(player);
-    botAnim.setChar(bot);
-    playerAnim.alusta();
-    botAnim.alusta();
-    const hp = new HP(ctx, player, bot);
 
-    // localhost:3001/player vois muuttaa sillee että ottaa 2 olioo vastaan jollon tarttis vaa yhen kutsun
+    player = new Character(canvas, ctx, 60, 245, 90, 150, "green", 100, playerName);
+    bot = new Bot(canvas, ctx, 650, 245, 90, 150, "red", 100, botUsername);
+    playerAnim = player.getAnimations();
+    botAnim = bot.getAnimations();
+    const hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
+
     try{
         await new Promise(async (resolve,reject)=>{
             if(parseInt($("#points").attr("value")) > 0) {

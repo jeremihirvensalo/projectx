@@ -3,7 +3,8 @@ let canAttack = true;
 let points = 0;
 
 class Character{
-    constructor(ctx, x, y, userW, userH, color, hp, name, animation){ // update API
+    constructor(canvas, ctx, x, y, userW, userH, color, hp, name){ // update API
+        this.canvas = canvas;
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -12,7 +13,8 @@ class Character{
         this.color = color;
         this.hp = hp;
         this.name = name;
-        this.animation = animation;
+        this.animation;
+        this.ukkeli;
         this.startPos = {
             x: x,
             y: y,
@@ -20,7 +22,18 @@ class Character{
             h: userH,
             color: color
         };
-        // this.piirraChar();
+        this.alusta();
+    }
+
+    alusta(){
+        this.animation = new Animations(this.canvas, this.ctx);
+        this.animation.alusta(this);
+        this.ukkeli = this.animation.getUkkeli();
+        // this.ukkeli.drawStill(this.x, this.y, this.name !== getCookieValue("username"));
+    }
+
+    getAnimations(){
+        return this.animation;
     }
 
     async goLeft(amount){
@@ -30,6 +43,7 @@ class Character{
         if(!result) return false;
         this.piirraCanvas();
         if((this.x - amount) > 0) this.x -= amount; //jos haluaa pelaajan kiinni seinään (this.x - amount) > -10
+        this.ukkeli.siirryVasen(amount);
         this.piirraChar();
         return true;
     }
@@ -46,6 +60,7 @@ class Character{
         if((this.x) == (botX - this.userW)){
             if(ogAmount != this.x) this.x -= amount;
         }
+        this.ukkeli.siirryOikea(amount);
         this.piirraChar();
         return true;
 
@@ -59,7 +74,7 @@ class Character{
             return false;
         }
         this.piirraCanvas();
-        bot.piirraChar();
+        bot.piirraCharStill();
         this.piirraChar();
         setTimeout(async ()=>{
             this.y += amount;
@@ -67,7 +82,7 @@ class Character{
             if(!result2) return false;
             
             this.piirraCanvas();
-            bot.piirraChar();
+            bot.piirraCharStill();
             this.piirraChar();
         }, 300);
         return true;
@@ -88,7 +103,7 @@ class Character{
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
-            bot.piirraChar();
+            bot.piirraCharStill();
             this.piirraChar();
         }, 100);
 
@@ -113,7 +128,7 @@ class Character{
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
-            bot.piirraChar();
+            bot.piirraCharStill();
             this.piirraChar()
         }, 100);
         if((this.getCoords().x - bot.getCoords().x) <=160 && (this.getCoords().x - bot.getCoords().x) > 0){
@@ -131,7 +146,7 @@ class Character{
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
-            bot.piirraChar();
+            bot.piirraCharStill();
             this.piirraChar();
         }, 100);
 
@@ -156,7 +171,7 @@ class Character{
         canAttack = false;
         setTimeout(()=>{
             this.piirraCanvas();
-            bot.piirraChar();
+            bot.piirraCharStill();
             this.piirraChar();
         }, 100);
         if((this.getCoords().x - bot.getCoords().x) <= 160 && (this.getCoords().x - bot.getCoords().x) > 0){
@@ -183,6 +198,10 @@ class Character{
         // this.ctx.fillStyle = this.color;
         // this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
         this.animation.piirra(this.x, this.y);
+    }
+
+    piirraCharStill(){
+        this.ukkeli.drawStill(this.x, this.y, this.name !== getCookieValue("username"));
     }
 
     piirraCanvas(){

@@ -1,25 +1,39 @@
 'use strict';
 
 class Ukkeli{
-    constructor(kuvat, x=0, y=0){
-        // super(x,y,kuvat.ALAS[0].leveys, kuvat.ALAS[0].korkeus);
+    constructor(ctx, kuvat, x=0, y=0){
+        this.konteksti = ctx;
         this.x = x;
         this.y = y;
         this.kuvat=kuvat;
-        this.aktiivisetKuvat=kuvat.ALAS;
+        this.aktiivisetKuvat= this.kuvat.ALAS;
         this.kuvanro=0;
         this.rivinro=0;
     }
 
-    piirra(konteksti, x=this.y, y=this.y){
+    drawStill(x=this.x, y=this.y, isBot){
         let pala = this.aktiivisetKuvat[this.kuvanro];
-        this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
-        konteksti.drawImage(this.kuvat.kuva,
+        if(isBot) this.konteksti.filter = "invert(1)";
+        this.konteksti.drawImage(this.kuvat.kuva,
             //spritestä otettava pala
             pala.x,pala.y, pala.leveys,pala.korkeus,
             //mihin kohtaan piirretään kanvakselle
             x,y, pala.leveys,pala.korkeus);
+        this.konteksti.filter = "invert(0)";
+    }
 
+    piirra(x=this.x, y=this.y, isBot){
+        console.log((isBot ? "bot: " : "player: "), this.kuvanro);
+        let pala = this.aktiivisetKuvat[this.kuvanro];
+        // if(x !== this.x || y !== this.y) 
+        this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
+        if(isBot) this.konteksti.filter = "invert(1)";
+        this.konteksti.drawImage(this.kuvat.kuva,
+            //spritestä otettava pala
+            pala.x,pala.y, pala.leveys,pala.korkeus,
+            //mihin kohtaan piirretään kanvakselle
+            x,y, pala.leveys,pala.korkeus);
+        this.konteksti.filter = "invert(0)";
     }
 
     siirryAlas(dy){
