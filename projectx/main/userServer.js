@@ -26,8 +26,7 @@ app.get("/main", (req, res)=>{
 });
 
 app.get("/abobo.png", (req, res)=>{
-    const aboboPath = path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo.png");
-    res.sendFile(aboboPath);
+    res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo.png"));
 });
 
 app.post("/", async (req, res) => {
