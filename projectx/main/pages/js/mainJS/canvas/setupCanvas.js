@@ -38,6 +38,8 @@ async function start() {
 
     player = new Character(canvas, ctx, 60, 245, 90, 150, "green", 100, playerName);
     bot = new Bot(canvas, ctx, 650, 245, 90, 150, "red", 100, botUsername);
+    await player.alusta();
+    await bot.alusta();
     playerAnim = player.getAnimations();
     botAnim = bot.getAnimations();
     const hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
