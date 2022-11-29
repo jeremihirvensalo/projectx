@@ -72,7 +72,12 @@ async function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
 
-    // tähä botin alotus
+    setInterval(
+        ()=>{
+            bot.doRandomAction(player);
+        },
+        100
+    )
 
     document.addEventListener("keydown", e => {
         // e.preventDefault(); 
