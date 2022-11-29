@@ -19,11 +19,10 @@ class Ukkeli{
             pala.x,pala.y, pala.leveys,pala.korkeus,
             //mihin kohtaan piirretään kanvakselle
             x,y, pala.leveys,pala.korkeus);
-        this.konteksti.filter = "invert(0)";
+        this.konteksti.filter = "none";
     }
 
     piirra(x=this.x, y=this.y, isBot){
-        console.log((isBot ? "bot: " : "player: "), this.kuvanro);
         let pala = this.aktiivisetKuvat[this.kuvanro];
         // if(x !== this.x || y !== this.y) 
         this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;

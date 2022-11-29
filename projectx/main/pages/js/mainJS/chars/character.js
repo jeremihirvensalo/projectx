@@ -29,7 +29,6 @@ class Character{
         this.animation = new Animations(this.canvas, this.ctx);
         this.animation.alusta(this);
         this.ukkeli = this.animation.getUkkeli();
-        // this.ukkeli.drawStill(this.x, this.y, this.name !== getCookieValue("username"));
     }
 
     getAnimations(){
@@ -75,6 +74,7 @@ class Character{
         }
         this.piirraCanvas();
         bot.piirraCharStill();
+        this.ukkeli.siirryYlos(amount);
         this.piirraChar();
         setTimeout(async ()=>{
             this.y += amount;
@@ -83,6 +83,7 @@ class Character{
             
             this.piirraCanvas();
             bot.piirraCharStill();
+            this.ukkeli.siirryAlas(amount);
             this.piirraChar();
         }, 300);
         return true;
@@ -197,7 +198,8 @@ class Character{
     piirraChar(){
         // this.ctx.fillStyle = this.color;
         // this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
-        this.animation.piirra(this.x, this.y);
+        // this.animation.piirra(this.x, this.y);
+        this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username"));
     }
 
     piirraCharStill(){

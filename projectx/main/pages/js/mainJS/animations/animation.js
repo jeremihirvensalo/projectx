@@ -50,22 +50,13 @@ class Animations{ // write API
         this.player = player;
         this.kuvat.kuva = new Image();
         this.kuvat.kuva.src = this.kuvat.nimi;
-        this.kuvat.kuva.onload = this.kuvatLadattu();
-    }
-
-    kuvatLadattu(){
-        if (++this.ladatutKuvatLkm === 1) this.lisaaKasittelijat();
+        this.kuvat.kuva.onload = this.lisaaKasittelijat();
     }
 
     lisaaKasittelijat(){
         const playerCRDS = this.player.getCoords();
         this.playerUkkeli = new Ukkeli(this.konteksti, this.kuvat, playerCRDS.x, playerCRDS.y);
-        // this.piirra();
         this.playerUkkeli.drawStill();
-    }
-
-    piirra(x, y){
-        this.playerUkkeli.piirra(x, y, this.player.name !== getCookieValue("username"));
     }
 
     getUkkeli(){
