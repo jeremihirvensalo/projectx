@@ -46,11 +46,22 @@ class Animations{ // write API
         };
     }
 
-    alusta(player){
+    async alusta(player){
         this.player = player;
-        this.kuvat.kuva = new Image();
-        this.kuvat.kuva.src = this.kuvat.nimi;
-        this.kuvat.kuva.onload = this.lisaaKasittelijat();
+        this.kuvat.kuva = await this.promiseImgLoad(this.kuvat.nimi);
+        this.lisaaKasittelijat();
+    }
+
+    async promiseImgLoad(source){
+        let img;
+        const promiseImage = new Promise(resolve =>{
+            img = new Image();
+            img.onload = resolve;
+            img.src = source;
+        });
+
+        await promiseImage;
+        return img;
     }
 
     lisaaKasittelijat(){
@@ -61,5 +72,9 @@ class Animations{ // write API
 
     getUkkeli(){
         return this.playerUkkeli;
+    }
+
+    getAnimations(){
+        return this;
     }
 }

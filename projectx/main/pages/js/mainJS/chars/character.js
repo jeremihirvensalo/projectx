@@ -22,12 +22,12 @@ class Character{
             h: userH,
             color: color
         };
-        this.alusta();
+        // this.alusta();
     }
 
-    alusta(){
+    async alusta(){
         this.animation = new Animations(this.canvas, this.ctx);
-        this.animation.alusta(this);
+        await this.animation.alusta(this);
         this.ukkeli = this.animation.getUkkeli();
     }
 
