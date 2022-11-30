@@ -766,6 +766,12 @@ Palauttaa `pelaaja1`
 ### start()
     Parametriton(?) funktio, joka aloittaa pelin luomalla canvaksen ja tarvittavat luokat.
 
+### canvasEvents()
+    Palauttaa booleanin, joka kertoo onko canvaksen kuuntelu pysäytetty.
+
+### stopCanvasEvents(state)
+    Pysäyttää (state = true) ja aloittaa (state = false) canvaksen kuuntelun. 
+
 ### showPoints(points)
     Funktio, joka päivittää sivulle pelaajan pisteet. Parametriksi ottaa pelaajan pisteet (integer)
 
