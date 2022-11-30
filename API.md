@@ -955,8 +955,9 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     pelaajan leveys (integer), pelaajan korkeus (integer),
     pelaajan väri (string) (tulee olemaan lopuksi pelaajan kuva(t)(jpeg tai png)) ja pelaajan osumapisteet (integer)
 
-### goLeft(amount)
-    Funktio, joka liikuttaa pelaajaa vasemmalle. Parametriksi ottaa liikkumismäärän (integer).
+### goLeft(amount, playerCRDS)
+    Funktio, joka liikuttaa pelaajaa vasemmalle. Parametriksi ottaa liikkumismäärän (integer) ja playerCRDS (JSON-object).
+    playerCRDS sisältää pelaajan koordinaatit, leveyden ja pituuden. Pitää olla mukana vain silloin kun halutaan botin liikkuvan.
     Palauttaa booleanin (`true` kun onnistuu ja `false` jos ei onnistu).
 
 ### goRight(amount, botX)
