@@ -76,9 +76,9 @@ async function start() {
 
     setInterval(
         ()=>{
-            bot.doRandomAction(player);
+            bot.doRandomAction(player, hp);
         },
-        100
+        1700
     )
 
     document.addEventListener("keydown", e => {

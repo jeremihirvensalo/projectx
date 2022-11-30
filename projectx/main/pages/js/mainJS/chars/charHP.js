@@ -51,10 +51,7 @@ class HP{
 
     takeHit(amount, who){
         if(this.botHP == 0 || this.playerHP == 0){
-            if(canvasEvents() == false){
-                console.log("tuli");
-                this.reset();
-            }
+            if(canvasEvents() == false) this.reset();
             return;
         }
         if(who == this.bot.getName()){

@@ -109,26 +109,25 @@ app.post("/move", async (req, res)=>{
         if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
         return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
         if(player.blockstate) return res.json({info:false});
+        
+        const whoIndex = player.username === players[playerIndex].username ? playerIndex : botIndex;
+        const user = players[whoIndex];
 
         let result = false;
-        for(let user of players){
-            if(user.username === player.username){
-                // seuraavat arvot ovat oletuksia, mutta voidaan vaihtaa muuttujiksi 
-                if(player.x !== user.x){
-                    if(player.x + 20 === user.x) result = true; // liikkuu vasemmalle
-                    else if(player.x - 20 === user.x && player.x < players[botIndex].x - user.w) result = true; // liikkuu oikealle
-                }else if(player.y !== user.y){
-                    if(player.y + 75 === user.y && player.y + 75 === defaultY) result = true;
-                    else if(player.y - 75 === user.y && player.y === defaultY) result = true;
-                }else if(player.w !== user.w || player.h !== user.h){
-                    result = false;
-                    break;
-                }
+        if(player.x !== user.x){
+            if(player.x + 20 === user.x) result = true; // liikkuu vasemmalle
+            else if(player.x - 20 === user.x){ // liikkuu oikealle
+                if(whoIndex !== botIndex && player.x < players[botIndex].x - user.w) result = true;
+                else if(player.x < canvasWidth - user.w) result = true;
             }
-        }
+        }else if(player.y !== user.y){
+            if(player.y + 75 === user.y && player.y + 75 === defaultY) result = true;
+            else if(player.y - 75 === user.y && player.y === defaultY) result = true;
+        }else if(player.w !== user.w || player.h !== user.h) result = false;
+        
         if(!result) return res.json({info:false});
-        players[playerIndex] = player;
-        res.json({info:true});
+        players[whoIndex] = player;
+        return res.json({info:true});
     }catch(e){
         return res.json({err:"Liikkeen tarkistuksessa virhe"});
     }

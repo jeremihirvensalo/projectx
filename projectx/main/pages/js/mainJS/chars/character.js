@@ -35,19 +35,19 @@ class Character{
         return this.animation;
     }
 
-    async goLeft(amount){
+    async goLeft(amount, playerCRDS){
         this.x -= amount;
         const result = await verifyMove(this);
         this.x += amount;
         if(!result) return false;
         this.piirraCanvas();
-        if((this.x - amount) > 0) this.x -= amount; //jos haluaa pelaajan kiinni seinään (this.x - amount) > -10
+        if((this.x - amount) > (playerCRDS ? playerCRDS.x + playerCRDS.w : 0)) this.x -= amount;
         this.ukkeli.siirryVasen(amount);
         this.piirraChar();
         return true;
     }
     
-    async goRight(amount, botX){
+    async goRight(amount, botX=-1){
         this.x += amount;
         const result = await verifyMove(this);
         this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)
@@ -56,7 +56,7 @@ class Character{
         this.piirraCanvas();
         let ogAmount = this.x;
         if((this.x + amount) < (800 - this.userW)) this.x += amount; // canvas width: 800
-        if((this.x) == (botX - this.userW)){
+        if(botX != -1 && (this.x) == (botX - this.userW)){
             if(ogAmount != this.x) this.x -= amount;
         }
         this.ukkeli.siirryOikea(amount);
@@ -99,7 +99,7 @@ class Character{
 
     punch(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x + this.userW), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
@@ -124,7 +124,7 @@ class Character{
  
     punchL(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
@@ -142,7 +142,7 @@ class Character{
 
     kick(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x + this.userW), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
@@ -167,7 +167,7 @@ class Character{
 
     kickL(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = this.color;
+        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
         setTimeout(()=>{
@@ -196,9 +196,6 @@ class Character{
     }
 
     piirraChar(){
-        // this.ctx.fillStyle = this.color;
-        // this.ctx.fillRect(this.x, this.y, this.userW, this.userH);
-        // this.animation.piirra(this.x, this.y);
         this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username"));
     }
 
@@ -207,9 +204,6 @@ class Character{
     }
 
     piirraCanvas(){
-        // this.ctx.fillStyle = "grey"; // tähän taustakuva
-        // this.ctx.clearRect(0, 170, 800, 400); // vain canvaksen alaosa piirretään uusiksi
-        // this.ctx.fillRect(0, 170, 800, 400);
         this.ctx.clearRect(0, 170, 800, 400);
     }
 
