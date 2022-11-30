@@ -1,5 +1,3 @@
-let eventStatus = false;
-
 (function(){
     document.addEventListener("DOMContentLoaded", ()=>{
         document.getElementById("logout").addEventListener("click", async ()=>{
@@ -41,7 +39,7 @@ let eventStatus = false;
     });
 
     document.getElementById("settings").addEventListener("click", ()=>{
-        eventStatus = true;
+        stopCanvasEvents(true);
         let main = document.getElementById("main");
         let navWrap = document.getElementById("navWrap");
 
@@ -142,7 +140,7 @@ let eventStatus = false;
     });
 
     document.getElementById("closeSettings").addEventListener("click", ()=>{
-        eventStatus = false;
+        stopCanvasEvents(false);
         let main = document.getElementById("main");
         let navWrap = document.getElementById("navWrap");
         document.getElementById("userSettings").style.display = "none";
