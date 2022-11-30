@@ -155,11 +155,3 @@ let eventStatus = false;
         document.getElementById("info").innerHTML = "";
     });
 })();
-
-function canvasEvents(){
-    return eventStatus;
-}
-
-function stopCanvasEvents(state){
-    eventStatus = state;
-}
