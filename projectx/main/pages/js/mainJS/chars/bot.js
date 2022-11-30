@@ -1,7 +1,7 @@
 // Tää on bonari botti joka ei 100% oo vaa pelaaja - score ja pari outoo global variablee, (tee random ja lisää canvaksee)
 class Bot extends Character{
     
-    doRandomAction(player) {
+    doRandomAction(player, hp) {
 
         let moveAmount = 50;
 
@@ -12,10 +12,10 @@ class Bot extends Character{
         ];
 
         let attackActions = [
-            ()=>{this.punch(player, this.hp)},
-            ()=>{this.punchL(player, this.hp)},
-            ()=>{this.kick(player, this.hp)},
-            ()=>{this.kickL(player, this.hp)}
+            ()=>{this.punch(player, hp)},
+            ()=>{this.punchL(player, hp)},
+            ()=>{this.kick(player, hp)},
+            ()=>{this.kickL(player, hp)}
         ];
 
         let actions = [
