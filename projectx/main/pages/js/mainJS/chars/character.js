@@ -83,8 +83,7 @@ class Character{
             
             this.piirraCanvas();
             bot.piirraCharStill();
-            this.ukkeli.siirryAlas(amount);
-            this.piirraChar();
+            this.piirraCharStill();
         }, 300);
         return true;
     }
@@ -102,6 +101,8 @@ class Character{
         this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x + this.userW), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
+        this.ukkeli.siirryAlas();
+        this.piirraChar();
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraCharStill();
@@ -127,6 +128,9 @@ class Character{
         this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
+
+        // vasen lyönti kutsu tähän
+
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraCharStill();
@@ -145,6 +149,9 @@ class Character{
         this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x + this.userW), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
+
+        // potku animaatio kutsu tähän
+    
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraCharStill();
@@ -170,6 +177,9 @@ class Character{
         this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
         this.ctx.fillRect((this.x - this.userW + 20), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
+
+        // vasen potku animaatio tähän
+
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraCharStill();
@@ -195,16 +205,19 @@ class Character{
         return {x:this.x, y:this.y, w:this.userW, h:this.userH};
     }
 
-    piirraChar(){
-        this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username"));
+    async piirraChar(){
+        for(let i = 0; i < this.ukkeli.getActiveImgs().length; i++){
+            await this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username")); 
+        }
+        stopCanvasEvents(false);
     }
 
     piirraCharStill(){
         this.ukkeli.drawStill(this.x, this.y, this.name !== getCookieValue("username"));
     }
 
-    piirraCanvas(){
-        this.ctx.clearRect(0, 170, 800, 400);
+    piirraCanvas(x=0,y=170,w=800,h=400){ // update API
+        this.ctx.clearRect(x, y, w, h);
     }
 
     getHP(){

@@ -6,16 +6,16 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
     switch (toiminto) {
         case "LEFT":
             allowed = await player.goLeft(20);
-            if(allowed) bot.piirraCharStill();
+            if(allowed) await bot.piirraCharStill();
             break;
         case "RIGHT":
             allowed = await player.goRight(20, botCRDS.x);
-            if(allowed) bot.piirraCharStill();
+            if(allowed) await bot.piirraCharStill();
             break;
         case "UP":
             if (playerCRDS.y == 245) {
                 allowed = await player.jump(75, bot);
-                if(allowed) bot.piirraCharStill();
+                if(allowed) await bot.piirraCharStill();
             }
             break;
         case "PUNCH":

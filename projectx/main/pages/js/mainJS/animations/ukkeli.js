@@ -12,7 +12,7 @@ class Ukkeli{
     }
 
     drawStill(x=this.x, y=this.y, isBot){
-        let pala = this.aktiivisetKuvat[this.kuvanro];
+        let pala = this.kuvat.ALAS[0];
         if(isBot) this.konteksti.filter = "invert(1)";
         this.konteksti.drawImage(this.kuvat.kuva,
             //spritestä otettava pala
@@ -22,17 +22,30 @@ class Ukkeli{
         this.konteksti.filter = "none";
     }
 
-    piirra(x=this.x, y=this.y, isBot){
-        let pala = this.aktiivisetKuvat[this.kuvanro];
-        // if(x !== this.x || y !== this.y) 
-        this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
-        if(isBot) this.konteksti.filter = "invert(1)";
-        this.konteksti.drawImage(this.kuvat.kuva,
-            //spritestä otettava pala
-            pala.x,pala.y, pala.leveys,pala.korkeus,
-            //mihin kohtaan piirretään kanvakselle
-            x,y, pala.leveys,pala.korkeus);
-        this.konteksti.filter = "invert(0)";
+    async piirra(x=this.x, y=this.y, isBot){
+        const promiseDraw = new Promise(resolve=>{
+            setTimeout(()=>{
+                let pala = this.aktiivisetKuvat[this.kuvanro];
+                let lastPala = this.kuvanro === 0 ? pala : this.aktiivisetKuvat[this.kuvanro - 1];
+                this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
+                
+                this.konteksti.clearRect(x, y, lastPala.leveys, lastPala.korkeus);
+                if(isBot) this.konteksti.filter = "invert(1)";
+                this.konteksti.drawImage(this.kuvat.kuva,
+                    //spritestä otettava pala
+                    pala.x,pala.y, pala.leveys,pala.korkeus,
+                    //mihin kohtaan piirretään kanvakselle
+                    x,y, pala.leveys,pala.korkeus);
+                this.konteksti.filter = "invert(0)";
+                resolve();    
+            }, 80);
+
+        });
+        await promiseDraw;
+    }
+
+    getActiveImgs(){
+        return this.aktiivisetKuvat;
     }
 
     siirryAlas(dy){

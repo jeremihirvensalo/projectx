@@ -12,6 +12,7 @@ const movement = {
     KeyC: "KICKL"
 };
 
+let eventStatus = true;
 let keypressed = false;
 let player;
 let bot;
@@ -82,7 +83,6 @@ async function start() {
     )
 
     document.addEventListener("keydown", e => {
-        // e.preventDefault(); 
         if(keypressed) return;
         keypressed = true;
         if (canvasEvents()) return;
@@ -92,6 +92,7 @@ async function start() {
                 player.block(true);
             }
         } else {
+            stopCanvasEvents(true);
             suoritaToiminto(player, bot, movement[e.code], hp);
         }
     });
@@ -105,6 +106,14 @@ async function start() {
         const result = await resetServer();
         console.log(result);
     });
+}
+
+function canvasEvents(){
+    return eventStatus;
+}
+
+function stopCanvasEvents(state=false){
+    eventStatus = state;
 }
 
 function returnPlayers(){
