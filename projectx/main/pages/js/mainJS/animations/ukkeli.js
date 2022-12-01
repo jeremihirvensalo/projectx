@@ -9,7 +9,7 @@ class Ukkeli{
         this.aktiivisetKuvat= this.kuvat.ALAS;
         this.kuvanro=0;
         this.rivinro=0;
-        this.currImg = this.kuvat.ALAS[0];
+        this.currImg = this.kuvat.DEFAULT[0];
     }
 
     async drawStill(isBot, x=this.x, y=this.y){
@@ -45,7 +45,6 @@ class Ukkeli{
                 this.currImg = pala;
                 resolve();    
             }, 60);
-
         });
         await promiseDraw;
     }
