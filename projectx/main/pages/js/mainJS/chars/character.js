@@ -25,8 +25,8 @@ class Character{
         // this.alusta();
     }
 
-    async alusta(){
-        this.animation = new Animations(this.canvas, this.ctx);
+    async alusta(imgs){
+        this.animation = new Animations(this.canvas, this.ctx, imgs);
         await this.animation.alusta(this);
         this.ukkeli = this.animation.getUkkeli();
     }

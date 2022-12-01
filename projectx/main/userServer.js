@@ -29,6 +29,10 @@ app.get("/abobo.png", (req, res)=>{
     res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo.png"));
 });
 
+app.get("/abobo_mirrored.png", (req, res)=>{
+    res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo_mirrored.png"));
+});
+
 app.post("/", async (req, res) => {
     const user = req.body;
     const result = await db.verifyLogin(user.username, user.password);
