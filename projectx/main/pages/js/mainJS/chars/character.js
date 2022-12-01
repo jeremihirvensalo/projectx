@@ -35,36 +35,34 @@ class Character{
         return this.animation;
     }
 
-    async goLeft(amount, playerCRDS){
+    async goLeft(amount){
         this.x -= amount;
         const result = await verifyMove(this);
-        this.x += amount;
-        if(!result) return false;
-        this.piirraCanvas();
-        if((this.x - amount) > (playerCRDS ? playerCRDS.x + playerCRDS.w : 0)) this.x -= amount;
+        if(!result){
+            this.x += amount;
+            return false;
+        } 
         this.ukkeli.siirryVasen(amount);
+        this.piirraCanvas();
         this.piirraChar();
         stopCanvasEvents(false);
         return true;
     }
     
-    async goRight(amount, botX=-1){
+    async goRight(amount){
         this.x += amount;
         const result = await verifyMove(this);
-        this.x -= amount; // helpompi vaa miinustaa takasi alkuperäseen arvoon. (en jaksa miettii tän toimintaa uudestaa)
-        if(!result) return false;
-        
-        this.piirraCanvas();
-        let ogAmount = this.x;
-        if((this.x + amount) < (800 - this.userW)) this.x += amount; // canvas width: 800
-        if(botX != -1 && (this.x) == (botX - this.userW)){
-            if(ogAmount != this.x) this.x -= amount;
-        }
+        if(!result){
+            this.x -= amount;
+            return false;
+        } 
+
         this.ukkeli.siirryOikea(amount);
-        this.piirraChar();
+        const currImg = this.ukkeli.getCurrentImg();
+        this.piirraCanvas(this.x- amount, this.y, currImg.leveys, currImg.korkeus);
+        await this.piirraChar();
         stopCanvasEvents(false);
         return true;
-
     }
 
     async jump(amount, bot){
@@ -75,16 +73,19 @@ class Character{
             return false;
         }
         this.piirraCanvas();
-        bot.piirraCharStill();
+        bot.piirraCharStill(); // jos on animaatio kesken tulee näyttää kusiselta?
         this.ukkeli.siirryYlos(amount);
         this.piirraChar();
         setTimeout(async ()=>{
             this.y += amount;
             const result2 = await verifyMove(this);
-            if(!result2) return false;
+            if(!result2){
+                this.y -= amount;
+                return false;
+            } 
             
-            this.piirraCanvas();
-            bot.piirraCharStill();
+            const currImg = this.ukkeli.getCurrentImg();
+            this.piirraCanvas(this.x, this.y-amount, currImg.leveys, currImg.korkeus);
             this.piirraCharStill();
             stopCanvasEvents(false);
         }, 300);
@@ -99,20 +100,12 @@ class Character{
         return blockState;
     }
 
-    punch(bot, hp){
+    async punch(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
-        this.ctx.fillRect((this.x + this.userW), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
         this.ukkeli.siirryAlas();
-        this.piirraChar();
-        setTimeout(()=>{
-            const imgCRDS = this.ukkeli.getCurrentImg();
-            this.piirraCanvas(imgCRDS.x, imgCRDS.y, imgCRDS.leveys, imgCRDS.korkeus); // en tiiä auttaako mitään
-            bot.piirraCharStill();
-            this.piirraChar();
-            stopCanvasEvents(false);
-        }, 100);
+        await this.piirraChar();
+        bot.piirraCharStill();
 
         if(this.getCoords().x > bot.getCoords().x){
             setTimeout(()=>{
@@ -124,49 +117,45 @@ class Character{
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
+            stopCanvasEvents(false);
             canAttack = true;
         }, 230);
     }
  
-    punchL(bot, hp){
+    async punchL(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
-        this.ctx.fillRect((this.x - this.userW + 20), (this.y + 40), 70, (this.userH / 3));
         canAttack = false;
+        this.ukkeli.siirryAlas();
+        await this.piirraChar();
+        bot.piirraCharStill();
 
-        // vasen lyönti kutsu tähän
-
-        setTimeout(()=>{
-            this.piirraCanvas();
-            bot.piirraCharStill();
-            this.piirraChar();
-            stopCanvasEvents(false);
-        }, 100);
         if((this.getCoords().x - bot.getCoords().x) <=160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
+            stopCanvasEvents(false);
             canAttack = true;
         }, 230);
     }
 
-    kick(bot, hp){
+    async kick(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
-        this.ctx.fillRect((this.x + this.userW), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
-
-        // potku animaatio kutsu tähän
-    
+        this.ukkeli.siirryPotku();
+        let currImg = this.ukkeli.getCurrentImg();
+        this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+        this.y += 30;
+        await this.piirraChar();
         setTimeout(()=>{
-            this.piirraCanvas();
-            bot.piirraCharStill();
-            this.piirraChar();
-            stopCanvasEvents(false);
+            currImg = this.ukkeli.getCurrentImg();
+            this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+            this.y -= 30;
+            this.piirraCharStill();
         }, 100);
 
         if(this.getCoords().x > bot.getCoords().x){
             setTimeout(()=>{
+                stopCanvasEvents(false);
                 canAttack = true;
             }, 230);
             return;
@@ -175,28 +164,30 @@ class Character{
             hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
+            stopCanvasEvents(false);
             canAttack = true;
         }, 230);
     }
 
-    kickL(bot, hp){
+    async kickL(bot, hp){
         if(!canAttack) return;
-        this.ctx.fillStyle = "rgba(0, 0, 200, 0)";
-        this.ctx.fillRect((this.x - this.userW + 20), (this.y + 95), 70, (this.userH / 3));
         canAttack = false;
-
-        // vasen potku animaatio tähän
-
+        this.ukkeli.siirryPotku();
+        let currImg = this.ukkeli.getCurrentImg();
+        this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+        this.y += 30;
+        await this.piirraChar();
         setTimeout(()=>{
-            this.piirraCanvas();
-            bot.piirraCharStill();
-            this.piirraChar();
-            stopCanvasEvents(false);
+            currImg = this.ukkeli.getCurrentImg();
+            this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+            this.y -= 30;
+            this.piirraCharStill();
         }, 100);
         if((this.getCoords().x - bot.getCoords().x) <= 160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
+            stopCanvasEvents(false);
             canAttack = true;
         }, 230);
     }
@@ -215,12 +206,12 @@ class Character{
 
     async piirraChar(){
         for(let i = 0; i < this.ukkeli.getActiveImgs().length; i++){
-            await this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username")); 
+            await this.ukkeli.piirra(this.name !== getCookieValue("username"), this.x, this.y); 
         }
     }
 
     piirraCharStill(){
-        this.ukkeli.drawStill(this.x, this.y, this.name !== getCookieValue("username"));
+        this.ukkeli.drawStill(this.name !== getCookieValue("username"), this.x, this.y);
     }
 
     piirraCanvas(x=0,y=170,w=800,h=400){ // update API

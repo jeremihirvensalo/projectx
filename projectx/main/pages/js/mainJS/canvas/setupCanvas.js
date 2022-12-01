@@ -6,17 +6,19 @@ const abobo = {
         { x: 66, y: 1195, leveys: 99, korkeus: 119 },
         { x: 196, y: 1191, leveys: 166, korkeus: 117 },
         { x: 66, y: 1195, leveys: 99, korkeus: 119 },
-        { x: 411, y: 1022, leveys: 104, korkeus: 121 }
+        { x: 411, y: 1022, leveys: 104, korkeus: 121 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     YLOS: [
 
-        { x: 323, y: 365, leveys: 101, korkeus: 114 },
+        { x: 323, y: 365, leveys: 100, korkeus: 113 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        { x: 207, y: 520, leveys: 97, korkeus: 94 }
+        { x: 207, y: 520, leveys: 97, korkeus: 94 },
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 323, y: 365, leveys: 101, korkeus: 114 }
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     VASEN: [
         { x: 74, y: 203, leveys: 98, korkeus: 125 },
@@ -40,6 +42,9 @@ const abobo = {
         { x: 221, y: 1879, leveys: 127, korkeus: 87 },
         { x: 81, y: 1871, leveys: 83, korkeus: 96 },
         { x: 208, y: 1728, leveys: 103, korkeus: 88 }
+    ],
+    DEFAULT: [
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ]
 };
 
@@ -51,17 +56,19 @@ const abobo_mirrored = {
         { x: 66, y: 1195, leveys: 99, korkeus: 119 },
         { x: 196, y: 1191, leveys: 166, korkeus: 117 },
         { x: 66, y: 1195, leveys: 99, korkeus: 119 },
-        { x: 411, y: 1022, leveys: 104, korkeus: 121 }
+        { x: 411, y: 1022, leveys: 104, korkeus: 121 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     YLOS: [
 
-        { x: 323, y: 365, leveys: 101, korkeus: 114 },
+        { x: 323, y: 365, leveys: 100, korkeus: 113 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        { x: 207, y: 520, leveys: 97, korkeus: 94 }
+        { x: 207, y: 520, leveys: 97, korkeus: 94 },
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 323, y: 365, leveys: 101, korkeus: 114 }
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     VASEN: [
         { x: 74, y: 203, leveys: 98, korkeus: 125 },
@@ -85,6 +92,9 @@ const abobo_mirrored = {
         { x: 221, y: 1879, leveys: 127, korkeus: 87 },
         { x: 81, y: 1871, leveys: 83, korkeus: 96 },
         { x: 208, y: 1728, leveys: 103, korkeus: 88 }
+    ],
+    DEFAULT: [
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ]
 };
 
@@ -97,9 +107,7 @@ const movement = {
     KeyD: "RIGHT",
     Space: "BLOCK",
     KeyF: "PUNCH",
-    KeyR: "PUNCHL",
-    KeyG: "KICK",
-    KeyC: "KICKL"
+    KeyG: "KICK"
 };
 
 let eventStatus = true;
@@ -165,12 +173,12 @@ async function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
 
-    // setInterval(
-    //     ()=>{
-    //         bot.doRandomAction(player, hp);
-    //     },
-    //     1700
-    // )
+    setInterval(
+        ()=>{
+            bot.doRandomAction(player, hp);
+        },
+        1700
+    )
 
     document.addEventListener("keydown", e => {
         if(keypressed) return;

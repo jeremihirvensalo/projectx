@@ -8,7 +8,7 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
             allowed = await player.goLeft(20);
             break;
         case "RIGHT":
-            allowed = await player.goRight(20, botCRDS.x);
+            allowed = await player.goRight(20);
             break;
         case "UP":
             if (playerCRDS.y == 245) allowed = await player.jump(75, bot);
@@ -27,7 +27,10 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
             return;
     }
     if(allowed) await bot.piirraCharStill();
-    else console.log("Move not allowed");
+    else{
+        console.log("Move not allowed");
+        stopCanvasEvents(false);
+    } 
 }
 
 async function verifyMove(player){ // write API

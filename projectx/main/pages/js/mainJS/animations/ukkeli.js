@@ -12,9 +12,10 @@ class Ukkeli{
         this.currImg = this.kuvat.ALAS[0];
     }
 
-    async drawStill(x=this.x, y=this.y, isBot){
+    async drawStill(isBot, x=this.x, y=this.y){
         const promiseDraw = new Promise(resolve=>{ // ei luultavasti mitään hyötyy olla promisessa
-            let pala = this.kuvat.ALAS[0];
+            let pala = this.kuvat.DEFAULT[0];
+            this.konteksti.clearRect(x, y, this.currImg.leveys, this.currImg.korkeus);
             if(isBot) this.konteksti.filter = "invert(1)";
             this.konteksti.drawImage(this.kuvat.kuva,
                 //spritestä otettava pala
@@ -27,15 +28,14 @@ class Ukkeli{
         await promiseDraw;
     }
 
-    async piirra(x=this.x, y=this.y, isBot){
+    async piirra(isBot, x=this.x, y=this.y){
         const promiseDraw = new Promise(resolve=>{
             setTimeout(()=>{
                 let pala = this.aktiivisetKuvat[this.kuvanro];
-                let lastPala = this.kuvanro === 0 ? pala : this.aktiivisetKuvat[this.kuvanro - 1];
                 this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
-                
-                this.konteksti.clearRect(x, y, lastPala.leveys, lastPala.korkeus);
+                this.konteksti.clearRect(x, y, this.currImg.leveys, this.currImg.korkeus);
                 if(isBot) this.konteksti.filter = "invert(1)";
+
                 this.konteksti.drawImage(this.kuvat.kuva,
                     //spritestä otettava pala
                     pala.x,pala.y, pala.leveys,pala.korkeus,
@@ -44,7 +44,7 @@ class Ukkeli{
                 this.konteksti.filter = "invert(0)";
                 this.currImg = pala;
                 resolve();    
-            }, 80);
+            }, 60);
 
         });
         await promiseDraw;
@@ -94,4 +94,11 @@ class Ukkeli{
         this.aktiivisetKuvat = this.kuvat.OIKEA;
     }
 
+    siirryPotku(){
+        if(this.rivinro != 4){
+            this.kuvanro = 0;
+            this.rivinro = 4;
+        }
+        this.aktiivisetKuvat = this.kuvat.POTKU;
+    }
 }
