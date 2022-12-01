@@ -936,6 +936,10 @@ Jos parametri `result` ei sisällä statuskoodia:
     Peli lopetetaan laittamalla parametriksi `false`. Aloitus tapahtuu parametrilla `true`.
     Funktio ei palauta mitään.
 
+### startBot(state)
+    Aloittaa ja lopettaa botin liikkumisen. Parametri "state" on boolean ja jos sen jättää määrittelemättömäksi, 
+    käsitellään se arvona `true`. Arvo `true` aloittaa liikkumisen ja `false` lopettaa.
+
 ### resetServer()
     Parametriton funktio joka kertoo palvelimelle, että käyttäjä haluaa päivittää sivun. 
     Palauttaa vastauksen json-muodossa.
