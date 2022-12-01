@@ -14,8 +14,8 @@ class Bot extends Character{
         ];
 
         let attackActions = [
-            ()=>{this.punch(player, hp)},
-            ()=>{this.kick(player, hp)},
+            ()=>{this.punchL(player, hp)},
+            ()=>{this.kickR(player, hp)},
         ];
 
         let actions = [
