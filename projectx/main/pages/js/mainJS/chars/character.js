@@ -210,8 +210,8 @@ class Character{
         }
     }
 
-    piirraCharStill(){
-        this.ukkeli.drawStill(this.name !== getCookieValue("username"), this.x, this.y);
+    async piirraCharStill(){
+        await this.ukkeli.drawStill(this.name !== getCookieValue("username"), this.x, this.y);
     }
 
     piirraCanvas(x=0,y=170,w=800,h=400){ // update API
