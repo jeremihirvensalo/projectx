@@ -6,16 +6,16 @@ class Bot extends Character{
         let moveAmount = 20;
 
         let moveActions = [
-            ()=>{this.goLeft(moveAmount).then(()=>{player.piirraCharStill()})},
-            ()=>{this.goLeft(moveAmount).then(()=>{player.piirraCharStill()})},
-            ()=>{this.goLeft(moveAmount).then(()=>{player.piirraCharStill()})},
+            ()=>{this.goLeft(moveAmount, player.getCoords()).then(()=>{player.piirraCharStill()})},
+            ()=>{this.goLeft(moveAmount, player.getCoords()).then(()=>{player.piirraCharStill()})},
+            ()=>{this.goLeft(moveAmount, player.getCoords()).then(()=>{player.piirraCharStill()})},
             ()=>{this.goRight(moveAmount).then(()=>{player.piirraCharStill()})},
             ()=>{this.jump(75, player).then(()=>{player.piirraCharStill()})}
         ];
 
         let attackActions = [
             ()=>{this.punchL(player, hp)},
-            ()=>{this.kickR(player, hp)},
+            ()=>{this.kickL(player, hp)},
         ];
 
         let actions = [
