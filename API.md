@@ -883,11 +883,10 @@ Jos ohjelma hajosi virheeseen:
     Eli jos statuskoodi on 401, tokeni on ollut väärä tai sitä ei ole tullut palvelimelle, jolloin pelaaja 
     täytyy heittää ulos sivulta => "info:false".
 
-Jos statuskoodi on 401:
+Jos statuskoodi on 200:
 ```json
 {
-    "info":false,
-    "details":"Token check fail"
+    "info":true
 }
 ```
 
@@ -896,6 +895,14 @@ Jos statuskoodi on 400:
 {
     "info":false,
     "details":"*result-parametrista löytyvä err-parametri*"
+}
+```
+
+Jos statuskoodi on 401:
+```json
+{
+    "info":false,
+    "details":"Token check fail"
 }
 ```
 
@@ -922,6 +929,12 @@ Jos parametri `result` ei sisällä statuskoodia:
     "details":"Status-parametria ei löytynyt"
 }
 ```
+
+### startGameServer(starting)
+    Lähettää kutsun pelipalvelimelle, kun peli halutaan aloittaa tai lopettaa.
+    Parametri `starting` täytyy olla booleani. Jos parametria ei ole määritelty sen oletetaan olevan `true`.
+    Peli lopetetaan laittamalla parametriksi `false`. Aloitus tapahtuu parametrilla `true`.
+    Funktio ei palauta mitään.
 
 ### resetServer()
     Parametriton funktio joka kertoo palvelimelle, että käyttäjä haluaa päivittää sivun. 
@@ -1290,24 +1303,27 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     Jos jotkin parametrit puuttuvat palauttaa:
 ```json
 {
-    "err":"Tiedot puutteelliset"
+    "err":"Tiedot puutteelliset",
+    "status":400
 }
 ```
 
     Onnistuneessa tilanteessa palauttaa:
 ```json
 {
-    "info":true
+    "info":true,
+    "status":200
 }
 ```
 
     Virhetilanteessa palauttaa:
 ```json
 {
-    "err":"Ohjelmassa tapahtui virhe"
+    "err":"Pelin aloituksessa tai lopetuksessa tapahtui virhe",
+    "status":500
 }
 ```
-    tai jonkin Database-luokan funktion search virheilmoituksen.
+    Parametri "err" voi sisältää myös tietokannan search-funktion virheilmoituksen.
 
     Jos tokeni on väärä tai puuttuu palauttaa:
 ```json
@@ -1319,6 +1335,7 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     Jos canvas-elementin pituus puuttuu tai se on liian pieni palauttaa:
 ```json
 {
+    "err":"Canvaksen leveys liian pieni tai sitä ei annettu",
     "status":400
 }
 ```
