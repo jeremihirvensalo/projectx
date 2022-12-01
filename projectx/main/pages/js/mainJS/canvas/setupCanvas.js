@@ -114,9 +114,11 @@ let eventStatus = true;
 let keypressed = false;
 let player;
 let bot;
+let hp;
 let botUsername = "bot";
 let playerAnim;
 let botAnim;
+let botRandInterval = -1;
 
 async function start() {
     if(window.innerWidth < 810){
@@ -141,12 +143,12 @@ async function start() {
     await bot.alusta(abobo_mirrored);
     playerAnim = player.getAnimations();
     botAnim = bot.getAnimations();
-    const hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
+    hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
 
     // Hoitaa uuden kierroksen aloituksen
     try{
         await new Promise(async (resolve,reject)=>{
-            if(parseInt($("#points").attr("value")) > 0) {
+            if(player.getHP() !== 100 || bot.getHP() !== 100) {
                 const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
                 if(!prepRound.info){
                     $("#infoalue").html(prepRound.err);
@@ -177,12 +179,7 @@ async function start() {
     
     await startGameServer(true);
 
-    setInterval(
-        ()=>{
-            bot.doRandomAction(player, hp);
-        },
-        1700
-    )
+    startBot(true);
 
     document.addEventListener("keydown", e => {
         if(keypressed) return;
@@ -343,6 +340,18 @@ async function startGameServer(starting=true){
     }catch(e){
         $("#infoalue").html(e.err ? e.err : "Pelin aloituksessa tai lopetuksessa virhe");
     }
+}
+
+function startBot(state=true){ // write API
+    console.log(botRandInterval);
+    if(botRandInterval === -1 && state){
+        botRandInterval = setInterval(()=>{
+            bot.doRandomAction(player, hp);
+        },1700);
+    }else if(botRandInterval && !state){
+        clearInterval(botRandInterval);
+        botRandInterval = -1;
+    } 
 }
 
 async function resetServer(){

@@ -74,6 +74,7 @@ class HP{
 
     reset(){
         stopCanvasEvents(true);
+        startBot(false);
         document.getElementById("restart").style.display = "block";
         hpWidth = 360;
         botRedBlock = 0;
@@ -83,6 +84,15 @@ class HP{
         this.player.reset();
         this.bot.reset();
         this.playerStart = 25 + hpWidth;
-        document.getElementById("restart").addEventListener("click", start);
+        
+        document.getElementById("restart").addEventListener("click", async ()=>{
+            this.player.piirraCanvas(0, 0, 800, 400);
+            const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
+            if(!result.info){
+                $("#infoalue").html(result.err);
+                return;
+            }
+            start();
+        });
     }
 }
