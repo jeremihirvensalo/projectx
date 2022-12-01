@@ -1,5 +1,4 @@
 let blockState = false;
-let canAttack = true;
 let points = 0;
 
 class Character{
@@ -15,6 +14,7 @@ class Character{
         this.name = name;
         this.animation;
         this.ukkeli;
+        this.canAttack = true;
         this.startPos = {
             x: x,
             y: y,
@@ -22,7 +22,6 @@ class Character{
             h: userH,
             color: color
         };
-        // this.alusta();
     }
 
     async alusta(imgs){
@@ -35,60 +34,69 @@ class Character{
         return this.animation;
     }
 
-    async goLeft(amount, playerCRDS={}){ // update API
+    async goLeft(amount, affectCanvasEvents=false){
         this.x -= amount;
         const result = await verifyMove(this);
         if(!result){
             this.x += amount;
             return false;
         }
-        
+        this.clearCurrentImg(this.x + amount);
         this.ukkeli.siirryVasen(amount);
-        this.piirraCanvas();
-        this.piirraChar();
-        stopCanvasEvents(false);
-        return true;
+        await this.piirraChar();
+        if(affectCanvasEvents){
+            setTimeout(()=>{
+                stopCanvasEvents(false);
+                return true;
+            },50);
+        }else return true;
+        
     }
     
-    async goRight(amount){
+    async goRight(amount, affectCanvasEvents=false){
         this.x += amount;
         const result = await verifyMove(this);
         if(!result){
             this.x -= amount;
             return false;
-        } 
+        }
 
+        this.clearCurrentImg(this.x - amount);
         this.ukkeli.siirryOikea(amount);
-        const currImg = this.ukkeli.getCurrentImg();
-        this.piirraCanvas(this.x- amount, this.y, currImg.leveys, currImg.korkeus);
         await this.piirraChar();
-        stopCanvasEvents(false);
-        return true;
+        if(affectCanvasEvents){
+            setTimeout(()=>{
+                stopCanvasEvents(false);
+                return true;
+            },50);
+        }else return true;
     }
 
-    async jump(amount, bot){
+    async jump(amount, affectCanvasEvents=false){
         this.y -= amount;
         const result = await verifyMove(this);
         if(!result){
             this.y += amount;
             return false;
         }
-        this.piirraCanvas();
-        bot.piirraCharStill(); // jos on animaatio kesken tulee näyttää kusiselta?
+        this.clearCurrentImg(this.x, this.y + amount);
         this.ukkeli.siirryYlos(amount);
-        this.piirraChar();
+        await this.piirraChar();
         setTimeout(async ()=>{
             this.y += amount;
             const result2 = await verifyMove(this);
             if(!result2){
                 this.y -= amount;
-                return false;
+                return;
+            }
+            this.clearCurrentImg(this.x, this.y - amount);
+            this.ukkeli.siirryDefault();
+            await this.piirraChar();
+            if(affectCanvasEvents){
+                setTimeout(()=>{
+                    stopCanvasEvents(false);
+                },100);
             } 
-            
-            const currImg = this.ukkeli.getCurrentImg();
-            this.piirraCanvas(this.x, this.y-amount, currImg.leveys, currImg.korkeus);
-            this.piirraCharStill();
-            stopCanvasEvents(false);
         }, 300);
         return true;
     }
@@ -102,94 +110,78 @@ class Character{
     }
 
     async punch(bot, hp){
-        if(!canAttack) return;
-        canAttack = false;
+        if(!this.canAttack) return;
+        this.canAttack = false;
         this.ukkeli.siirryAlas();
-        await this.piirraChar();
-        bot.piirraCharStill();
-
-        if(this.getCoords().x > bot.getCoords().x){
-            setTimeout(()=>{
-                canAttack = true;
-            }, 230);
-            return;
-        } 
+        await this.piirraChar();        
         if((bot.getCoords().x - this.x) <= 160){
+            bot.piirraCharStill();
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             stopCanvasEvents(false);
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
+        return true;
     }
  
     async punchL(bot, hp){
-        if(!canAttack) return;
-        canAttack = false;
+        if(!this.canAttack) return;
+        this.canAttack = false;
         this.ukkeli.siirryAlas();
         await this.piirraChar();
-        bot.piirraCharStill();
-
-        if((this.getCoords().x - bot.getCoords().x) <=160 && (this.getCoords().x - bot.getCoords().x) > 0){
+        if((this.x - bot.getCoords().x) <= 160){
+            bot.piirraCharStill();
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            stopCanvasEvents(false);
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
     async kick(bot, hp){
-        if(!canAttack) return;
-        canAttack = false;
+        if(!this.canAttack) return;
+        this.canAttack = false;
         this.ukkeli.siirryPotku();
-        let currImg = this.ukkeli.getCurrentImg();
-        this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+        this.clearCurrentImg();
         this.y += 30;
         await this.piirraChar();
         setTimeout(()=>{
-            currImg = this.ukkeli.getCurrentImg();
-            this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+            this.clearCurrentImg();
             this.y -= 30;
-            this.piirraCharStill();
+            this.ukkeli.siirryDefault();
+            this.piirraChar();
         }, 100);
 
-        if(this.getCoords().x > bot.getCoords().x){
-            setTimeout(()=>{
-                stopCanvasEvents(false);
-                canAttack = true;
-            }, 230);
-            return;
-        }
         if((bot.getCoords().x - this.x) <= 160){
+            bot.piirraCharStill();
             hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
             stopCanvasEvents(false);
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
     async kickL(bot, hp){
-        if(!canAttack) return;
-        canAttack = false;
+        if(!this.canAttack) return;
+        this.canAttack = false;
         this.ukkeli.siirryPotku();
-        let currImg = this.ukkeli.getCurrentImg();
-        this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+        this.clearCurrentImg();
         this.y += 30;
         await this.piirraChar();
         setTimeout(()=>{
-            currImg = this.ukkeli.getCurrentImg();
-            this.piirraCanvas(this.x, this.y, currImg.leveys, currImg.korkeus);
+            this.clearCurrentImg();
             this.y -= 30;
-            this.piirraCharStill();
+            this.ukkeli.siirryDefault();
+            this.piirraChar();
         }, 100);
-        if((this.getCoords().x - bot.getCoords().x) <= 160 && (this.getCoords().x - bot.getCoords().x) > 0){
+        if((this.x - bot.getCoords().x) <= 160){
+            bot.piirraCharStill();
             hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
-            stopCanvasEvents(false);
-            canAttack = true;
+            this.canAttack = true;
         }, 230);
     }
 
@@ -219,12 +211,17 @@ class Character{
         this.ctx.clearRect(x, y, w, h);
     }
 
+    clearCurrentImg(x=this.x, y=this.y){ // write API
+        const currImg = this.ukkeli.getCurrentImg();
+        this.piirraCanvas(x, y, currImg.leveys, currImg.korkeus);
+    }
+
     getHP(){
         return this.hp;
     }
 
     getAttackStatus(){
-        return canAttack;
+        return this.canAttack;
     }
 
     getName(){

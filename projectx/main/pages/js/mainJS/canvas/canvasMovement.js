@@ -4,31 +4,25 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
     let allowed = false;
     switch (toiminto) {
         case "LEFT":
-            allowed = await player.goLeft(20);
-            break;
-        case "RIGHT":
-            allowed = await player.goRight(20);
-            break;
-        case "UP":
-            if (playerCRDS.y == 245) allowed = await player.jump(75);
-            break;
-        case "PUNCH":
-            player.punch(bot, hp);
+            allowed = await player.goLeft(20, true);
             return;
-        case "PUNCHL":
-            player.punchL(bot, hp);
+        case "RIGHT":
+            allowed = await player.goRight(20, true);
+            return;
+        case "UP":
+            if (playerCRDS.y == 245) allowed = await player.jump(75, true);
+            return;
+        case "PUNCH":
+            await player.punch(bot, hp);
             return;
         case "KICK":
-            player.kick(bot, hp);
-            return;
-        case "KICKL":
-            player.kickL(bot, hp);
+            await player.kick(bot, hp);
             return;
     }
-    if(allowed) await bot.piirraCharStill();
-    else{
+    // if(allowed) await bot.piirraCharStill();
+    if(!allowed){
         console.log("Move not allowed");
-        stopCanvasEvents(false);
+        // stopCanvasEvents(false);
     } 
 }
 

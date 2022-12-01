@@ -100,4 +100,12 @@ class Ukkeli{
         }
         this.aktiivisetKuvat = this.kuvat.POTKU;
     }
+
+    siirryDefault(){
+        if(this.rivinro != 5){
+            this.kuvanro = 0;
+            this.rivinro = 5;
+        }
+        this.aktiivisetKuvat = this.kuvat.DEFAULT;
+    }
 }

@@ -10,15 +10,14 @@ const abobo = {
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     YLOS: [
-
         { x: 323, y: 365, leveys: 100, korkeus: 113 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        { x: 207, y: 520, leveys: 97, korkeus: 94 },
+        { x: 207, y: 520, leveys: 97, korkeus: 94 }
         // { x: 85, y: 525, leveys: 97, korkeus: 120 },
         // { x: 444, y: 359, leveys: 97, korkeus: 132 },
         // { x: 323, y: 365, leveys: 101, korkeus: 114 }
-        { x: 184, y: 204, leveys: 99, korkeus: 124 }
+        // { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     VASEN: [
         { x: 74, y: 203, leveys: 98, korkeus: 125 },
@@ -181,7 +180,7 @@ async function start() {
 
     startBot(true);
 
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", async e => {
         if(keypressed) return;
         keypressed = true;
         if (canvasEvents()) return;
@@ -192,7 +191,7 @@ async function start() {
             }
         } else {
             stopCanvasEvents(true);
-            suoritaToiminto(player, bot, movement[e.code], hp);
+            await suoritaToiminto(player, bot, movement[e.code], hp);
         }
     });
     document.addEventListener("keyup", e => {
@@ -342,8 +341,7 @@ async function startGameServer(starting=true){
     }
 }
 
-function startBot(state=true){ // write API
-    console.log(botRandInterval);
+function startBot(state=true){
     if(botRandInterval === -1 && state){
         botRandInterval = setInterval(()=>{
             bot.doRandomAction(player, hp);
