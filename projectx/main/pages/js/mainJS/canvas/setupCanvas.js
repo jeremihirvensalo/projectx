@@ -143,6 +143,7 @@ async function start() {
     botAnim = bot.getAnimations();
     const hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
 
+    // Hoitaa uuden kierroksen aloituksen
     try{
         await new Promise(async (resolve,reject)=>{
             if(parseInt($("#points").attr("value")) > 0) {
@@ -163,7 +164,8 @@ async function start() {
         });
     }catch(e){
         console.log(e);
-        $("#infoalue").html("Odottamaton virhe tapahtui");
+        $("#infoalue").html(e.err ? e.err : "Odottamaton virhe tapahtui");
+        return;
     }
 
     hp.drawBarL(playerName);
@@ -172,6 +174,8 @@ async function start() {
     const restart = document.getElementById("restart");
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
+    
+    await startGameServer(true);
 
     setInterval(
         ()=>{
@@ -298,11 +302,13 @@ function statusCheck(result){
         }
         if(foundCode){
             switch(foundCode){
+                case 200:
+                    return {info:true, status:200};
+                case 400:
+                    return {info:false, details:result.err,status:400};
                 case 401:
                     window.location.href = "http://localhost:3000/";
                     return {info:false, details:"Token check fail", status:401};
-                case 400:
-                    return {info:false, details:result.err,status:400};
                 case 409:
                     return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409};
                 case 500:
@@ -313,6 +319,30 @@ function statusCheck(result){
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
+}
+
+async function startGameServer(starting=true){
+    try{
+        const options = {
+            method:"POST",
+            body:JSON.stringify({
+                token:getCookieValue("token"), 
+                username:getCookieValue("username"), 
+                canvasWidth:canvas.width, 
+                info:starting
+            }),
+            headers:{
+                "Content-Type":"application/json"
+            }
+        }
+        const data = await fetch("http://localhost:3001/game", options);
+        const result = await data.json();
+        const check = statusCheck(result);
+        if(!check.info) throw new Error({err:check.details});
+
+    }catch(e){
+        $("#infoalue").html(e.err ? e.err : "Pelin aloituksessa tai lopetuksessa virhe");
+    }
 }
 
 async function resetServer(){

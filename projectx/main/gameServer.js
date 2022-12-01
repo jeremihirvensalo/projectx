@@ -12,22 +12,19 @@ let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua
 
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0; 
-let canvasWidth = 800; // valmiissa versiossa = -1
+let canvasWidth = -1; // valmiissa versiossa = -1
 const defaultY = 245; // pelaajien positio Y canvaksella
-const playerDefaultX = 60; // player alku x koordinaatti
-const botDefaultX = 650; // bot alku x koordinaatti
-const defaultHP = 100 // osumapisteiden oletusarvo
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
     if(!state.token) return res.json({status:401});
     if(!state.canvasWidth || state.canvasWidth < 800){
-        return res.json({err:"Canvaksen leveys liian pieni tai sitä ei annettu"});
+        return res.json({err:"Canvaksen leveys liian pieni tai sitä ei annettu", status:400});
     }else if(state.canvasWidth && canvasWidth === -1) canvasWidth = state.canvasWidth;
     try{
         const searchToken = await db.search("tokens", "token", state.username);
         if(!db.compareTokens(state.token, searchToken.token)) return res.json({state:401});
-        if(state.info === undefined || !state.token || !state.username) return res.json({err:"Tiedot puuttelliset"});
+        if(state.info === undefined || !state.token || !state.username) return res.json({err:"Tiedot puuttelliset", status:400});
         if(!state.info){
             players = [];
             return res.json({info:true});
@@ -35,11 +32,11 @@ app.post("/game", async (req, res)=>{
 
         const result = await db.search("players", "*");
         if(!result.err && result.lenght === 2) players = result;
-        else new Error();
+        else new Error(result.err ? result.err : "Pelin aloituksessa tai lopetuksessa tapahtui virhe");
 
-        res.json({info:true});
+        return res.json({info:true});
     }catch(e){
-        res.json({err:"Ohjelmassa tapahtui virhe"});
+        return res.json({err: e, status:500});
     }
 });
 
