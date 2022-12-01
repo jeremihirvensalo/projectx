@@ -36,15 +36,17 @@ class HP{
     }
 
     drawDMG(amount, who){ // 360/10 = 36 eli defaulttina damage on 36
-        // amount ilmoittaa kuin moninkertaisesti lyönti tapahtuu. Default=1
+        // amount ilmoittaa kuin moninkertaisesti lyönti tapahtuu. 
+        let drawingWidth = (36 * amount) - (360 % (36 * amount));
         this.ctx.fillStyle = "red";
         if(who == this.bot.getName()){
-            // this.botStart += 36*amount;
-            botRedBlock += 36;
+            if((drawingWidth + botRedBlock) > hpWidth) drawingWidth = drawingWidth + botRedBlock - hpWidth;
+            botRedBlock += drawingWidth;
             this.ctx.fillRect(this.botStart, 35, botRedBlock, 30);
         }else{
-            playerRedBlock += 36;
-            this.playerStart -= 36;
+            if((drawingWidth + playerRedBlock) > hpWidth) drawingWidth = drawingWidth + playerRedBlock - hpWidth;
+            playerRedBlock += drawingWidth;
+            this.playerStart -= drawingWidth;
             this.ctx.fillRect(this.playerStart, 35, playerRedBlock, 30);
         }
     }
