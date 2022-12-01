@@ -33,6 +33,13 @@ const abobo = {
         { x: 442, y: 201, leveys: 96, korkeus: 127 },
         { x: 313, y: 201, leveys: 96, korkeus: 129 },
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
+    ],
+    POTKU: [
+        { x: 208, y: 1728, leveys: 103, korkeus: 88 },
+        { x: 81, y: 1871, leveys: 83, korkeus: 96 },
+        { x: 221, y: 1879, leveys: 127, korkeus: 87 },
+        { x: 81, y: 1871, leveys: 83, korkeus: 96 },
+        { x: 208, y: 1728, leveys: 103, korkeus: 88 }
     ]
 };
 
@@ -71,6 +78,13 @@ const abobo_mirrored = {
         { x: 442, y: 201, leveys: 96, korkeus: 127 },
         { x: 313, y: 201, leveys: 96, korkeus: 129 },
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
+    ],
+    POTKU: [
+        { x: 208, y: 1728, leveys: 103, korkeus: 88 },
+        { x: 81, y: 1871, leveys: 83, korkeus: 96 },
+        { x: 221, y: 1879, leveys: 127, korkeus: 87 },
+        { x: 81, y: 1871, leveys: 83, korkeus: 96 },
+        { x: 208, y: 1728, leveys: 103, korkeus: 88 }
     ]
 };
 
