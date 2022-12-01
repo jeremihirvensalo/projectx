@@ -35,13 +35,14 @@ class Character{
         return this.animation;
     }
 
-    async goLeft(amount){
+    async goLeft(amount, playerCRDS={}){ // update API
         this.x -= amount;
         const result = await verifyMove(this);
         if(!result){
             this.x += amount;
             return false;
-        } 
+        }
+        
         this.ukkeli.siirryVasen(amount);
         this.piirraCanvas();
         this.piirraChar();

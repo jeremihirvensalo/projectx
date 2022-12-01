@@ -112,10 +112,13 @@ app.post("/move", async (req, res)=>{
 
         let result = false;
         if(player.x !== user.x){
-            if(player.x + 20 === user.x) result = true; // liikkuu vasemmalle
+            if(player.x + 20 === user.x){// liikkuu vasemmalle
+                if(whoIndex === playerIndex && 0 < players[whoIndex].x) result = true; 
+                else if(whoIndex === botIndex && player.x - 10 > players[playerIndex].x + players[playerIndex].w) result = true;
+            } 
             else if(player.x - 20 === user.x){ // liikkuu oikealle
-                if(whoIndex !== botIndex && player.x < players[botIndex].x - user.w) result = true;
-                else if(player.x < canvasWidth - user.w) result = true;
+                if(whoIndex !== botIndex && player.x + player.w + 5 < players[botIndex].x) result = true;
+                else if(whoIndex === botIndex && player.x + 10 < canvasWidth - user.w) result = true;
             }
         }else if(player.y !== user.y){
             if(player.y + 75 === user.y && player.y + 75 === defaultY) result = true;
