@@ -1,5 +1,4 @@
 async function suoritaToiminto(player, bot, toiminto, hp) {
-    let botCRDS = bot.getCoords();
     let playerCRDS = player.getCoords();
     if(player.blockState() || playerCRDS.y != 245) return; // jos pelaaja on ilmassa tai torjumassa ei voida liikkua
     let allowed = false;
@@ -11,7 +10,7 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
             allowed = await player.goRight(20);
             break;
         case "UP":
-            if (playerCRDS.y == 245) allowed = await player.jump(75, bot);
+            if (playerCRDS.y == 245) allowed = await player.jump(75);
             break;
         case "PUNCH":
             player.punch(bot, hp);
