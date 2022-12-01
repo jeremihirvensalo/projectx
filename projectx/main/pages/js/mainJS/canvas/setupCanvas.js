@@ -1,5 +1,43 @@
 const abobo = {
-    nimi: 'abobo.png',
+    nimi: "abobo.png",
+    kuva: null,
+    ALAS: [
+        { x: 411, y: 1022, leveys: 104, korkeus: 121 },
+        { x: 66, y: 1195, leveys: 99, korkeus: 119 },
+        { x: 196, y: 1191, leveys: 166, korkeus: 117 },
+        { x: 66, y: 1195, leveys: 99, korkeus: 119 },
+        { x: 411, y: 1022, leveys: 104, korkeus: 121 }
+    ],
+    YLOS: [
+
+        { x: 323, y: 365, leveys: 101, korkeus: 114 },
+        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
+        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
+        { x: 207, y: 520, leveys: 97, korkeus: 94 }
+        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
+        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
+        // { x: 323, y: 365, leveys: 101, korkeus: 114 }
+    ],
+    VASEN: [
+        { x: 74, y: 203, leveys: 98, korkeus: 125 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 },
+        { x: 313, y: 201, leveys: 96, korkeus: 129 },
+        { x: 442, y: 201, leveys: 96, korkeus: 127 },
+        { x: 313, y: 201, leveys: 96, korkeus: 129 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
+    ],
+    OIKEA: [
+        { x: 74, y: 203, leveys: 98, korkeus: 125 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 },
+        { x: 313, y: 201, leveys: 96, korkeus: 129 },
+        { x: 442, y: 201, leveys: 96, korkeus: 127 },
+        { x: 313, y: 201, leveys: 96, korkeus: 129 },
+        { x: 184, y: 204, leveys: 99, korkeus: 124 }
+    ]
+};
+
+const abobo_mirrored = {
+    nimi: "abobo_mirrored.png",
     kuva: null,
     ALAS: [
         { x: 411, y: 1022, leveys: 104, korkeus: 121 },
@@ -77,10 +115,8 @@ async function start() {
 
     player = new Character(canvas, ctx, 60, 245, 90, 150, "green", 100, playerName);
     bot = new Bot(canvas, ctx, 650, 245, 90, 150, "red", 100, botUsername);
-    abobo.nimi = "abobo.png";
     await player.alusta(abobo);
-    abobo.nimi = "abobo_mirrored.png";
-    await bot.alusta(abobo);
+    await bot.alusta(abobo_mirrored);
     playerAnim = player.getAnimations();
     botAnim = bot.getAnimations();
     const hp = new HP(ctx, player, bot); // perjaatteessa vois käyttää background canvasta
@@ -115,12 +151,12 @@ async function start() {
     if(restart.style.display != "none") restart.style.display = "none";
     showPoints(player.getPoints());
 
-    setInterval(
-        ()=>{
-            bot.doRandomAction(player, hp);
-        },
-        1700
-    )
+    // setInterval(
+    //     ()=>{
+    //         bot.doRandomAction(player, hp);
+    //     },
+    //     1700
+    // )
 
     document.addEventListener("keydown", e => {
         if(keypressed) return;

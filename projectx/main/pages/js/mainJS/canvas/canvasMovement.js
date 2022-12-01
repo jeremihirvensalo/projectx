@@ -6,31 +6,28 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
     switch (toiminto) {
         case "LEFT":
             allowed = await player.goLeft(20);
-            if(allowed) await bot.piirraCharStill();
             break;
         case "RIGHT":
             allowed = await player.goRight(20, botCRDS.x);
-            if(allowed) await bot.piirraCharStill();
             break;
         case "UP":
-            if (playerCRDS.y == 245) {
-                allowed = await player.jump(75, bot);
-                if(allowed) await bot.piirraCharStill();
-            }
+            if (playerCRDS.y == 245) allowed = await player.jump(75, bot);
             break;
         case "PUNCH":
             player.punch(bot, hp);
-            break;
+            return;
         case "PUNCHL":
             player.punchL(bot, hp);
-            break;
+            return;
         case "KICK":
             player.kick(bot, hp);
-            break;
+            return;
         case "KICKL":
             player.kickL(bot, hp);
-            break;
+            return;
     }
+    if(allowed) await bot.piirraCharStill();
+    else console.log("Move not allowed");
 }
 
 async function verifyMove(player){ // write API

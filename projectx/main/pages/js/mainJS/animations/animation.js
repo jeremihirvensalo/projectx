@@ -30,7 +30,7 @@ class Animations{ // write API
     lisaaKasittelijat(){
         const playerCRDS = this.player.getCoords();
         this.playerUkkeli = new Ukkeli(this.konteksti, this.kuvat, playerCRDS.x, playerCRDS.y);
-        this.playerUkkeli.drawStill();
+        this.playerUkkeli.drawStill(playerCRDS.x, playerCRDS.y, this.player.getName() !== getCookieValue("username"));
     }
 
     getUkkeli(){

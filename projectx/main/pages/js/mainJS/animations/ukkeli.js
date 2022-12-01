@@ -9,17 +9,22 @@ class Ukkeli{
         this.aktiivisetKuvat= this.kuvat.ALAS;
         this.kuvanro=0;
         this.rivinro=0;
+        this.currImg = this.kuvat.ALAS[0];
     }
 
-    drawStill(x=this.x, y=this.y, isBot){
-        let pala = this.kuvat.ALAS[0];
-        if(isBot) this.konteksti.filter = "invert(1)";
-        this.konteksti.drawImage(this.kuvat.kuva,
-            //spritestä otettava pala
-            pala.x,pala.y, pala.leveys,pala.korkeus,
-            //mihin kohtaan piirretään kanvakselle
-            x,y, pala.leveys,pala.korkeus);
-        this.konteksti.filter = "none";
+    async drawStill(x=this.x, y=this.y, isBot){
+        const promiseDraw = new Promise(resolve=>{ // ei luultavasti mitään hyötyy olla promisessa
+            let pala = this.kuvat.ALAS[0];
+            if(isBot) this.konteksti.filter = "invert(1)";
+            this.konteksti.drawImage(this.kuvat.kuva,
+                //spritestä otettava pala
+                pala.x,pala.y, pala.leveys,pala.korkeus,
+                //mihin kohtaan piirretään kanvakselle
+                x,y, pala.leveys,pala.korkeus);
+            this.konteksti.filter = "invert(0)";
+            resolve();
+        });
+        await promiseDraw;
     }
 
     async piirra(x=this.x, y=this.y, isBot){
@@ -37,6 +42,7 @@ class Ukkeli{
                     //mihin kohtaan piirretään kanvakselle
                     x,y, pala.leveys,pala.korkeus);
                 this.konteksti.filter = "invert(0)";
+                this.currImg = pala;
                 resolve();    
             }, 80);
 
@@ -46,6 +52,10 @@ class Ukkeli{
 
     getActiveImgs(){
         return this.aktiivisetKuvat;
+    }
+
+    getCurrentImg(){
+        return this.currImg;
     }
 
     siirryAlas(dy){

@@ -44,6 +44,7 @@ class Character{
         if((this.x - amount) > (playerCRDS ? playerCRDS.x + playerCRDS.w : 0)) this.x -= amount;
         this.ukkeli.siirryVasen(amount);
         this.piirraChar();
+        stopCanvasEvents(false);
         return true;
     }
     
@@ -61,6 +62,7 @@ class Character{
         }
         this.ukkeli.siirryOikea(amount);
         this.piirraChar();
+        stopCanvasEvents(false);
         return true;
 
     }
@@ -84,6 +86,7 @@ class Character{
             this.piirraCanvas();
             bot.piirraCharStill();
             this.piirraCharStill();
+            stopCanvasEvents(false);
         }, 300);
         return true;
     }
@@ -104,9 +107,11 @@ class Character{
         this.ukkeli.siirryAlas();
         this.piirraChar();
         setTimeout(()=>{
-            this.piirraCanvas();
+            const imgCRDS = this.ukkeli.getCurrentImg();
+            this.piirraCanvas(imgCRDS.x, imgCRDS.y, imgCRDS.leveys, imgCRDS.korkeus); // en tiiä auttaako mitään
             bot.piirraCharStill();
             this.piirraChar();
+            stopCanvasEvents(false);
         }, 100);
 
         if(this.getCoords().x > bot.getCoords().x){
@@ -134,7 +139,8 @@ class Character{
         setTimeout(()=>{
             this.piirraCanvas();
             bot.piirraCharStill();
-            this.piirraChar()
+            this.piirraChar();
+            stopCanvasEvents(false);
         }, 100);
         if((this.getCoords().x - bot.getCoords().x) <=160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
@@ -156,6 +162,7 @@ class Character{
             this.piirraCanvas();
             bot.piirraCharStill();
             this.piirraChar();
+            stopCanvasEvents(false);
         }, 100);
 
         if(this.getCoords().x > bot.getCoords().x){
@@ -184,6 +191,7 @@ class Character{
             this.piirraCanvas();
             bot.piirraCharStill();
             this.piirraChar();
+            stopCanvasEvents(false);
         }, 100);
         if((this.getCoords().x - bot.getCoords().x) <= 160 && (this.getCoords().x - bot.getCoords().x) > 0){
             hp.takeHit(10, bot.getName());
@@ -209,7 +217,6 @@ class Character{
         for(let i = 0; i < this.ukkeli.getActiveImgs().length; i++){
             await this.ukkeli.piirra(this.x, this.y, this.name !== getCookieValue("username")); 
         }
-        stopCanvasEvents(false);
     }
 
     piirraCharStill(){
