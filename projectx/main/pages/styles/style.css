@@ -175,6 +175,12 @@ canvas{
     margin: 20px;
 }
 
+.success{
+    display: none;
+    color: limegreen;
+    margin: 20px;
+}
+
 #points{
     margin:10px;
 }
