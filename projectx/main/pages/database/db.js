@@ -59,8 +59,10 @@ module.exports = class Database{
             if(result.affectedRows > 0) return {info:"Tallennus onnistui"};
             return {info:"Tallennus epäonnistui"};
 
-        }catch(e){
-            if(e.errno === 1062) return {status:409,err:"Käyttäjä on jo tietokannassa"}; // update API
+        }catch(e){ // update API
+            if(e.errno === 1062) return {status:409,err:"Käyttäjä on jo tietokannassa"}; 
+            else if(e.errno === 1054) return {status:400, err:"Tiedot virheelliset. Tarkista palvelimelle lähetetty data ja vertaa tietokannan taulukkoon"};
+            console.log(e);
             return {err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
