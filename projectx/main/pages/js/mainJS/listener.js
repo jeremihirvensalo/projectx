@@ -18,10 +18,10 @@
                 });
                 console.log("Logout answer received");
                 if(data.logoutURL) window.location.replace(`${data.logoutURL}`);
-                else $("#infoalue").html(data.err);
+                else setInfo(data.err);
 
             }catch(e){
-                $("#infoalue").html(e.message);
+                setInfo(e.message);
             }
         });
 
@@ -153,3 +153,13 @@
         document.getElementById("info").innerHTML = "";
     });
 })();
+
+function setInfo(msg, cssClass="err", display=true){ // write API
+    if($("#infoalue").attr("class") !== cssClass){
+        $("#infoalue").removeClass((cssClass==="err" ? "err" : "success"));
+        $("#infoalue").addClass(cssClass);
+    }
+    if($("#infoalue").css("display") === "block" && !display) $("#infoalue").css("display", "none");
+    else $("#infoalue").css("display", "block");
+    $("#infoalue").html(msg);
+}

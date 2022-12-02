@@ -153,17 +153,21 @@ app.post("/changePW", async (req, res)=>{
 app.post("/points", async (req, res)=>{
     const user = req.body;
     if(!user.username || !user.points || !user.token){
-        if(!user.token) return res.json({err:"No token found", newURL:"http://localhost:3000"});
+        if(!user.token) return res.json({err:"No token found", newURL:"http://localhost:3000", status:401});
         return res.json({err:"Käyttäjätiedot eivät tulleet palvelimelle"});
     }
     const tokenDB = await db.search("tokens", "token", user.username);
-    if(tokenDB.err || tokenDB.length === 0) return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
+    if(tokenDB.err || tokenDB.length === 0) return res.json({err:"Token check fail", newURL:"http://localhost:3000", status:401});
 
-    if(db.compareTokens(user.token, tokenDB)){
-        const result = await db.insert(user, "points");
-        return res.json(result);
+    if(db.compareTokens(user.token, tokenDB.token)){
+        const formattedUser = {username:user.username,points:user.points};
+        const previousRecord = await db.search("points", "points", user.username);
+        let result = {};
+        if(previousRecord.lenght === 0) result = await db.insert(formattedUser, "points");
+        else if(previousRecord.points < user.points) result = await db.update(formattedUser, "points");
+        return res.json((Object.keys(result).lenght > 0 ? result : {info:true}));
     }
-    return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
+    return res.json({err:"Token check fail", newURL:"http://localhost:3000", status:401});
 });
 
 app.listen(port, async() =>{

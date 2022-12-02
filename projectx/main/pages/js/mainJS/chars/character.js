@@ -146,11 +146,11 @@ class Character{
         this.clearCurrentImg();
         this.y += 30;
         await this.piirraChar();
-        setTimeout(()=>{
+        setTimeout(async ()=>{
             this.clearCurrentImg();
             this.y -= 30;
             this.ukkeli.siirryDefault();
-            this.piirraChar();
+            await this.piirraChar();
         }, 100);
 
         if((bot.getCoords().x - this.x) <= 160){
@@ -170,11 +170,11 @@ class Character{
         this.clearCurrentImg();
         this.y += 30;
         await this.piirraChar();
-        setTimeout(()=>{
+        setTimeout(async ()=>{
             this.clearCurrentImg();
             this.y -= 30;
             this.ukkeli.siirryDefault();
-            this.piirraChar();
+            await this.piirraChar();
         }, 100);
         if((this.x - bot.getCoords().x) <= 160){
             bot.piirraCharStill();

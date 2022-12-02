@@ -30,7 +30,6 @@ class Ukkeli{
 
     async piirra(isBot, x=this.x, y=this.y){
         const promiseDraw = new Promise(resolve=>{
-            setTimeout(()=>{
                 let pala = this.aktiivisetKuvat[this.kuvanro];
                 this.kuvanro=++this.kuvanro%this.aktiivisetKuvat.length;
                 this.konteksti.clearRect(x, y, this.currImg.leveys, this.currImg.korkeus);
@@ -43,8 +42,9 @@ class Ukkeli{
                     x,y, pala.leveys,pala.korkeus);
                 this.konteksti.filter = "invert(0)";
                 this.currImg = pala;
-                resolve();    
-            }, 60);
+                setTimeout(()=>{
+                    resolve();
+                }, 60);
         });
         await promiseDraw;
     }

@@ -74,27 +74,61 @@ class HP{
         return {botHP:this.botHP, playerHP:this.playerHP};
     }
 
-    reset(){
+    async reset(){
         stopCanvasEvents(true);
         startBot(false);
-        document.getElementById("restart").style.display = "block";
-        hpWidth = 360;
-        botRedBlock = 0;
-        playerRedBlock = 0;
-        this.botHP = 100;
-        this.playerHP = 100;
-        this.player.reset();
-        this.bot.reset();
-        this.playerStart = 25 + hpWidth;
-        
-        document.getElementById("restart").addEventListener("click", async ()=>{
-            this.player.piirraCanvas(0, 0, 800, 400);
-            const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
-            if(!result.info){
-                $("#infoalue").html(result.err);
-                return;
+
+        const promisePoints = new Promise(async (resolve, reject) =>{
+            setInfo("Saving...");
+            try{
+                const options = {
+                    method:"POST",
+                    body:JSON.stringify({
+                        username:getCookieValue("username"),
+                        token:getCookieValue("token"),
+                        points: this.player.getPoints()
+                    }),
+                    headers:{
+                        "Content-Type":"application/json"
+                    }
+                }
+
+                const data = await fetch("http://localhost:3000/points", options);
+                const result = await data.json();
+                const check= statusCheck(result); 
+                if(!check.info) setInfo(check.details);
+                if(result.err){
+                    console.log(result.err);
+                    setInfo("Pisteiden tallennuksessa virhe. Katso konsolista lisätiedot.");
+                }else setInfo("Saved!", "success");
+                resolve();
+            }catch(e){
+                setInfo("Varoitus! Pisteiden tallennuksessa virhe");
+                reject(e);
             }
-            start();
         });
+
+        await promisePoints;
+
+        document.getElementById("restart").style.display = "block";
+        setTimeout(async ()=>{ // Pitää pakottaa odottamaan muuten gameServer saa helposti väärää dataa
+            hpWidth = 360;
+            botRedBlock = 0;
+            playerRedBlock = 0;
+            this.botHP = 100;
+            this.playerHP = 100;
+            this.player.reset();
+            this.bot.reset();
+            this.playerStart = 25 + hpWidth;
+            
+            document.getElementById("restart").addEventListener("click", async ()=>{
+                setInfo("","err",false);
+                this.player.piirraCanvas(0, 0, 800, 400);
+                const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
+                if(!result.info) return;
+                start();
+            });
+        }, 1000);
+
     }
 }

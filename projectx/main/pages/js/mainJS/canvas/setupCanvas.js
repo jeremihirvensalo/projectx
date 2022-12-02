@@ -150,7 +150,7 @@ async function start() {
             if(player.getHP() !== 100 || bot.getHP() !== 100) {
                 const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
                 if(!prepRound.info){
-                    $("#infoalue").html(prepRound.err);
+                    setInfo(prepRound.err);
                     reject(prepRound.err);
                 }
                 resolve("Uuden kierroksen aloitus onnistui");
@@ -164,8 +164,7 @@ async function start() {
             }
         });
     }catch(e){
-        console.log(e);
-        $("#infoalue").html(e.err ? e.err : "Odottamaton virhe tapahtui");
+        setInfo(e.err ? e.err : "Odottamaton virhe tapahtui");
         return;
     }
 
@@ -278,7 +277,7 @@ async function nextRound(usersObj){
             return await data.json();
         });
         const check = statusCheck(result);
-        if(!check.info) $("#infoalue").html(check.details);
+        if(!check.info) setInfo(check.details);
         else if(check.info) return {info:true};
         return {info:false, err:result.err};
     }catch(e){
@@ -287,31 +286,23 @@ async function nextRound(usersObj){
 }
 
 function statusCheck(result){
-    if(result.status){
-        const knownCodes = [400,401,409];
-        let foundCode;
-        for(let code of knownCodes){
-            if(result.status === code){
-                foundCode = code;
-                break;
-            }
-        }
-        if(foundCode){
-            switch(foundCode){
-                case 200:
-                    return {info:true, status:200};
-                case 400:
-                    return {info:false, details:result.err,status:400};
-                case 401:
-                    window.location.href = "http://localhost:3000/";
-                    return {info:false, details:"Token check fail", status:401};
-                case 409:
-                    return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409};
-                case 500:
-                    return {info:false,details:result.err,status:500};
-                default:
-                    return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`,status:foundCode};
-            }
+    let foundCode;
+    if(result.status)  foundCode = result.status;
+    if(foundCode){
+        switch(foundCode){
+            case 200:
+                return {info:true, status:200};
+            case 400:
+                return {info:false, details:result.err,status:400};
+            case 401:
+                window.location.href = "http://localhost:3000/";
+                return {info:false, details:"Token check fail", status:401};
+            case 409:
+                return {info:true, details:"Pelaaja oli jo luultavasti tietokannassa",status:409};
+            case 500:
+                return {info:false,details:result.err,status:500};
+            default:
+                return {info:true, details:`Ohjelmistolle tuntematon statuskoodi ('${result.status}')`,status:foundCode};
         }
     }
     return {info:true, details:"Status-parametria ei löytynyt"};
@@ -337,7 +328,7 @@ async function startGameServer(starting=true){
         if(!check.info) throw new Error({err:check.details});
 
     }catch(e){
-        $("#infoalue").html(e.err ? e.err : "Pelin aloituksessa tai lopetuksessa virhe");
+        setInfo(e.err ? e.err : "Pelin aloituksessa tai lopetuksessa virhe");
     }
 }
 
@@ -366,7 +357,7 @@ async function resetServer(){
         });
 
         const check = statusCheck(result);
-        if(!check.info) $("#infoalue").html(check.details);
+        if(!check.info) setInfo(check.details);
         else if(check.info) return {info:true};
         return {info:false, err:result.err ? result.err : "Palvelimella tapahtui jotain outoa"};
     }catch(e){
