@@ -15,6 +15,18 @@ let botIndex = 0;
 let canvasWidth = -1; // valmiissa versiossa = -1
 const defaultY = 245; // pelaajien positio Y canvaksella
 
+
+// apufunktiot
+
+async function setMemoryToken(username){ // write API + jos tässä tulee virhe niin pitäis varmaa jotenkin pysäyttää koko ohjelma?
+    if(players[playerIndex].username === username && players[playerIndex].token === ""){
+        const result = await db.search("tokens", "token", username);
+        console.log(result);
+        if(result.token) players[playerIndex].token = result.token;
+    }
+}
+
+
 app.post("/game", async (req, res)=>{
     const state = req.body;
     if(!state.token) return res.json({status:401});
@@ -23,7 +35,7 @@ app.post("/game", async (req, res)=>{
     }else if(state.canvasWidth && canvasWidth === -1) canvasWidth = state.canvasWidth;
     try{
         const searchToken = await db.search("tokens", "token", state.username);
-        if(!db.compareTokens(state.token, searchToken.token)) return res.json({state:401});
+        if(!db.compareTokens(state.token, searchToken.token) && state.token !== oldToken) return res.json({state:401});
         if(state.info === undefined || !state.token || !state.username) return res.json({err:"Tiedot puuttelliset", status:400});
         if(!state.info){
             players = [];
@@ -101,6 +113,9 @@ app.post("/move", async (req, res)=>{
     const player = req.body;
     if(!player) return res.json({status:401});
     if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
+    await setMemoryToken(player.username);
+    console.log("server: ", players[playerIndex]);
+    console.log("new: ", player);
     try{
         if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
         if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
@@ -269,7 +284,7 @@ app.post("/reset",async (req,res)=>{
     const playersDB = await db.search("players");
     if(playersDB.err) return res.json({err:playersDB.err});
     for(let user of playersDB){
-        if(user.username === players[playerIndex].username) players[playerIndex] = {...user,...{token:obj.token}};
+        if(user.username === players[playerIndex].username) players[playerIndex] = {...user, token:""};
         else players[botIndex] = user;
     }
     return res.json({details:players});

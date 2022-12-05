@@ -17,8 +17,7 @@
         if(!data.info) window.location.href = "http://localhost:3000";
         
     }catch(e){
-        console.log(e);
-        $("#infoalue").html("Virhe ohjelmassa");
+        setInfo("Virhe ohjelmassa", "err", true);
     }
 })();
 

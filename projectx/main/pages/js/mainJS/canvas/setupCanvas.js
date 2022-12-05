@@ -183,6 +183,7 @@ async function start() {
         if(keypressed) return;
         keypressed = true;
         if (canvasEvents()) return;
+        
         if (movement[e.code] == "BLOCK") {
             if (player.blockState()) return;
             else {
@@ -193,15 +194,11 @@ async function start() {
             await suoritaToiminto(player, bot, movement[e.code], hp);
         }
     });
+
     document.addEventListener("keyup", e => {
         keypressed = false;
         if (canvasEvents()) return;
         if (movement[e.code] == "BLOCK") player.block(false);
-    });
-
-    $(window).bind("beforeunload", async function(){
-        const result = await resetServer();
-        console.log(result);
     });
 }
 

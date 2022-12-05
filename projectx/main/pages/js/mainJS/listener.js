@@ -1,10 +1,12 @@
 (function(){
     document.addEventListener("DOMContentLoaded", ()=>{
         document.getElementById("logout").addEventListener("click", async ()=>{
+            startBot(false);
             const username = getCookieValue("username");
             const token = getCookieValue("token");
             if(token == null) window.location.replace("http://localhost:3000");
             try{
+                await resetServer();
                 const options = {
                     method:"POST",
                     body: JSON.stringify({username:username,token:token}),
@@ -12,7 +14,7 @@
                         "Content-Type":"application/json"
                     }
                 };
-                console.log("Logout request sent")
+                console.log("Logout request sent");
                 const data = await fetch("http://localhost:3000/logout", options).then(async (result)=>{
                     return await result.json();
                 });
@@ -152,7 +154,14 @@
         navWrap.style.userSelect = "auto";
         document.getElementById("info").innerHTML = "";
     });
+
 })();
+
+    $(window).on("unload", async function(){
+        const result = await resetServer();
+        console.log(result);
+        return ":(";
+    });
 
 function setInfo(msg, cssClass="err", display=true){ // write API
     if($("#infoalue").attr("class") !== cssClass){
