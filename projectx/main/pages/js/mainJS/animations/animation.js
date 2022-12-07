@@ -1,6 +1,6 @@
 'use strict';
 
-class Animations{ // write API
+class Animations{
     constructor(canvas, ctx, imgs){
         this.piirtoalusta = canvas;
         this.konteksti = ctx;
