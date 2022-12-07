@@ -1087,6 +1087,86 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     Suorittaa pelaajan halutun toiminnon. Parametreiksi ottaa pelaajan (character-luokka),
     toisen pelaajan (character-luokka), toiminnon (string) ja osumapisteluokan (hp-luokka)
 
+## ukkeli.js
+    Sisältää Ukkeli-luokan, joka piirtää halutun kuvan tai kuvasarjan.
+
+### drawStill(isBot, x, y)
+    Piirtää ukkelin canvakselle. Tämä funktio ei käy kuvasarjaa vaan piirtää ukkelin seisonta asentoon.
+    Parametreiksi otetaan isBot (boolean), x (integer), y (integer). Jos isBot on "true" piirretään kuva siten, että
+    kuvan värit peilataan. Parametrit x ja y eivät ole pakollisia ja jos niitä ei määrittele oletetaan niiden olevan 
+    Ukkeli-luokan this.x ja this.y parametrit.
+    Funktio ei palauta mitään.
+
+### piirra(isBot, x, y)
+    Piirtää ukkelin canvakselle. Käy kuvasarjan läpi eli tätä kuuluu käyttää kun halutaan liikkua/lyödä.
+    Parametrit ovat samat kuin ylemmässä drawStill-funktiossa.
+    Funktio ei palauta mitään.
+
+### getActiveImgs()
+    Palauttaa viimeksi käytetyn kuvasarjan tai käytössä olevan kuvasarjan, joista animaatiot
+    luetaan.
+
+### getCurrentImg()
+    Palauttaa kuvan, joka on canvakselle piirrettynä.
+
+### siirryAlas(dy)
+    Asettaa lyöntikuvasarjan aktiiviseksi sarjaksi. Parametri dy on integer, jota käytetään
+    luokan y-parametrin päivittämiseen.
+    Funktio ei palauta mitään.
+
+### siirryYlos(dy)
+    Asettaa hyppykuvasarjan aktiiviseksi sarjaksi. Parametri dy on integer, jota käytetään
+    luokan y-parametrin päivittämiseen.
+    Funktio ei palauta mitään.
+
+### siirryVasen(dx)
+    Asettaa liikkumiskuvasarjan (vasemmalle) aktiiviseksi sarjaksi. Parametri dx on integer, jota käytetään
+    luokan x-parametrin päivittämiseen.
+    Funktio ei palauta mitään.
+
+### siirryOikea(dx)
+    Asettaa liikkumiskuvasarjan (oikealle) aktiiviseksi sarjaksi. Parametri dx on integer, jota käytetään
+    luokan x-parametrin päivittämiseen.
+    Funktio ei palauta mitään.
+
+### siirryPotku()
+    Asettaa potkukuvasarjan aktiiviseksi sarjaksi.
+    Funktio ei palauta mitään.
+
+### siirryDefault()
+    Asettaa oletuskuvasarjan aktiiviseksi sarjaksi. Oletuskuvasarja sisältää vain yhden kuvan. 
+    Funktio ei palauta mitään.
+
+## animations.js
+    Sisältää Animations-luokan, joka valmistaa animaatiossa käytettävän kuvan.
+
+### alusta(player)
+    Asettaa Animations-luokkaan oikeat tiedot ja kutsuu sen jälkeen Ukkeli-luokan luovaa funktiota.
+    Parametri "player" on pakollinen ja sen täytyy olla character-luokka.
+    Funktio ei palauta mitään.
+
+### promiseImgLoad(source)
+    Lataa halutun animaatiossa käytettävän kuvan. Parametri "source" on string ja pakollinen.
+    "Source"-parametrin kuuluu olla kuvan reitti, jolla se haetaan palvelimelta.
+    Funktio palauttaa ladatun kuvan.
+
+### lisaaKasittelijat()
+    Luo Ukkeli-luokan animaatiolle ja piirtää canvakselle characterin.
+    Funktio ei palauta mitään.
+
+### getUkkeli()
+    Parametriton funktio, joka palauttaa Animations-luokkaan liitetyn Ukkeli-luokan.
+
+### getAnimations()
+    Parametriton funktio, joka palauttaa kyseisen Animations-luokan.
+
+## bot.js
+    Sisältää Bot-luokan. Luokka sisältää Character-luokan kaikki funktiot.
+
+### doRandomAction(player, hp)
+    Käskee bottia tekemään satunnaisen liikkeen. Parametrit player (pelaajan Character-luokka) ja hp (HP-luokka)
+    ovat pakollisia.
+    Funktio ei palauta mitään.
 
 ## gameServer.js
     Serveri, joka käsittelee käyttäjän tekemät liikkeet ja vahvistaa niiden aitouden.
