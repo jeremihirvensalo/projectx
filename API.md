@@ -966,10 +966,10 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
 }
 ```
 
-### drawBG(ctxBG, imgs)
-    Piirtää canvakselle taustakuvan. Ottaa parametreiksi ctxBG (canvaksen konteksti), imgs (kuvat/kuva).
-    ctxBG täytyy olla sen canvaksen konteksti, jonne ei piirretä pelaajia. Parametri `imgs` on lista kuvien tai
-    kuvan lähteistä. Esimerkiksi arr[0] => "./esimerkki/reitti/kuva.png".
+### drawBG(ctxBG)
+    Piirtää canvakselle taustakuvan. Ottaa parametriksi ctxBG (canvaksen konteksti).
+    ctxBG täytyy olla sen canvaksen konteksti, jonne ei piirretä pelaajia.
+    Jos taustakuva ei jostain syystä latautunut käytetään sen sijasta harmaata taustaväriä.
     Funktio ei palauta mitään.
 
 ## character.js
