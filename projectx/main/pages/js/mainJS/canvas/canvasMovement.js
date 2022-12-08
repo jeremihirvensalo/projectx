@@ -1,17 +1,18 @@
 async function suoritaToiminto(player, bot, toiminto, hp) {
+    let moveAmount = 30;
     let playerCRDS = player.getCoords();
     if(player.blockState() || playerCRDS.y != 255) return; // jos pelaaja on ilmassa tai torjumassa ei voida liikkua
     let allowed = false;
     switch (toiminto) {
         case "LEFT":
-            allowed = await player.goLeft(20, true);
-            return;
+            allowed = await player.goLeft(moveAmount, true);
+            break;
         case "RIGHT":
-            allowed = await player.goRight(20, true);
-            return;
+            allowed = await player.goRight(moveAmount, true);
+            break;
         case "UP":
-            if (playerCRDS.y == 245) allowed = await player.jump(75, true);
-            return;
+            allowed = await player.jump(75, true);
+            break;
         case "PUNCH":
             await player.punch(bot, hp);
             return;
@@ -20,9 +21,11 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
             return;
         case "BLOCK":
             await player.block();
+            return;
     }
     if(!allowed){
         console.log("Move not allowed");
+        stopCanvasEvents(false);
     } 
 }
 

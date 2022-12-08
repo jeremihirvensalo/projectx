@@ -3,7 +3,7 @@ class Bot extends Character{
     
     async doRandomAction(player, hp) {
 
-        let moveAmount = 20;
+        let moveAmount = 30;
 
         let moveActions = [
             ()=>{this.goLeft(moveAmount, player.getCoords()).then(()=>{player.piirraCharStill()})},
