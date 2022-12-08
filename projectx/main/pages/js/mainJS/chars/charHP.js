@@ -126,7 +126,7 @@ class HP{
                 this.player.piirraCanvas(0, 0, 800, 400);
                 const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
                 if(!result.info) return;
-                start();
+                await start();
             });
         }, 1000);
 
