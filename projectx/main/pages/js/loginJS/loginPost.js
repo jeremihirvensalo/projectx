@@ -29,7 +29,7 @@
                 }
             }
         });
-        document.getElementById("submitNewLogin").addEventListener("click",async () => {
+        document.getElementById("submitRegister").addEventListener("click",async () => {
             const u = document.getElementById("newUsername").value;
             const p = document.getElementById("newPassword").value;
             const p2 = document.getElementById("verifyPassword").value;
@@ -43,7 +43,7 @@
                                 "Content-Type":"application/json"
                             }
                         };
-                        const data = await fetch("http://localhost:3000/newLogin", options).then(async (result)=>{
+                        const data = await fetch("http://localhost:3000/register", options).then(async (result)=>{
                             return await result.json();
                         });
                         
