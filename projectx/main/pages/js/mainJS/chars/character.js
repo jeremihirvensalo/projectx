@@ -1,7 +1,5 @@
-let points = 0;
-
 class Character{
-    constructor(canvas, ctx, x, y, userW, userH, color, hp, name){ // update API
+    constructor(canvas, ctx, x, y, userW, userH, color, hp, name, points=0){ // update API
         this.canvas = canvas;
         this.ctx = ctx;
         this.x = x;
@@ -13,6 +11,7 @@ class Character{
         this.name = name;
         this.blockstate = false;
         this.canBlock = true;
+        this.points = points;
         this.animation;
         this.ukkeli;
         this.canAttack = true;
@@ -204,11 +203,15 @@ class Character{
     }
 
     awardPoints(){
-        points += 100;
+        this.points += 100;
+    }
+
+    setPoints(amount){
+        this.points = amount;
     }
 
     getPoints(){
-        return points;
+        return this.points;
     }
 
     getCoords(){

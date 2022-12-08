@@ -110,7 +110,7 @@ class HP{
 
         await promisePoints;
 
-        const playerLost = this.playerHP <= 0;
+        const playerLost = (this.playerHP <= 0);
         if(playerLost) $("#restart").html("ALOITA ALUSTA");
         else $("#restart").html("JATKA");
         $("#restart").css("display", "block");
@@ -127,12 +127,15 @@ class HP{
             document.getElementById("restart").addEventListener("click", async ()=>{
                 if(playerLost){
                     $("#points").attr("value", "0");
-                    $("#points").html("0");
+                    $("#points").html("Points: 0");
+                    this.player.setPoints(0);
                 }
-                setInfo("","err",false);
                 this.player.piirraCanvas(0, 0, 800, 400);
                 const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
-                if(!result.info) return;
+                if(!result.info){
+                    setInfo(result.err, "err", true);
+                    return;
+                }else setInfo("","err",false);
                 await start();
             });
         }, 1000);

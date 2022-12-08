@@ -141,8 +141,10 @@ async function start() {
     const ctx = canvas.getContext("2d");
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
-
-    player = new Character(canvas, ctx, 60, 255, 90, 150, "green", 100, playerName);
+    
+    let points = 0;
+    if(player) points = player.getPoints();
+    player = new Character(canvas, ctx, 60, 255, 90, 150, "green", 100, playerName, points);
     bot = new Bot(canvas, ctx, 650, 255, 90, 150, "red", 100, botUsername);
     await player.alusta(abobo);
     await bot.alusta(abobo_mirrored);
@@ -183,7 +185,7 @@ async function start() {
     
     await startGameServer(true);
 
-    // startBot(true);
+    startBot(true);
 
     document.addEventListener("keydown", async e => {
         if(keypressed) return;
