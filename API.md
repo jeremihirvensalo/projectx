@@ -627,7 +627,7 @@ Virhetilanteessa palauttaa
 ```
 `#virhe#` kohdalla on tietokannan funktiosta `verifyLogin()` saatu virheilmoitus.
 
-### POST /newLogin
+### POST /register
     Käsittelee rekisteröitymisen. Ottaa vastaan käyttäjänimen ja salasanan.
     
 Jos salasana tai käyttäjänimi on tyhjä/null palauttaa
