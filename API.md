@@ -750,8 +750,12 @@ Palauttaa `pelaaja1`
 
 
 ## listener.js
-    Kuuntelee painalluksia main-sivulla. Näyttää ja sulkee
-    käyttäjän asetus-sivua.
+    Kuuntelee painalluksia main-sivulla. Hoitaa asetuksien ja uloskirjautumisen toiminnallisuuden.
+
+### setInfo(msg, cssClass, display)
+    Hoitaa infoviestin näyttämisen käyttäjälle. 
+    Parametreiksi ottaa msg (string, infoviesti), cssClass (string, haluttu css tyyliluokka) 
+    ja display (boolean, true jos viesti halutaan näyttää ja false jos viestialue halutaan pois näkyvistä).
 
 ## displayCookies.js
     Näyttää käyttäjän nimen sivulla.
