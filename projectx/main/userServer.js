@@ -43,7 +43,7 @@ app.get("/pelitausta.jpg", (req, res)=>{
 app.post("/", async (req, res) => {
     const user = req.body;
     const result = await db.verifyLogin(user.username, user.password);
-    if (result) {
+    if (result === true){
         const newToken = token();
         const tokenResult = await db.insert({username:user.username,token:newToken}, "tokens");
         if(tokenResult.status === 409){
@@ -59,7 +59,7 @@ app.post("/", async (req, res) => {
     else return res.json({err:"Käyttäjätiedot väärin"});
 });
 
-app.post("/newLogin", async (req, res) => {
+app.post("/register", async (req, res) => {
     const user = req.body;
     if (!user.username || !user.password) {
         return res.json({ err: "Virheellinen data" });
