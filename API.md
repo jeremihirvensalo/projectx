@@ -1179,6 +1179,13 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     
 ```
 
+### setMemoryToken(username)
+    Asettaa tokenin erilliseen muuttujaan. Parametri username (string) on pakollinen ja kuuluisi olla käyttäjänimi.
+    Jos palvelimella ei ole tietoa pelaajista ilmoittaa funktio siitä konsolissa.
+
+Jos palvelimella ei ole tietoja pelaajasta konsoliin tulostuu:
+`Game server out of sync`
+
 ### POST /player
     Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit, osumapisteet (integer)
     ja pelaajan nimen (string) joka säilötään tietokantaan.
