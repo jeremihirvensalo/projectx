@@ -63,7 +63,7 @@ module.exports = class Database{
             if(e.errno === 1062) return {status:409,err:"Käyttäjä on jo tietokannassa"}; 
             else if(e.errno === 1054) 
             return {status:400, err:"Tiedot virheelliset. Tarkista palvelimelle lähetetty data ja vertaa tietokannan taulukkoon"};
-            else if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            else if(e.errno === 45028) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             console.log(e);
             return {status:500, err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
@@ -83,7 +83,7 @@ module.exports = class Database{
             });
             return result;
         }catch(e){
-            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            if(e.errno === 45028) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             return {status:500, err:"Virhe käyttäjätietojen päivityksessä!"};
         }finally{
             if(conn) conn.end();
@@ -163,7 +163,7 @@ module.exports = class Database{
 
             return {info: (result.affectedRows > 0 ? true : false),details:resultArr};  
         }catch(e){
-            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            if(e.errno === 45028) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             return {info:false,err:"Odottamaton virhe tapahtui päivityksessä",status:500};
         }finally{
             if(conn) conn.end();
@@ -196,7 +196,7 @@ module.exports = class Database{
             return result.length > 0 ? result[0] : result;
 
         }catch(e){
-            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            if(e.errno === 45028) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             return {status:500, err:"Virhe tietojen haussa tietokannasta"};
         }finally{
             if(conn) conn.end();
@@ -206,6 +206,7 @@ module.exports = class Database{
     async verifyLogin(username, password){
         try{
             let user = await this.search("users", "*", username);
+            if(user.err) throw new Error(user.err);
             if(user.username){
                 const check = await bcrypt.compare(password, user.password).then(result =>{
                     return result;
@@ -214,7 +215,8 @@ module.exports = class Database{
             }
             return false;
         }catch(e){
-            return ({status:500, err:"Virhe kirjautumistietojen tarkistuksessa"});
+            console.log(e);
+            return ({status: 500, err:(e.message ? e.message :"Virhe kirjautumistietojen tarkistuksessa")});
         }finally{
             if(conn) conn.end();
         }
