@@ -1133,6 +1133,10 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     Asettaa potkukuvasarjan aktiiviseksi sarjaksi.
     Funktio ei palauta mitään.
 
+### siirryBlock()
+    Asettaa torjumiskuvasarjan aktiiviseksi sarjaksi.
+    Funktio ei palauta mitään.
+
 ### siirryDefault()
     Asettaa oletuskuvasarjan aktiiviseksi sarjaksi. Oletuskuvasarja sisältää vain yhden kuvan. 
     Funktio ei palauta mitään.
