@@ -991,8 +991,9 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     ja toisen pelaajan eli botin (character-luokka).
     Palauttaa booleanin (`true` kun onnistuu ja `false` jos ei onnistu).
 
-### block(state)
-    Funktio asettaa pelaajan torjumistilaan. Parametriksi ottaa booleanin.
+### block()
+    Funktio asettaa pelaajan torjumistilaan. 
+    Funktio palauttaa `true` jos liike on sallittu ja kun sitä ei ole sallittu `false`.
 
 ### blockState()
     Parametriton funktio, joka palauttaa torjumistilan. Palautus on boolean.
