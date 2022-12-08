@@ -1,6 +1,6 @@
 async function suoritaToiminto(player, bot, toiminto, hp) {
     let playerCRDS = player.getCoords();
-    if(player.blockState() || playerCRDS.y != 245) return; // jos pelaaja on ilmassa tai torjumassa ei voida liikkua
+    if(player.blockState() || playerCRDS.y != 255) return; // jos pelaaja on ilmassa tai torjumassa ei voida liikkua
     let allowed = false;
     switch (toiminto) {
         case "LEFT":

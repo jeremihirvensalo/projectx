@@ -136,14 +136,14 @@ async function start() {
     }
     const canvasBG = document.getElementById("canvasBG");
     const ctxBG = canvasBG.getContext("2d");
-    drawBG(ctxBG) // tämä on background image piirtofunktio. Jos et tiedä/ymmärrä toimintaa => API (löytyy rivin 920 lähistöltä)
+    drawBG(ctxBG);
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
 
-    player = new Character(canvas, ctx, 60, 245, 90, 150, "green", 100, playerName);
-    bot = new Bot(canvas, ctx, 650, 245, 90, 150, "red", 100, botUsername);
+    player = new Character(canvas, ctx, 60, 255, 90, 150, "green", 100, playerName);
+    bot = new Bot(canvas, ctx, 650, 255, 90, 150, "red", 100, botUsername);
     await player.alusta(abobo);
     await bot.alusta(abobo_mirrored);
     playerAnim = player.getAnimations();
@@ -183,7 +183,7 @@ async function start() {
     
     await startGameServer(true);
 
-    startBot(true);
+    // startBot(true);
 
     document.addEventListener("keydown", async e => {
         if(keypressed) return;
@@ -195,8 +195,8 @@ async function start() {
 
     document.addEventListener("keyup", e => {
         keypressed = false;
-        if (canvasEvents()) return;
-        if (movement[e.code] == "BLOCK") player.block(false);
+        // if (canvasEvents()) return;
+        // if (movement[e.code] == "BLOCK") player.block(false);
     });
 }
 
@@ -343,20 +343,18 @@ async function resetServer(){
         const options = {
             method:"POST",
             body:JSON.stringify({token:getCookieValue("token")}),
+            keepalive: true,
             headers:{
                 "Content-Type":"application/json"
             }
         }
-        const result = await fetch("http://localhost:3001/reset",options).then(async (data)=>{
-            return await data.json();
-        });
-
+        const data = await fetch("http://localhost:3001/reset",options);
+        const result = await data.json();
         const check = statusCheck(result);
         if(!check.info) setInfo(check.details);
         else if(check.info) return {info:true};
         return {info:false, err:result.err ? result.err : "Palvelimella tapahtui jotain outoa"};
     }catch(e){
-        alert(e);
         return {err:"Jokin meni pieleen"};
     }
 }

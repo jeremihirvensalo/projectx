@@ -173,7 +173,7 @@ class Character{
 
         if((bot.getCoords().x - this.x) <= 160){
             bot.piirraCharStill();
-            if(bot.getCoords().y >= 245) hp.takeHit(10, bot.getName()); 
+            if(bot.getCoords().y >= 255) hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
             stopCanvasEvents(false);
@@ -196,7 +196,7 @@ class Character{
         }, 100);
         if((this.x - bot.getCoords().x) <= 160){
             bot.piirraCharStill();
-            if(bot.getCoords().y >= 245) hp.takeHit(10, bot.getName());
+            if(bot.getCoords().y >= 255) hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             this.canAttack = true;
