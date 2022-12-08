@@ -361,12 +361,22 @@ async function resetServer(){
     }
 }
 
-function drawBG(ctxBG, imgs){
-    if(!imgs) {
+async function drawBG(ctxBG){
+    let img;
+    const waitImageLoad = new Promise(async resolve =>{
+        img = new Image();
+        img.onload = resolve;
+        img.src = "/pelitausta.jpg";
+    });
+    await waitImageLoad;
+
+    if(img.width <= 0) {
         ctxBG.fillStyle = "grey";
         ctxBG.fillRect(0, 0, 800, 400);
     }else{
-        // tähän background image?
+        ctxBG.globalAlpha = 0.7; // tämä muuttaa kuvan "opacity"
+        ctxBG.drawImage(img, 0, 0, 800, 400);
+        ctxBG.globalAlpha = 1.0;
     }
 }
 
