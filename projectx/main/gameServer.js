@@ -17,11 +17,13 @@ const defaultY = 245; // pelaajien positio Y canvaksella
 
 
 // apufunktiot
-
 async function setMemoryToken(username){ // write API + jos tässä tulee virhe niin pitäis varmaa jotenkin pysäyttää koko ohjelma?
+    if(players[playerIndex] === undefined){
+        console.log("Game server out of sync!");
+        return;
+    }
     if(players[playerIndex].username === username && players[playerIndex].token === ""){
         const result = await db.search("tokens", "token", username);
-        console.log(result);
         if(result.token) players[playerIndex].token = result.token;
     }
 }
@@ -114,8 +116,6 @@ app.post("/move", async (req, res)=>{
     if(!player) return res.json({status:401});
     if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
     await setMemoryToken(player.username);
-    console.log("server: ", players[playerIndex]);
-    console.log("new: ", player);
     try{
         if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
         if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
