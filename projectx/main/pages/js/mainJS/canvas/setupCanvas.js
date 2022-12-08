@@ -42,6 +42,9 @@ const abobo = {
         { x: 81, y: 1871, leveys: 83, korkeus: 96 },
         { x: 208, y: 1728, leveys: 103, korkeus: 88 }
     ],
+    BLOKKI: [
+        { x: 332, y: 2857, leveys: 83, korkeus: 120 }
+    ],
     DEFAULT: [
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ]
@@ -91,6 +94,9 @@ const abobo_mirrored = {
         { x: 221, y: 1879, leveys: 127, korkeus: 87 },
         { x: 81, y: 1871, leveys: 83, korkeus: 96 },
         { x: 208, y: 1728, leveys: 103, korkeus: 88 }
+    ],
+    BLOKKI: [
+        { x: 332, y: 2857, leveys: 83, korkeus: 120 }
     ],
     DEFAULT: [
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
