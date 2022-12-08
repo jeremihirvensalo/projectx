@@ -23,6 +23,7 @@ class Ukkeli{
                 //mihin kohtaan piirretään kanvakselle
                 x,y, pala.leveys,pala.korkeus);
             this.konteksti.filter = "invert(0)";
+            this.currImg = pala;
             resolve();
         });
         await promiseDraw;
