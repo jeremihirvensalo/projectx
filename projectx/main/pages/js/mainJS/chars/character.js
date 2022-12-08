@@ -1,4 +1,3 @@
-let blockState = false;
 let points = 0;
 
 class Character{
@@ -12,6 +11,8 @@ class Character{
         this.color = color;
         this.hp = hp;
         this.name = name;
+        this.blockstate = false;
+        this.canBlock = true;
         this.animation;
         this.ukkeli;
         this.canAttack = true;
@@ -101,12 +102,29 @@ class Character{
         return true;
     }
 
-    block(state){
-        blockState = state;
+    async block(){ // update API
+        if(!this.canBlock) return false;
+        if(!this.blockstate){
+            stopCanvasEvents(true);
+            this.blockstate = true;
+            this.canBlock = false;
+        } 
+        this.ukkeli.siirryBlock();
+        await this.ukkeli.piirra(getCookieValue("username") !== this.name, this.x, this.y);
+        setTimeout(async ()=>{
+            await this.ukkeli.drawStill(getCookieValue("username") !== this.name, this.x, this.y);
+        }, 240);
+        setTimeout(()=>{
+            stopCanvasEvents(false);
+            this.blockstate = false;
+            this.canBlock = true;
+        }, 800);
+
+        return true;
     }
 
     blockState(){
-        return blockState;
+        return this.blockstate;
     }
 
     async punch(bot, hp){
@@ -116,7 +134,7 @@ class Character{
         await this.piirraChar();        
         if((bot.getCoords().x - this.x) <= 160){
             bot.piirraCharStill();
-            hp.takeHit(10, bot.getName());
+            if(!bot.blockState()) hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             stopCanvasEvents(false);
@@ -132,7 +150,7 @@ class Character{
         await this.piirraChar();
         if((this.x - bot.getCoords().x) <= 160){
             bot.piirraCharStill();
-            hp.takeHit(10, bot.getName());
+            if(!bot.blockState()) hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             this.canAttack = true;
@@ -155,7 +173,7 @@ class Character{
 
         if((bot.getCoords().x - this.x) <= 160){
             bot.piirraCharStill();
-            hp.takeHit(10, bot.getName()); 
+            if(bot.getCoords().y >= 245) hp.takeHit(10, bot.getName()); 
         }
         setTimeout(()=>{
             stopCanvasEvents(false);
@@ -178,7 +196,7 @@ class Character{
         }, 100);
         if((this.x - bot.getCoords().x) <= 160){
             bot.piirraCharStill();
-            hp.takeHit(10, bot.getName());
+            if(bot.getCoords().y >= 245) hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
             this.canAttack = true;

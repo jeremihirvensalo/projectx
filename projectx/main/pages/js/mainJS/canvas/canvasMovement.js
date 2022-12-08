@@ -18,15 +18,15 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
         case "KICK":
             await player.kick(bot, hp);
             return;
+        case "BLOCK":
+            await player.block();
     }
-    // if(allowed) await bot.piirraCharStill();
     if(!allowed){
         console.log("Move not allowed");
-        // stopCanvasEvents(false);
     } 
 }
 
-async function verifyMove(player){ // write API
+async function verifyMove(player){
     try{
         const formattedPlayer = formatPlayer(player);
         const options = {

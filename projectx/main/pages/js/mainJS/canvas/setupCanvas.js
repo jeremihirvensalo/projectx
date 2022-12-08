@@ -188,17 +188,9 @@ async function start() {
     document.addEventListener("keydown", async e => {
         if(keypressed) return;
         keypressed = true;
-        if (canvasEvents()) return;
-        
-        if (movement[e.code] == "BLOCK") {
-            if (player.blockState()) return;
-            else {
-                player.block(true);
-            }
-        } else {
-            stopCanvasEvents(true);
-            await suoritaToiminto(player, bot, movement[e.code], hp);
-        }
+        if (canvasEvents() || player.blockState()) return;
+        stopCanvasEvents(true);
+        await suoritaToiminto(player, bot, movement[e.code], hp);
     });
 
     document.addEventListener("keyup", e => {
@@ -364,6 +356,7 @@ async function resetServer(){
         else if(check.info) return {info:true};
         return {info:false, err:result.err ? result.err : "Palvelimella tapahtui jotain outoa"};
     }catch(e){
+        alert(e);
         return {err:"Jokin meni pieleen"};
     }
 }

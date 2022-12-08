@@ -101,10 +101,18 @@ class Ukkeli{
         this.aktiivisetKuvat = this.kuvat.POTKU;
     }
 
-    siirryDefault(){
+    siirryBlock(){ // write API
         if(this.rivinro != 5){
             this.kuvanro = 0;
-            this.rivinro = 5;
+            this.rivinro = 6;
+        }
+        this.aktiivisetKuvat = this.kuvat.BLOKKI;
+    }
+
+    siirryDefault(){
+        if(this.rivinro != 6){
+            this.kuvanro = 0;
+            this.rivinro = 6;
         }
         this.aktiivisetKuvat = this.kuvat.DEFAULT;
     }
