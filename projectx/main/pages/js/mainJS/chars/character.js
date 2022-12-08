@@ -48,8 +48,8 @@ class Character{
         if(affectCanvasEvents){
             setTimeout(()=>{
                 stopCanvasEvents(false);
-                return true;
             },50);
+            return true;
         }else return true;
         
     }
@@ -68,8 +68,8 @@ class Character{
         if(affectCanvasEvents){
             setTimeout(()=>{
                 stopCanvasEvents(false);
-                return true;
             },50);
+            return true;
         }else return true;
     }
 
@@ -102,20 +102,20 @@ class Character{
         return true;
     }
 
-    async block(){ // update API
+    async block(affectCanvasEvents=false){ // update API
         if(!this.canBlock) return false;
         if(!this.blockstate){
-            stopCanvasEvents(true);
+            if(affectCanvasEvents) stopCanvasEvents(true);
             this.blockstate = true;
             this.canBlock = false;
         } 
         this.ukkeli.siirryBlock();
-        await this.ukkeli.piirra(getCookieValue("username") !== this.name, this.x, this.y);
+        await this.piirraChar();
         setTimeout(async ()=>{
-            await this.ukkeli.drawStill(getCookieValue("username") !== this.name, this.x, this.y);
+            await this.piirraCharStill();
         }, 240);
         setTimeout(()=>{
-            stopCanvasEvents(false);
+            if(affectCanvasEvents) stopCanvasEvents(false);
             this.blockstate = false;
             this.canBlock = true;
         }, 800);
@@ -131,9 +131,9 @@ class Character{
         if(!this.canAttack) return;
         this.canAttack = false;
         this.ukkeli.siirryAlas();
-        await this.piirraChar();        
+        await this.piirraChar();
         if((bot.getCoords().x - this.x) <= 160){
-            bot.piirraCharStill();
+            bot.piirraCharStill(); 
             if(!bot.blockState()) hp.takeHit(10, bot.getName());
         }
         setTimeout(()=>{
