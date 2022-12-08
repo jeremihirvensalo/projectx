@@ -17,6 +17,7 @@ app.use(express.json());
 
 let id; //checkTokenDates() intervallin id
 
+// get
 app.get("/", (req, res) => {
     res.sendFile(loginPath);
 });
@@ -25,6 +26,7 @@ app.get("/main", (req, res)=>{
     res.sendFile(mainPath);
 });
 
+// images
 app.get("/abobo.png", (req, res)=>{
     res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo.png"));
 });
@@ -33,6 +35,11 @@ app.get("/abobo_mirrored.png", (req, res)=>{
     res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "animations", "abobo_mirrored.png"));
 });
 
+app.get("/pelitausta.jpg", (req, res)=>{
+    res.sendFile(path.join(__dirname, "pages", "js", "mainJS", "canvas", "pelitausta.jpg"));
+});
+
+// post
 app.post("/", async (req, res) => {
     const user = req.body;
     const result = await db.verifyLogin(user.username, user.password);
