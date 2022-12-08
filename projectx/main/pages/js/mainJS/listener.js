@@ -167,7 +167,7 @@ function setInfo(msg, cssClass="err", display=true){ // write API
         $("#infoalue").removeClass((cssClass==="err" ? "err" : "success"));
         $("#infoalue").addClass(cssClass);
     }
-    if($("#infoalue").css("display") === "block" && !display) $("#infoalue").css("display", "none");
+    if(!display) $("#infoalue").css("display", "none");
     else $("#infoalue").css("display", "block");
-    $("#infoalue").html(msg);
+    if(msg !== "") $("#infoalue").html(msg);
 }
