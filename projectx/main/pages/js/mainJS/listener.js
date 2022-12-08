@@ -159,6 +159,7 @@
 
     $(window).on("unload", async function(){
         const result = await resetServer();
+        alert(result.err);
         console.log(result);
         return ":(";
     });
