@@ -61,9 +61,11 @@ module.exports = class Database{
 
         }catch(e){ // update API
             if(e.errno === 1062) return {status:409,err:"Käyttäjä on jo tietokannassa"}; 
-            else if(e.errno === 1054) return {status:400, err:"Tiedot virheelliset. Tarkista palvelimelle lähetetty data ja vertaa tietokannan taulukkoon"};
+            else if(e.errno === 1054) 
+            return {status:400, err:"Tiedot virheelliset. Tarkista palvelimelle lähetetty data ja vertaa tietokannan taulukkoon"};
+            else if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             console.log(e);
-            return {err:"Tallentamisen aikana tapahtui virhe"};
+            return {status:500, err:"Tallentamisen aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
         }
@@ -81,7 +83,8 @@ module.exports = class Database{
             });
             return result;
         }catch(e){
-            return {err:"Virhe käyttäjätietojen päivityksessä!"};
+            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            return {status:500, err:"Virhe käyttäjätietojen päivityksessä!"};
         }finally{
             if(conn) conn.end();
         }
@@ -160,6 +163,7 @@ module.exports = class Database{
 
             return {info: (result.affectedRows > 0 ? true : false),details:resultArr};  
         }catch(e){
+            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
             return {info:false,err:"Odottamaton virhe tapahtui päivityksessä",status:500};
         }finally{
             if(conn) conn.end();
@@ -192,7 +196,8 @@ module.exports = class Database{
             return result.length > 0 ? result[0] : result;
 
         }catch(e){
-            return {err:"Virhe tietojen haussa tietokannasta"};
+            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            return {status:500, err:"Virhe tietojen haussa tietokannasta"};
         }finally{
             if(conn) conn.end();
         }
@@ -209,7 +214,7 @@ module.exports = class Database{
             }
             return false;
         }catch(e){
-            return ({err:"Virhe kirjautumistietojen tarkistuksessa"});
+            return ({status:500, err:"Virhe kirjautumistietojen tarkistuksessa"});
         }finally{
             if(conn) conn.end();
         }
@@ -257,7 +262,8 @@ module.exports = class Database{
             }
             return {info:null};
         }catch(e){
-            return {err:"Virhe tokenien päivämäärän tarkistuksessa"}
+            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            return {status:500, err:"Virhe tokenien päivämäärän tarkistuksessa"}
         }finally{
             if(conn) conn.end();
         }
@@ -297,7 +303,8 @@ module.exports = class Database{
             if(result.affectedRows > 0) return {info:"Poisto onnistui"};
             return {err:"Poisto epäonnistui"};
         }catch(e){
-            return {err:"Poiston aikana tapahtui virhe"};
+            if(e.errno === -4078) return {status:500,err:"Tietokantaan ei saatu yhteyttä"};
+            return {status:500, err:"Poiston aikana tapahtui virhe"};
         }finally{
             if(conn) conn.end();
         }
