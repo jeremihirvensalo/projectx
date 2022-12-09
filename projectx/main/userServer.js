@@ -120,7 +120,7 @@ app.post("/delete", async (req, res)=>{ // rework? on aika sekava
         else return res.json({err:"Token check fail", newURL:"http://localhost:3000"});
 
         if(result === true){
-            result = await db.delete(true);
+            result = await db.delete(true, "*", user.username);
             if(result.err) return res.json({err:result.err});
             
             return res.json({info:true, newURL:"http://localhost:3000"});
