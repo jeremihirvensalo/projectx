@@ -16,7 +16,9 @@ class Bot extends Character{
         let attackActions = [
             ()=>{this.punchL(player, hp)},
             ()=>{this.kickL(player, hp)},
-            ()=>{this.block()}, // block toimivuus ei testattu
+            ()=>{this.punchL(player, hp)},
+            ()=>{this.kickL(player, hp)},
+            ()=>{this.block()},
             ()=>{this.block()}
         ];
 
@@ -26,6 +28,7 @@ class Bot extends Character{
             ...moveActions, // Näil on isompi tsäännssi tulla valituks
             ...moveActions,
             ...moveActions,
+            ...attackActions,
             ...attackActions
 
         ];
