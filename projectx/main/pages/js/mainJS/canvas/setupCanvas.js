@@ -322,10 +322,10 @@ async function startGameServer(starting=true){
         const data = await fetch("http://localhost:3001/game", options);
         const result = await data.json();
         const check = statusCheck(result);
-        if(!check.info) throw new Error({err:check.details});
+        if(!check.info) throw new Error(check.details);
 
     }catch(e){
-        setInfo(e.err ? e.err : "Pelin aloituksessa tai lopetuksessa virhe");
+        setInfo(e.message ? e.message : "Pelin aloituksessa tai lopetuksessa virhe");
     }
 }
 
