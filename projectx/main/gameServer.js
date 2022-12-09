@@ -50,7 +50,7 @@ app.post("/game", async (req, res)=>{
 
         return res.json({info:true});
     }catch(e){
-        return res.json({err: e, status:500});
+        return res.json({err: e.message, status:500});
     }
 });
 
@@ -222,7 +222,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
     try{
         const playersDB = await db.search("players");
         if(playersDB.length !== 2) 
-        throw new Error({err:`Tietokannasta löytyi virheellinen määrä pelaajia (${playersDB.lenght})`});
+        throw new Error(`Tietokannasta löytyi virheellinen määrä pelaajia (${playersDB.lenght})`);
 
         for(let user of playersDB){
             if(user.username === players[playerIndex].username){
@@ -248,7 +248,7 @@ app.post("/continue", async (req,res)=>{ // tän tarkistukset vois luultavasti t
         }
 
     }catch(e){
-        return res.json({info:false,details: e.err ? e.err : "Jokin meni pieleen palvelimen tai tietokannan kanssa"});
+        return res.json({info:false,details: e.message ? e.message : "Jokin meni pieleen palvelimen tai tietokannan kanssa"});
     }
 
     const keys = Object.keys(players[botIndex]); // otetaan botin avaimet, jotta ei pidä huolehtia token-parametrista
