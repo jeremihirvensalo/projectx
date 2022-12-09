@@ -1,22 +1,3 @@
-const timeoutArr = [];
-
-function timeoutArrays(tOut=true){ // write API
-    if(tOut === true){
-        for(let timeout of timeoutArr){
-            clearTimeout(timeout);
-        }
-        timeoutArr.length = 0;
-        return;
-    }
-
-    timeoutArr.push(tOut);
-}
-
-// testing only
-function getTimeoutArr(){
-    return timeoutArr;
-}
-
 class Character{
     constructor(canvas, ctx, x, y, userW, userH, color, hp, name, points=0){ // update API
         this.canvas = canvas;
@@ -64,9 +45,9 @@ class Character{
         this.ukkeli.siirryVasen(amount);
         await this.piirraChar();
         if(affectCanvasEvents){
-            timeoutArrays(setTimeout(()=>{
+            setTimeout(()=>{
                 stopCanvasEvents(false);
-            },50));
+            }, 50);
             return true;
         }else return true;
         
@@ -84,9 +65,9 @@ class Character{
         this.ukkeli.siirryOikea(amount);
         await this.piirraChar();
         if(affectCanvasEvents){
-            timeoutArrays(setTimeout(()=>{
+            setTimeout(()=>{
                 stopCanvasEvents(false);
-            },50));
+            },50);
             return true;
         }else return true;
     }
@@ -112,9 +93,9 @@ class Character{
             this.ukkeli.siirryDefault();
             await this.piirraChar();
             if(affectCanvasEvents){
-                timeoutArrays(setTimeout(()=>{
+                setTimeout(()=>{
                     stopCanvasEvents(false);
-                },100));
+                },100);
             } 
         }, 300);
         return true;
@@ -129,15 +110,15 @@ class Character{
         } 
         this.ukkeli.siirryBlock();
         await this.piirraChar();
-        timeoutArrays(setTimeout(async ()=>{
+        setTimeout(async ()=>{
             await this.piirraCharStill();
-        }, 800));
-        timeoutArrays(setTimeout(()=>{
+        }, 800);
+        setTimeout(()=>{
             if(affectCanvasEvents) stopCanvasEvents(false);
             this.blockstate = false;
             this.canBlock = true;
             return true;
-        }, 1000));   
+        }, 1000);   
     }
 
     blockState(){
@@ -152,10 +133,10 @@ class Character{
         if((bot.getCoords().x - this.x) <= 160){
             if(!bot.blockState()) hp.takeHit(10, bot.getName());
         }
-        timeoutArrays(setTimeout(()=>{
+        setTimeout(()=>{
             stopCanvasEvents(false);
             this.canAttack = true;
-        }, 230));
+        }, 230);
         return true;
     }
  
@@ -189,10 +170,10 @@ class Character{
         if((bot.getCoords().x - this.x) <= 160){
             if(bot.getCoords().y >= 255) hp.takeHit(10, bot.getName()); 
         }
-        timeoutArrays(setTimeout(()=>{
+        setTimeout(()=>{
             stopCanvasEvents(false);
             this.canAttack = true;
-        }, 230));
+        }, 230);
     }
 
     async kickL(bot, hp){

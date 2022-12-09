@@ -75,9 +75,6 @@ class HP{
     }
 
     async reset(){
-        console.log(getTimeoutArr());
-        timeoutArrays();
-        console.log(getTimeoutArr());
         this.player.setAttackStatus(false);
         stopCanvasEvents(true);
         startBot(false);
@@ -119,6 +116,7 @@ class HP{
         else $("#restart").html("JATKA");
         $("#restart").css("display", "block");
         setTimeout(async ()=>{ // Pitää pakottaa odottamaan muuten gameServer saa helposti väärää dataa
+            stopCanvasEvents(true);
             hpWidth = 360;
             botRedBlock = 0;
             playerRedBlock = 0;
