@@ -137,15 +137,17 @@ async function start() {
     const canvasBG = document.getElementById("canvasBG");
     const ctxBG = canvasBG.getContext("2d");
     drawBG(ctxBG);
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
+    const canvasPlayer = document.getElementById("canvas");
+    const ctx = canvasPlayer.getContext("2d");
+    const canvasBot = document.getElementById("canvasBot");
+    const ctxBot = canvasBot.getContext("2d");
     const playerName = getCookieValue("username");
     if(playerName === botUsername) botUsername += "_2";
     
     let points = 0;
     if(player) points = player.getPoints();
-    player = new Character(canvas, ctx, 60, 255, 90, 150, "green", 100, playerName, points);
-    bot = new Bot(canvas, ctx, 650, 255, 90, 150, "red", 100, botUsername);
+    player = new Character(canvasPlayer, ctx, 60, 255, 90, 150, "green", 100, playerName, points);
+    bot = new Bot(canvasBot, ctxBot, 650, 255, 90, 150, "red", 100, botUsername);
     await player.alusta(abobo);
     await bot.alusta(abobo_mirrored);
     playerAnim = player.getAnimations();
@@ -197,8 +199,6 @@ async function start() {
 
     document.addEventListener("keyup", e => {
         keypressed = false;
-        // if (canvasEvents()) return;
-        // if (movement[e.code] == "BLOCK") player.block(false);
     });
 }
 
