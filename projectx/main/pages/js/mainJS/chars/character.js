@@ -112,14 +112,13 @@ class Character{
         await this.piirraChar();
         setTimeout(async ()=>{
             await this.piirraCharStill();
-        }, 240);
+        }, 800);
         setTimeout(()=>{
             if(affectCanvasEvents) stopCanvasEvents(false);
             this.blockstate = false;
             this.canBlock = true;
-        }, 800);
-
-        return true;
+            return true;
+        }, 1000);   
     }
 
     blockState(){
@@ -206,7 +205,7 @@ class Character{
         this.points += 100;
     }
 
-    setPoints(amount){
+    setPoints(amount){ // write API
         this.points = amount;
     }
 
