@@ -277,9 +277,40 @@ module.exports = class Database{
             const tables = await conn.query("SHOW TABLES");
             if(delAllContent){
                 const resultArr = [];
-                for(let item of tables){
-                    const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`);
-                    resultArr.push({table: item.Tables_in_projectx, affectedRows:result.affectedRows});
+                if(!username){
+                    for(let item of tables){
+                        const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx}`);
+                        resultArr.push({table: item.Tables_in_projectx, affectedRows:result.affectedRows});
+                    }
+                }else{
+                    let selectedTables;
+                    if(Array.isArray(table) && table.length > 0){
+
+                        selectedTables = table;
+                        let foundCount = 0;
+                        let correctAmountFound = false;
+                        for(let tbl of selectedTables){
+                            for(let matchTable of tables){
+                                if(tbl === matchTable.Tables_in_projectx){
+                                    foundCount++;
+                                    if(foundCount === selectedTables.length){
+                                        correctAmountFound = true;
+                                        break;
+                                    }
+                                    continue;
+                                }
+                            }
+                            if(correctAmountFound) break;
+                        }
+                        if(!correctAmountFound) return {status:400, err:"Jotain tauluja ei löytynyt. Tarkista 'table' parametri."};
+                    } 
+                    else if(table === "*" || table.length === 0) selectedTables = tables;
+                    else return {status:400, err:"Virheellinen 'table' parametri. Kaikista tauluista poistetaan vain kun parametri 'table' on '*' tai []"};
+
+                    for(let item of selectedTables){
+                        const result = await conn.query(`DELETE FROM ${item.Tables_in_projectx} WHERE username=?`,[username]);
+                        resultArr.push({table: item.Tables_in_projectx, affectedRows:result.affectedRows});
+                    }
                 }
                 
                 let resultJSON = {};
