@@ -1085,6 +1085,10 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
 ### getHP()
     Parametriton funktio, joka palauttaa pelaajan osumapisteet (integer).
 
+### setAttackStatus(state)
+    Asettaa luokan canAttack parametrin arvoksi true tai false. Funktion parametri state
+    on boolean. 
+
 ### getAttackStatus()
     Parametriton funktio, joka kertoo voiko pelaaja hyökätä. Palauttaa booleanin.
 
