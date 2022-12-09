@@ -160,7 +160,6 @@ async function start() {
             if(player.getHP() !== 100 || bot.getHP() !== 100) {
                 const prepRound = await nextRound([formatPlayer(player,false),formatPlayer(bot,true)]);
                 if(!prepRound.info){
-                    setInfo(prepRound.err);
                     reject(prepRound.err);
                 }
                 resolve("Uuden kierroksen aloitus onnistui");
@@ -174,7 +173,7 @@ async function start() {
             }
         });
     }catch(e){
-        setInfo(e.err ? e.err : "Odottamaton virhe tapahtui");
+        setInfo(e ? e : "Odottamaton virhe tapahtui");
         return;
     }
 
