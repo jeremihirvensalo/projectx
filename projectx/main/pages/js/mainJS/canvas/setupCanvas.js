@@ -146,8 +146,8 @@ async function start() {
     
     let points = 0;
     if(player) points = player.getPoints();
-    player = new Character(canvasPlayer, ctx, 60, 255, 90, 150, "green", 100, playerName, points);
-    bot = new Bot(canvasBot, ctxBot, 650, 255, 90, 150, "red", 100, botUsername);
+    player = new Character(canvasPlayer, ctx, 60, 268, 90, 150, "green", 100, playerName, points);
+    bot = new Bot(canvasBot, ctxBot, 650, 268, 90, 150, "red", 100, botUsername);
     await player.alusta(abobo);
     await bot.alusta(abobo_mirrored);
     playerAnim = player.getAnimations();

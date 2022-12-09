@@ -13,7 +13,7 @@ let players = []; // tallentaa pelaajat jotta ei tarvitse tehdä monta eri hakua
 let playerIndex = 0; // molemmat indexit valmiissa versiossa = 0
 let botIndex = 0; 
 let canvasWidth = -1; // valmiissa versiossa = -1
-const defaultY = 255; // pelaajien positio Y canvaksella
+const defaultY = 268; // pelaajien positio Y canvaksella
 
 let memoryToken = "";
 
