@@ -267,6 +267,10 @@ Virhetilanteessa palauttaa
     Funktio poistaa tietokannasta tietoja.
     Parametreiksi ottaa username (string) käyttäjänimi ja table (string) taulukon josta tieto
     halutaan poistaa. delAllContent on boolean ja jos se on `true`, poistuu KAIKISTA tauluista KAIKKI tiedot.
+    HUOM! Jos delAllContent = true, table = ["tokens","users"], username = "pelaaja1" poistetaan vain 
+    tauluista "tokens" ja "users" tiedot, joista löytyy username "pelaaja1". Jos jotain taulukon taulukkoa ei löydy
+    ei mitään poisteta. Parametrin table tyhjä taulukko voi myös delAllContent = true tilanteessa olla "*". Tässä tilanteessa ei
+    mitään poisteta jos table parametri on jotain muuta kuin taulukko jossa on sisältöä, tyhjä taulukko tai "*".
     Jos `delAllContent` parametri on `true` Funktio palauttaa onnistuneessa tilanteessa 
     JSON-muodossa tiedon, että mistä tietoa on yritetty poistaa ja onko jotain poistettu (boolean).
     Jos `table` on määritelty palauttaa funktio JSON-muodossa onnistuiko poistaminen vai ei.
@@ -304,7 +308,7 @@ Virhetilanteessa palauttaa
     Poistetaan käyttäjä "pelaaja1" ilman `table` parametria:
 ```js
 const db = new Database();
-db.delete("pelaaja1");
+db.delete(true, [], "pelaaja1");
 ```
 
 Palauttaa
@@ -316,11 +320,55 @@ Palauttaa
     "info":"Poistaminen onnistui"
 }
 ```
+
+    Poistetaan kaikista tauluista kaikki tiedot
+```js
+const db = new Database();
+db.delete(true);
+```
+Palauttaa
+```json
+{
+    "users":true,
+    "points":true,
+    "tokens":false,
+    "info":"Poistaminen onnistui"
+}
+```
     
+    Yritetään poistaa kaikki tiedot pelaajasta "pelaaja1", mutta yksi tauluista ei ole olemassa
+```js
+const db = new Database();
+db.delete(true, ["users", "foobar"],"pelaaja1");
+```
+
+Palauttaa
+```json
+{
+    "status":400,
+    "err":"Jotain tauluja ei löytynyt. Tarkista 'table' parametri."
+}
+```
+
+    Yritetään poistaa kaikki tiedot pelaajasta "pelaaja1", mutta table parametri ei ole taulukko tai "*"
+```js
+const db = new Database();
+db.delete(true, "foobar","pelaaja1");
+```
+
+Palauttaa
+```json
+{
+    "status":400,
+    "err":"Virheellinen 'table' parametri. Kaikista tauluista poistetaan vain kun parametri 'table' on '*' tai []"
+}
+```
+
+
     Poistetaan käyttäjä "pelaaja1" kun `table` parametri on "users"
 ```js
 const db = new Database();
-db.delete("pelaaja1", "users");
+db.delete(false, "pelaaja1", "users");
 ```
 
 Palauttaa
@@ -1188,12 +1236,8 @@ Jos ohjelma ei pysty käsittelemään palvelimen vastausta:
     
 ```
 
-### setMemoryToken(username)
-    Asettaa tokenin erilliseen muuttujaan. Parametri username (string) on pakollinen ja kuuluisi olla käyttäjänimi.
-    Jos palvelimella ei ole tietoa pelaajista ilmoittaa funktio siitä konsolissa.
-
-Jos palvelimella ei ole tietoja pelaajasta konsoliin tulostuu:
-`Game server out of sync`
+### setMemoryToken(newToken)
+    Asettaa parametrina olevan tokenin erilliseen muuttujaan.
 
 ### POST /player
     Ottaa vastaan tokenin (string), pelaajan character-luokan x, y, w, h koordinaatit, osumapisteet (integer)
