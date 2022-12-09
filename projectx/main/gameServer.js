@@ -15,19 +15,12 @@ let botIndex = 0;
 let canvasWidth = -1; // valmiissa versiossa = -1
 const defaultY = 255; // pelaajien positio Y canvaksella
 
+let memoryToken = "";
 
 // apufunktiot
-async function setMemoryToken(username){ // write API + jos tässä tulee virhe niin pitäis varmaa jotenkin pysäyttää koko ohjelma?
-    if(players[playerIndex] === undefined){
-        console.log("Game server out of sync!");
-        return;
-    }
-    if(players[playerIndex].username === username && players[playerIndex].token === ""){
-        const result = await db.search("tokens", "token", username);
-        if(result.token) players[playerIndex].token = result.token;
-    }
+async function setMemoryToken(newToken){
+    memoryToken = newToken;
 }
-
 
 app.post("/game", async (req, res)=>{
     const state = req.body;
@@ -54,10 +47,23 @@ app.post("/game", async (req, res)=>{
     }
 });
 
-app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testattu (eikä uusinta versiota tästä)
+app.post("/player", async (req, res)=>{
     const player = req.body;
-    if(players.length === 2) return res.json({info:false,username:player.username,status:409});
     if(!player.token && players[playerIndex] === undefined) return res.json({status:401});
+
+    if(players.length === 2){
+        if(!player.token) return res.json({info:false,username:player.username,status:409});
+        const sUser = await db.search("users", "username", player.username);
+        if(sUser.username){
+            const sToken = await db.search("tokens", "token", player.username);
+            if(sToken.lenght === 0){
+                return res.json({status:401});
+            }
+            setMemoryToken(player.token); // tässä ei katota tulosta, koska ei pitäisi tässä kohtaa koskaan palauttaa mitään.
+            players[playerIndex] = player;
+        }
+        return res.json({info:false,username:player.username,status:409});
+    }
     try{
         if(!player.x || !player.y || !player.w || !player.h || !player.username || !player.hp || player.blockstate === undefined)
         return res.json({info:false});
@@ -66,7 +72,7 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
         if(players.length > 0){
             for(let i = 0; i < players.length; i++){
                 if(player.username === players[i].username){ // tee clientin puolelle, että tajuaa 
-                    player.username = player.username + "_2"; // vaihtaa nimen jos se on jo olemassa + update API sille
+                    player.username = player.username + "_2"; // vaihtaa nimen jos se on jo olemassa
                     break;
                 } 
             }
@@ -80,6 +86,7 @@ app.post("/player", async (req, res)=>{ // tokenien tarkistus botilta ei testatt
             userToken = await db.search("tokens", "token", user.username);
             if(!userToken.err){
                 if(Object.keys(userToken).length === 0 || db.compareTokens(player.token, userToken.token)){
+                    setMemoryToken(userToken.token); // tässä ei katota tulosta, koska ei pitäisi tässä kohtaa koskaan palauttaa mitään.
                     const playerObject = {
                         username:player.username,
                         x:player.x,
@@ -115,9 +122,11 @@ app.post("/move", async (req, res)=>{
     const player = req.body;
     if(!player) return res.json({status:401});
     if(!player.username) return res.json({status:400,info:"Pelaajan nimi puuttuu"});
-    await setMemoryToken(player.username);
     try{
-        if(!db.compareTokens(player.token, players[playerIndex].token)) return res.json({status:401});
+        if(!db.compareTokens(player.token, players[playerIndex].token)){
+            return res.json({status:401});
+        } 
+
         if(!player.x || !player.y || !player.w || !player.h || typeof player.blockstate !== "boolean") 
         return res.json({status:400, info:"Pelaajan jokin tieto puuttuu"});
         if(player.blockstate) return res.json({info:false});
@@ -144,7 +153,7 @@ app.post("/move", async (req, res)=>{
         players[whoIndex] = player;
         return res.json({info:true});
     }catch(e){
-        return res.json({err:"Liikkeen tarkistuksessa virhe"});
+        return res.json({status:500, err: e.message ? e.message : "Liikkeen tarkistuksessa virhe"});
     }
 });
 
@@ -284,7 +293,7 @@ app.post("/reset",async (req,res)=>{
     const playersDB = await db.search("players");
     if(playersDB.err) return res.json({err:playersDB.err});
     for(let user of playersDB){
-        if(user.username === players[playerIndex].username) players[playerIndex] = {...user, token:""};
+        if(user.username === players[playerIndex].username) players[playerIndex] = {...user, token:memoryToken};
         else players[botIndex] = user;
     }
     return res.json({details:players});
