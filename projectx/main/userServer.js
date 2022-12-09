@@ -159,7 +159,7 @@ app.post("/changePW", async (req, res)=>{
 
 app.post("/points", async (req, res)=>{
     const user = req.body;
-    if(!user.username || !user.points || !user.token){
+    if(!user.username || !(JSON.stringify(user.points)) || !user.token){
         if(!user.token) return res.json({err:"No token found", newURL:"http://localhost:3000", status:401});
         return res.json({err:"Käyttäjätiedot eivät tulleet palvelimelle"});
     }
