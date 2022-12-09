@@ -121,9 +121,9 @@ app.post("/delete", async (req, res)=>{ // rework? on aika sekava
 
         if(result === true){
             result = await db.delete(true);
-            if(result.err){
-                return res.json({err:result.err});
-            }
+            if(result.err) return res.json({err:result.err});
+            
+            return res.json({info:true, newURL:"http://localhost:3000"});
         }else if(!result){
             return res.json({err:"Kirjautumistiedot väärin!"});
             
