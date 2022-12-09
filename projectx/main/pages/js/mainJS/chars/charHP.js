@@ -75,11 +75,15 @@ class HP{
     }
 
     async reset(){
+        console.log(getTimeoutArr());
+        timeoutArrays();
+        console.log(getTimeoutArr());
+        this.player.setAttackStatus(false);
         stopCanvasEvents(true);
         startBot(false);
 
         const promisePoints = new Promise(async (resolve, reject) =>{
-            setInfo("Saving...");
+            setInfo("Tallennetaan...");
             try{
                 const options = {
                     method:"POST",
@@ -100,7 +104,7 @@ class HP{
                 if(result.err){
                     console.log(result.err);
                     setInfo("Pisteiden tallennuksessa virhe. Katso konsolista lisätiedot.");
-                }else setInfo("Saved!", "success");
+                }else setInfo("Tallennettu!", "success");
                 resolve();
             }catch(e){
                 setInfo("Varoitus! Pisteiden tallennuksessa virhe");
@@ -130,7 +134,8 @@ class HP{
                     $("#points").html("Points: 0");
                     this.player.setPoints(0);
                 }
-                this.player.piirraCanvas(0, 0, 800, 400);
+                this.player.piirraCanvas();
+                this.bot.piirraCanvas();
                 const result = await nextRound([formatPlayer(this.player, false),formatPlayer(this.bot, true)]);
                 if(!result.info){
                     setInfo(result.err, "err", true);

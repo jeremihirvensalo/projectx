@@ -191,7 +191,7 @@ async function start() {
     document.addEventListener("keydown", async e => {
         if(keypressed) return;
         keypressed = true;
-        if (canvasEvents() || player.blockState()) return;
+        if (!player.getAttackStatus() || canvasEvents() || player.blockState()) return;
         stopCanvasEvents(true);
         await suoritaToiminto(player, bot, movement[e.code], hp);
     });
@@ -207,10 +207,6 @@ function canvasEvents(){
 
 function stopCanvasEvents(state=false){
     eventStatus = state;
-}
-
-function returnPlayers(){
-    return {player:player,bot:bot}
 }
 
 function showPoints(points){
