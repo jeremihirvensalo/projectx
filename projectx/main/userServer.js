@@ -170,9 +170,9 @@ app.post("/points", async (req, res)=>{
         const formattedUser = {username:user.username,points:user.points};
         const previousRecord = await db.search("points", "points", user.username);
         let result = {};
-        if(previousRecord.lenght === 0) result = await db.insert(formattedUser, "points");
+        if(previousRecord.length === 0) result = await db.insert(formattedUser, "points");
         else if(previousRecord.points < user.points) result = await db.update(formattedUser, "points");
-        return res.json((Object.keys(result).lenght > 0 ? result : {info:true}));
+        return res.json((Object.keys(result).length > 0 ? result : {info:true}));
     }
     return res.json({err:"Token check fail", newURL:"http://localhost:3000", status:401});
 });
