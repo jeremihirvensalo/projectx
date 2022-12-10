@@ -42,6 +42,7 @@
 
     document.getElementById("settings").addEventListener("click", ()=>{
         stopCanvasEvents(true);
+        startBot(false);
         let main = document.getElementById("main");
         let navWrap = document.getElementById("navWrap");
 
@@ -143,6 +144,7 @@
 
     document.getElementById("closeSettings").addEventListener("click", ()=>{
         stopCanvasEvents(false);
+        startBot(true);
         let main = document.getElementById("main");
         let navWrap = document.getElementById("navWrap");
         document.getElementById("userSettings").style.display = "none";
