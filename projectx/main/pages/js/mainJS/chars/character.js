@@ -48,9 +48,8 @@ class Character{
             setTimeout(()=>{
                 stopCanvasEvents(false);
             }, 50);
-            return true;
-        }else return true;
-        
+        }
+        return true;
     }
     
     async goRight(amount, affectCanvasEvents=false){
@@ -68,8 +67,8 @@ class Character{
             setTimeout(()=>{
                 stopCanvasEvents(false);
             },50);
-            return true;
-        }else return true;
+        }
+        return true;
     }
 
     async jump(amount, affectCanvasEvents=false){
@@ -112,13 +111,13 @@ class Character{
         await this.piirraChar();
         setTimeout(async ()=>{
             await this.piirraCharStill();
-        }, 800);
+        }, 500);
         setTimeout(()=>{
             if(affectCanvasEvents) stopCanvasEvents(false);
             this.blockstate = false;
             this.canBlock = true;
             return true;
-        }, 1000);   
+        }, 800);
     }
 
     blockState(){
