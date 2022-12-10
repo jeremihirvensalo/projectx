@@ -178,7 +178,7 @@ async function start() {
     document.addEventListener("keydown", async e => {
         if(keypressed) return;
         keypressed = true;
-        if (!player.getAttackStatus() || canvasEvents() || player.blockState()) return;
+        if (!player.getAttackStatus() || canvasEvents() || player.blockState() || !hp.getRoundStatus()) return;
         stopCanvasEvents(true);
         await suoritaToiminto(player, bot, movement[e.code], hp);
     });

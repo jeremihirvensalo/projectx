@@ -11,6 +11,7 @@ class HP{
         this.playerStart = 25 + hpWidth;
         this.player = player;
         this.bot = bot;
+        this.roundRunning = true;
     }
     drawBarL(name){
         if(!name) name = "Player";
@@ -65,6 +66,7 @@ class HP{
         }
         this.drawDMG((amount/10), who);
         if(this.botHP == 0 || this.playerHP == 0){
+            this.roundRunning = false;
             this.reset();
             return;
         }
@@ -72,6 +74,10 @@ class HP{
 
     returnHP(){
         return {botHP:this.botHP, playerHP:this.playerHP};
+    }
+
+    getRoundStatus(){
+        return this.roundRunning;
     }
 
     async reset(){
