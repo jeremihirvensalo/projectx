@@ -11,13 +11,7 @@ const abobo = {
     ],
     YLOS: [
         { x: 323, y: 365, leveys: 100, korkeus: 113 },
-        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
-        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
         { x: 207, y: 520, leveys: 97, korkeus: 94 }
-        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
-        // { x: 323, y: 365, leveys: 101, korkeus: 114 }
-        // { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     VASEN: [
         { x: 74, y: 203, leveys: 98, korkeus: 125 },
@@ -62,15 +56,8 @@ const abobo_mirrored = {
         { x: 184, y: 204, leveys: 99, korkeus: 124 }
     ],
     YLOS: [
-
         { x: 323, y: 365, leveys: 100, korkeus: 113 },
-        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
-        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        { x: 207, y: 520, leveys: 97, korkeus: 94 },
-        // { x: 85, y: 525, leveys: 97, korkeus: 120 },
-        // { x: 444, y: 359, leveys: 97, korkeus: 132 },
-        // { x: 323, y: 365, leveys: 101, korkeus: 114 }
-        { x: 184, y: 204, leveys: 99, korkeus: 124 }
+        { x: 207, y: 520, leveys: 97, korkeus: 94 }
     ],
     VASEN: [
         { x: 74, y: 203, leveys: 98, korkeus: 125 },
