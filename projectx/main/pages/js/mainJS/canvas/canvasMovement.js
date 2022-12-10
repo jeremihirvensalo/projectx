@@ -20,7 +20,7 @@ async function suoritaToiminto(player, bot, toiminto, hp) {
             await player.kick(bot, hp);
             return;
         case "BLOCK":
-            await player.block();
+            await player.block(true);
             return;
     }
     if(!allowed){
